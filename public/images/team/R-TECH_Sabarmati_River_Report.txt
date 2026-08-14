@@ -1,0 +1,18 @@
+R-TECH Water Quality Report - Sabarmati River
+Generated: 1/12/2025, 7:47:20 pm
+
+📍 LOCATION: Sabarmati River (Tamil Nadu)
+🗺️  Coordinates: 23.020925865026157°N, 72.57519813548666°E
+
+📊 WATER QUALITY PARAMETERS:
+• Chlorophyll-a: 7.9 µg/L
+• Turbidity: 11 NTU  
+• pH: 7.3
+• Temperature: 20.2 °C
+
+⚠️  ASSESSMENT:
+• Pollution Type: Organic Matter
+• Severity: 2/10
+• Status: CLEANED
+
+🔗 Source: R-TECH Real-Time Monitoring System

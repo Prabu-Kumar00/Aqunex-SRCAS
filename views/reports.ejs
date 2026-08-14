@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R-TECH - Water Quality Reports</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+        
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+        }
+
+        h3 {
+            color: #555;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .download-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .download-btn {
+            background: #667eea;
+            color: white;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .download-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .download-btn.state-btn {
+            background: #28a745;
+        }
+
+        .download-btn.state-btn:hover {
+            background: #218838;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 14px;
+        }
+        
+        th, td {
+            padding: 1rem 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .severity-high { color: #d73027; font-weight: bold; }
+        .severity-medium { color: #fdae61; font-weight: bold; }
+        .severity-low { color: #4CAF50; font-weight: bold; }
+        .status-active { background: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+        .status-cleaned { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+        
+        .nav-links a {
+            margin-left: 1rem;
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background: #f0f4ff;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .action-btn:hover {
+            background: #5568d3;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            color: #666;
+        }
+
+        .section-divider {
+            border-top: 2px solid #e0e0e0;
+            margin: 2rem 0 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">📊 R-TECH Reports</div>
+        <div class="nav-links">
+            <a href="/">🏠 Home</a>
+            <a href="/dashboard">🗺️ Dashboard</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2>📈 Data Summary</h2>
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalHotspots">0</div>
+                    <div>Total Monitoring Points</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="highSeverity">0</div>
+                    <div>High Severity Alerts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activePoints">0</div>
+                    <div>Active Monitoring</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📥 Download Reports</h2>
+            
+            <!-- Full Report Button -->
+            <div class="download-section">
+                <button class="download-btn" onclick="downloadReport('all', 'all')">📊 Full Report (All Data)</button>
+            </div>
+
+            <!-- By State Section -->
+            <div class="section-divider"></div>
+            <h3>🗺️ Download by State</h3>
+            <div class="download-section" id="stateButtons">
+                <!-- State buttons will be dynamically generated here -->
+            </div>
+
+            <!-- By District Section -->
+            <div class="section-divider"></div>
+            <h3>🏙️ Download by District</h3>
+            <div class="download-section" id="districtButtons">
+                <!-- District buttons will be dynamically generated here -->
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🔍 All Sensor Data - Real Time</h2>
+            <table id="hotspotsTable">
+                <thead>
+                    <tr>
+                        <th>Location</th>
+                        <th>District</th>
+                        <th>State</th>
+                        <th>Type</th>
+                        <th>Severity</th>
+                        <th>Status</th>
+                        <th>Chl-a (µg/L)</th>
+                        <th>Turb (NTU)</th>
+                        <th>pH</th>
+                        <th>Temp (°C)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="11" class="loading">Connecting to Firebase sensor_data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Firebase JS -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyARC-G4soX4WRO26ncZE19L9BeUeTyHlw",
+            authDomain: "aquex-871b9.firebaseapp.com",
+            projectId: "aquex-871b9",
+            storageBucket: "aquex-871b9.firebasestorage.app",
+            messagingSenderId: "501715709742",
+            appId: "1:501715709742:web:8204e44f3219e6584954bf"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let allData = [];
+        let uniqueStates = new Set();
+        let uniqueDistricts = new Set();
+
+        function getSeverityInfo(chlorophyll) {
+            const severity = Math.min(Math.floor(chlorophyll / 3), 10);
+            if (severity <= 4) return { rating: severity, class: 'severity-low' };
+            if (severity <= 7) return { rating: severity, class: 'severity-medium' };
+            return { rating: severity, class: 'severity-high' };
+        }
+
+        function getStatus(severity) {
+            return severity <= 4 ? 'cleaned' : 'active';
+        }
+
+        function getPollutionType(chlorophyll) {
+            return chlorophyll > 15 ? 'Algae Bloom' : 'Organic Matter';
+        }
+
+        function updateStats() {
+            const total = allData.length;
+            const highSeverity = allData.filter(d => d.severity >= 8).length;
+            const active = allData.filter(d => d.status === 'active').length;
+
+            document.getElementById('totalHotspots').textContent = total;
+            document.getElementById('highSeverity').textContent = highSeverity;
+            document.getElementById('activePoints').textContent = active;
+        }
+
+        // Generate state and district download buttons dynamically
+        function generateDownloadButtons() {
+            const stateSection = document.getElementById('stateButtons');
+            const districtSection = document.getElementById('districtButtons');
+            
+            // Clear previous buttons
+            stateSection.innerHTML = '';
+            districtSection.innerHTML = '';
+            
+            // Sort states and districts alphabetically
+            const sortedStates = Array.from(uniqueStates).sort();
+            const sortedDistricts = Array.from(uniqueDistricts).sort();
+            
+            // Create state buttons
+            sortedStates.forEach(state => {
+                const button = document.createElement('button');
+                button.className = 'download-btn state-btn';
+                button.onclick = () => downloadReport('state', state);
+                button.innerHTML = `📥 ${state}`;
+                stateSection.appendChild(button);
+            });
+
+            // Create district buttons
+            sortedDistricts.forEach(districtInfo => {
+                const button = document.createElement('button');
+                button.className = 'download-btn';
+                button.onclick = () => downloadReport('district', districtInfo);
+                button.innerHTML = `📥 ${districtInfo}`;
+                districtSection.appendChild(button);
+            });
+        }
+
+        db.collection('sensor_data').onSnapshot((snapshot) => {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '<tr><td colspan="11" class="loading">Loading data...</td></tr>';
+            allData = [];
+            uniqueStates.clear();
+            uniqueDistricts.clear();
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const severity = getSeverityInfo(data.chlorophyll);
+                const status = getStatus(severity.rating);
+                const pollutionType = getPollutionType(data.chlorophyll);
+
+                // Use district and state directly from Firebase
+                const district = data.district || 'Unknown District';
+                const state = data.state || 'Unknown State';
+
+                // Add to unique sets
+                uniqueStates.add(state);
+                uniqueDistricts.add(`${district}, ${state}`);
+
+                const waterBody = {
+                    id: doc.id,
+                    name: data.location,
+                    district: district,
+                    state: state,
+                    type: pollutionType,
+                    severity: severity.rating,
+                    status: status,
+                    chlorophyll: data.chlorophyll,
+                    turbidity: data.turbidity,
+                    ph: data.ph,
+                    temperature: data.temperature,
+                    lat: data.gps.lat,
+                    lng: data.gps.lng,
+                    timestamp: data.timestamp ? new Date(data.timestamp.seconds * 1000).toISOString() : new Date().toISOString()
+                };
+
+                allData.push(waterBody);
+
+                const severityClass = severity.rating > 7 ? 'severity-high' : severity.rating > 4 ? 'severity-medium' : 'severity-low';
+                const statusClass = status === 'active' ? 'status-active' : 'status-cleaned';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${waterBody.name}</td>
+                    <td>${waterBody.district}</td>
+                    <td>${waterBody.state}</td>
+                    <td>${waterBody.type}</td>
+                    <td class="${severityClass}">${waterBody.severity}/10</td>
+                    <td><span class="${statusClass}">${waterBody.status.toUpperCase()}</span></td>
+                    <td>${waterBody.chlorophyll.toFixed(1)}</td>
+                    <td>${waterBody.turbidity.toFixed(1)}</td>
+                    <td>${waterBody.ph.toFixed(1)}</td>
+                    <td>${waterBody.temperature.toFixed(1)}</td>
+                    <td><button class="action-btn" onclick='downloadSingleHotspot(${JSON.stringify(waterBody).replace(/"/g, '&quot;')})'>📥 Report</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            if (allData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 4rem;">No sensor data available.</td></tr>';
+            } else {
+                updateStats();
+                generateDownloadButtons();
+            }
+        });
+
+        function downloadReport(filterType, filterValue) {
+            let filteredData = allData;
+
+            if (filterType === 'state') {
+                // Filter by state only
+                filteredData = allData.filter(wb => wb.state === filterValue);
+            } else if (filterType === 'district') {
+                // Filter by district, state combination
+                filteredData = allData.filter(wb => {
+                    return `${wb.district}, ${wb.state}` === filterValue;
+                });
+            }
+            // If filterType === 'all', use all data
+
+            if (filteredData.length === 0) {
+                alert('No data available for ' + filterValue);
+                return;
+            }
+
+            let csv = 'Location,District,State,Type,Severity,Status,Chlorophyll-a,Turbidity,pH,Temperature,Latitude,Longitude,Timestamp\n';
+
+            filteredData.forEach(wb => {
+                csv += `"${wb.name}","${wb.district}","${wb.state}","${wb.type}",${wb.severity},"${wb.status}",${wb.chlorophyll},${wb.turbidity},${wb.ph},${wb.temperature},${wb.lat},${wb.lng},"${wb.timestamp}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            
+            let fileName = 'All_Locations';
+            if (filterType !== 'all') {
+                fileName = filterValue.replace(/[,\s]+/g, '_');
+            }
+            
+            a.download = `${fileName}_Report_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function downloadSingleHotspot(waterBody) {
+            const csvData = `R-TECH Water Quality Report - ${waterBody.name}
+Generated: ${new Date().toLocaleString('en-IN')}
+
+📍 LOCATION: ${waterBody.name}
+🏙️  District: ${waterBody.district}
+🗺️  State: ${waterBody.state}
+📌 Coordinates: ${waterBody.lat}°N, ${waterBody.lng}°E
+
+📊 WATER QUALITY PARAMETERS:
+• Chlorophyll-a: ${waterBody.chlorophyll} µg/L
+• Turbidity: ${waterBody.turbidity} NTU  
+• pH: ${waterBody.ph}
+• Temperature: ${waterBody.temperature} °C
+
+⚠️  ASSESSMENT:
+• Pollution Type: ${waterBody.type}
+• Severity: ${waterBody.severity}/10
+• Status: ${waterBody.status.toUpperCase()}
+
+🔗 Source: R-TECH Real-Time Monitoring System`;
+
+            const blob = new Blob([csvData], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `R-TECH_${waterBody.name.replace(/\s+/g, '_')}_Report.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

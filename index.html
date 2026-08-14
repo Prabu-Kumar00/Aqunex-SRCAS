@@ -1,0 +1,55 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const path = require('path');
+
+const app = express();
+const port = 3001;
+
+// --- Middleware Setup ---
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// --- Authority Dashboard Routes ONLY ---
+
+// Home → Redirects to Authority Dashboard
+app.get('/', (req, res) => {
+  res.redirect('/dashboard');
+});
+
+// Authority Dashboard (Main page - ALL data visible)
+app.get('/dashboard', (req, res) => {
+  res.render('dashboard');
+});
+
+// Reports Page (All sensor/mission data)
+app.get('/reports', (req, res) => {
+  res.render('reports');
+});
+
+// API endpoint - Returns ALL data for authority dashboard
+app.get('/api/data', (req, res) => {
+  const fs = require('fs');
+  const dataPath = path.join(__dirname, 'public', 'data', 'sample-data.geojson');
+  
+  fs.readFile(dataPath, 'utf8', (err, data) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to load authority data' });
+    }
+    const geojson = JSON.parse(data);
+    res.json(geojson);
+  });
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'Aqunex Authority Server Running', timestamp: new Date().toISOString() });
+});
+
+// --- Start Server ---
+app.listen(port, () => {
+  console.log(`🚤 Aqunex Authority Server running at http://localhost:${port}`);
+  console.log(`📊 Dashboard: http://localhost:${port}/dashboard`);
+});

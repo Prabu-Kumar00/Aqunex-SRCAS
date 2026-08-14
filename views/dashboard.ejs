@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R-TECH - Authority Dashboard</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet Geocoder CSS for Search -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; background: #f5f5f5; }
+        .header { position: fixed; top: 0; left: 0; right: 0; background: white; color: #333; padding: 15px 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 20px; color: #333; }
+        .btn { padding: 8px 16px; background: #5b7dff; color: white; border: none; border-radius: 5px; text-decoration: none; font-size: 14px; margin-left: 10px; cursor: pointer; }
+        .btn:hover { background: #4a6ae8; }
+        #map { position: absolute; top: 60px; bottom: 0; width: 100%; }
+        .custom-marker { width: 32px !important; height: 32px !important; border-radius: 50%; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4); cursor: pointer; }
+        .marker-good { background: #28a745; }
+        .marker-moderate { background: #ffc107; }
+        .marker-alert { background: #dc3545; }
+        .leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .leaflet-popup-content { margin: 0; min-width: 340px; max-width: 400px; padding: 0; }
+        .popup-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px 10px 0 0; }
+        .popup-title { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
+        .popup-subtitle { font-size: 12px; opacity: 0.9; }
+        .popup-body { padding: 15px; }
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; width: 100%; }
+        .data-item { background: #f8f9fa; padding: 10px; border-radius: 6px; border-left: 3px solid #667eea; min-width: 0; }
+        .data-label { font-size: 11px; color: #666; text-transform: uppercase; margin-bottom: 4px; }
+        .data-value { font-size: 16px; font-weight: bold; color: #333; }
+        .meta-info { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; font-size: 12px; color: #666; }
+        .meta-item { display: flex; align-items: center; gap: 4px; }
+        .severity-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .severity-low { background: #d4edda; color: #155724; }
+        .severity-moderate { background: #fff3cd; color: #856404; }
+        .severity-high { background: #f8d7da; color: #721c24; }
+        .status-active { display: inline-block; padding: 4px 12px; background: #28a745; color: white; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .download-btn { display: block; width: 100%; padding: 12px; background: #5b7dff; color: white; text-align: center; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; margin-top: 15px; }
+        .download-btn:hover { background: #4a6ae8; }
+        .loading { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 9999; background: rgba(255,255,255,0.95); padding: 40px; border-radius: 10px; }
+        
+        /* Custom styling for search bar */
+        .leaflet-control-geocoder { 
+            border: 2px solid #5b7dff !important; 
+            border-radius: 8px !important; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15) !important;
+        }
+        .leaflet-control-geocoder-form input { 
+            font-size: 14px !important; 
+            padding: 8px !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loadingScreen">
+        <h2>🌊 Loading Authority Dashboard...</h2>
+        <p>Connecting to real-time sensor data</p>
+    </div>
+
+    <div class="header">
+        <h1>🛡️ R-TECH Authority Dashboard</h1>
+        <div>
+            <a href="/" class="btn">🏠 Home</a>
+            <a href="/dashboard" class="btn">📊 Dashboard</a>
+            <a href="/reports" class="btn">📄 Reports</a>
+        </div>
+    </div>
+    
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet Geocoder JS for Search -->
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyARC-G4soX4WRO26ncZE19l9BeFUsTyHlw",
+            authDomain: "aquex-871b9.firebaseapp.com",
+            projectId: "aquex-871b9",
+            storageBucket: "aquex-871b9.firebasestorage.app",
+            messagingSenderId: "501715709742",
+            appId: "1:501715709742:web:8204e44f3219e6584954bf"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Remove auth check - direct access for authority
+        document.getElementById('loadingScreen').style.display = 'none';
+
+        // Initialize map
+        const map = L.map('map').setView([20.5937, 78.9629], 5);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add Google Maps-style search bar
+        var searchMarker = null; // To store temporary search marker
+        
+        L.Control.geocoder({
+            defaultMarkGeocode: false,
+            placeholder: 'Search any location (city, river, lake)...',
+            errorMessage: 'Location not found',
+            suggestMinLength: 3,
+            suggestTimeout: 250,
+            queryMinLength: 1
+        })
+        .on('markgeocode', function(e) {
+            var latlng = e.geocode.center;
+            var locationName = e.geocode.name;
+            
+            // Remove previous search marker if exists
+            if (searchMarker) {
+                map.removeLayer(searchMarker);
+            }
+            
+            // Move map to searched location with smooth animation
+            map.setView(latlng, 12);
+            
+            // Add temporary marker at searched location
+            searchMarker = L.marker(latlng, {
+                icon: L.divIcon({
+                    className: 'custom-marker',
+                    html: '<div style="background: #5b7dff; width: 32px; height: 32px; border-radius: 50%; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4); text-align:center; line-height:26px; color:white; font-size:18px;">📍</div>',
+                    iconSize: [32, 32]
+                })
+            })
+            .addTo(map)
+            .bindPopup(`<div style="padding: 10px;"><strong>📍 ${locationName}</strong><br><small>Searched location</small></div>`)
+            .openPopup();
+        })
+        .addTo(map);
+
+        // Helper functions
+        function getSeverity(chlorophyll) {
+            const severity = Math.min(Math.floor(chlorophyll / 3), 10);
+            if (severity <= 4) return { rating: severity, class: 'severity-low', markerClass: 'marker-good' };
+            if (severity <= 7) return { rating: severity, class: 'severity-moderate', markerClass: 'marker-moderate' };
+            return { rating: severity, class: 'severity-high', markerClass: 'marker-alert' };
+        }
+        function getPollutionType(chlorophyll) {
+            return chlorophyll > 15 ? 'Algae Bloom' : 'Organic Matter';
+        }
+        function createDownloadFunction(location, chlorophyll, turbidity, ph, temperature) {
+            return function() {
+                const csv = `Water Quality Report - ${location}
+Date: ${new Date().toLocaleDateString()}
+
+Parameter,Value,Unit
+Chlorophyll-a,${chlorophyll},µg/L
+Turbidity,${turbidity},NTU
+pH,${ph},-
+Temperature,${temperature},°C`;
+
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${location.replace(/\s+/g, '_')}_Report.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            };
+        }
+
+        // Load ALL water quality data for authority (real-time)
+        db.collection('sensor_data').onSnapshot((snapshot) => {
+            // Clear existing markers (but keep search marker)
+            map.eachLayer(function (layer) {
+                if (layer instanceof L.Marker && layer !== searchMarker) {
+                    map.removeLayer(layer);
+                }
+            });
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const lat = data.gps.lat;
+                const lng = data.gps.lng;
+                const severity = getSeverity(data.chlorophyll);
+                const pollutionType = getPollutionType(data.chlorophyll);
+
+                const icon = L.divIcon({
+                    className: `custom-marker ${severity.markerClass}`,
+                    html: '<div style="text-align:center; line-height:26px; color:white; font-weight:bold; font-size:18px;">💧</div>',
+                    iconSize: [32, 32]
+                });
+
+                const funcName = `download_${doc.id}`;
+                window[funcName] = createDownloadFunction(
+                    data.location,
+                    data.chlorophyll,
+                    data.turbidity,
+                    data.ph,
+                    data.temperature
+                );
+
+                const popupContent = `
+                    <div class="popup-header">
+                        <div class="popup-title">${data.location}</div>
+                        <div class="popup-subtitle">Location: ${data.location.split(' ')[0]}</div>
+                    </div>
+                    <div class="popup-body">
+                        <div class="data-grid">
+                            <div class="data-item">
+                                <div class="data-label">Chlorophyll-a</div>
+                                <div class="data-value">${data.chlorophyll} µg/L</div>
+                            </div>
+                            <div class="data-item">
+                                <div class="data-label">Turbidity</div>
+                                <div class="data-value">${data.turbidity} NTU</div>
+                            </div>
+                            <div class="data-item">
+                                <div class="data-label">pH</div>
+                                <div class="data-value">${data.ph}</div>
+                            </div>
+                            <div class="data-item">
+                                <div class="data-label">Temperature</div>
+                                <div class="data-value">${data.temperature}°C</div>
+                            </div>
+                        </div>
+                        <div class="meta-info">
+                            <div class="meta-item"><strong>Type:</strong> ${pollutionType}</div>
+                            <div class="meta-item"><strong>Severity:</strong> <span class="severity-badge ${severity.class}">${severity.rating}/10</span></div>
+                        </div>
+                        <div class="meta-info">
+                            <div class="meta-item"><span class="status-active">ACTIVE</span></div>
+                        </div>
+                        <button class="download-btn" onclick="${funcName}()">
+                            📥 Download Data Report
+                        </button>
+                    </div>
+                `;
+                L.marker([lat, lng], { icon: icon })
+                    .bindPopup(popupContent, { maxWidth: 380, minWidth: 340 })
+                    .addTo(map);
+            });
+        });
+    </script>
+</body>
+</html>
