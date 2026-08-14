@@ -1,51 +1,693 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>R-TECH | Water Quality Monitoring Platform</title>
-
-  <!-- External CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/home.css">
+
+  <style>
+    /* ══════════════════════════════════════════════
+       GLOBAL ENHANCEMENTS
+    ══════════════════════════════════════════════ */
+    :root {
+      --ocean-1: #0ea5e9;
+      --ocean-2: #6366f1;
+      --ocean-3: #8b5cf6;
+      --ocean-4: #06b6d4;
+      --glow-blue:   0 0 40px rgba(14,165,233,0.25);
+      --glow-purple: 0 0 40px rgba(139,92,246,0.25);
+    }
+
+    * { scroll-behavior: smooth; }
+
+    body {
+      background: #060d1a !important;
+      color: #f1f5f9 !important;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── ANIMATED BG ─────────────────────────────── */
+    .bg-gradient {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 10%, rgba(14,165,233,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 90% 80%, rgba(139,92,246,0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(6,182,212,0.05) 0%, transparent 70%),
+        #060d1a;
+      animation: bgShift 12s ease-in-out infinite alternate;
+    }
+    @keyframes bgShift {
+      from { opacity: 1; }
+      to   { filter: hue-rotate(15deg) brightness(1.08); }
+    }
+
+    /* ── PARTICLES CANVAS ────────────────────────── */
+    #particlesCanvas {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none; opacity: 0.4;
+    }
+
+    /* ── NAVBAR ──────────────────────────────────── */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2.5rem;
+      background: rgba(6,13,26,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(14,165,233,0.12);
+      transition: all 0.3s ease;
+    }
+    .navbar.scrolled {
+      padding: 0.65rem 2.5rem;
+      background: rgba(6,13,26,0.92);
+      border-bottom-color: rgba(14,165,233,0.2);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.4);
+    }
+    .logo {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 1.4rem; font-weight: 800; font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, var(--ocean-1), var(--ocean-3));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .nav-links { display: flex; gap: 0.75rem; }
+
+    /* ── HERO ────────────────────────────────────── */
+    .hero-carousel {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .hero-slide { width: 100%; }
+    .hero-content {
+      position: relative;
+      text-align: center;
+      padding: 4rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* floating glow orbs behind hero text */
+    .hero-orb {
+      position: absolute; border-radius: 50%; filter: blur(80px);
+      animation: orbFloat 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .hero-orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(14,165,233,0.18) 0%, transparent 70%);
+      top: -100px; left: 50%; transform: translateX(-50%);
+      animation-delay: 0s;
+    }
+    .hero-orb-2 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(139,92,246,0.14) 0%, transparent 70%);
+      top: 100px; right: 100px;
+      animation-delay: -3s;
+    }
+    .hero-orb-3 {
+      width: 250px; height: 250px;
+      background: radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 70%);
+      bottom: 50px; left: 100px;
+      animation-delay: -6s;
+    }
+    @keyframes orbFloat {
+      0%, 100% { transform: translateY(0px) translateX(0px); }
+      33%       { transform: translateY(-30px) translateX(15px); }
+      66%       { transform: translateY(15px) translateX(-10px); }
+    }
+
+    /* wave decoration */
+    .hero-wave-line {
+      display: inline-block;
+      width: 60px; height: 3px;
+      background: linear-gradient(90deg, var(--ocean-1), var(--ocean-3));
+      border-radius: 2px;
+      margin: 0 1rem;
+      animation: wavePulse 2s ease-in-out infinite;
+    }
+    @keyframes wavePulse {
+      0%, 100% { opacity: 0.5; width: 40px; }
+      50%       { opacity: 1;   width: 70px; }
+    }
+
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(14,165,233,0.1);
+      border: 1px solid rgba(14,165,233,0.25);
+      color: var(--ocean-1);
+      padding: 0.4rem 1rem; border-radius: 100px;
+      font-size: 0.82rem; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      animation: fadeSlideDown 0.8s ease forwards;
+    }
+    .tag-dot {
+      width: 6px; height: 6px; background: var(--ocean-1);
+      border-radius: 50%; animation: tagBlink 1.5s infinite;
+    }
+    @keyframes tagBlink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(3.5rem, 8vw, 6.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #ffffff 0%, #bae6fd 40%, var(--ocean-3) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      animation: fadeSlideUp 1s ease 0.2s both;
+    }
+    .hero-subtitle {
+      font-size: 1.15rem; font-weight: 600;
+      color: var(--ocean-1); letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 1.5rem;
+      animation: fadeSlideUp 1s ease 0.4s both;
+    }
+    .hero-desc {
+      font-size: 1.1rem; line-height: 1.8;
+      color: #94a3b8; max-width: 700px;
+      margin: 0 auto 2.5rem;
+      animation: fadeSlideUp 1s ease 0.6s both;
+    }
+    .hero-cta-row {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      animation: fadeSlideUp 1s ease 0.8s both;
+    }
+
+    /* ── HERO STATS BAR ──────────────────────────── */
+    .hero-stats {
+      position: relative; z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1px;
+      max-width: 900px; margin: 0 auto 5rem;
+      background: rgba(14,165,233,0.1);
+      border: 1px solid rgba(14,165,233,0.15);
+      border-radius: 20px; overflow: hidden;
+      backdrop-filter: blur(10px);
+      animation: fadeSlideUp 1s ease 1s both;
+    }
+    .hero-stat-item {
+      padding: 1.5rem;
+      background: rgba(6,13,26,0.6);
+      text-align: center;
+      transition: background 0.3s;
+    }
+    .hero-stat-item:hover { background: rgba(14,165,233,0.08); }
+    .hero-stat-num {
+      font-size: 2rem; font-weight: 800; font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, var(--ocean-1), var(--ocean-3));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-stat-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
+
+    /* ── WAVE DIVIDER ────────────────────────────── */
+    .wave-divider {
+      position: relative; overflow: hidden;
+      height: 80px; margin-bottom: -2px;
+    }
+    .wave-divider svg { position: absolute; bottom: 0; width: 100%; }
+
+    /* ── SECTION FADE-IN ─────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-left  { opacity:0; transform: translateX(-40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal-right { opacity:0; transform: translateX(40px);  transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal-left.visible, .reveal-right.visible { opacity:1; transform: translateX(0); }
+
+    /* ── TECH CARDS ──────────────────────────────── */
+    .project-overview {
+      position: relative; z-index: 1;
+      padding: 5rem 2rem;
+    }
+    .project-container { max-width: 1400px; width: 100%; margin: 0 auto; }
+    .project-container h2 {
+      text-align: center; font-size: 2.5rem; font-weight: 800; font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, #fff, #94a3b8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    .project-container .subtitle {
+      text-align: center; color: #64748b; margin-bottom: 3.5rem;
+      font-size: 1rem;
+    }
+
+    .tech-grid {
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      gap: 1rem !important;
+      align-items: stretch !important;
+    }
+    @media (max-width: 1024px) {
+      .tech-grid { flex-wrap: wrap !important; }
+      .tech-card  { flex: 1 1 calc(50% - 1rem) !important; }
+    }
+    @media (max-width: 540px) {
+      .tech-card  { flex: 1 1 100% !important; }
+    }
+    .tech-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px; padding: 1.25rem;
+      transition: all 0.35s ease;
+      position: relative; overflow: hidden;
+      flex: 1 1 0 !important;
+      min-width: 0 !important;
+    }
+    .tech-card::before {
+      content: ''; position: absolute;
+      inset: 0; border-radius: 18px; opacity: 0;
+      background: linear-gradient(135deg, rgba(14,165,233,0.07), rgba(139,92,246,0.07));
+      transition: opacity 0.35s ease;
+    }
+    .tech-card:hover { transform: translateY(-8px); border-color: rgba(14,165,233,0.3); box-shadow: var(--glow-blue); }
+    .tech-card:hover::before { opacity: 1; }
+    .tech-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; color: #e2e8f0; }
+    .tech-card ul { list-style: none; padding: 0; }
+    .tech-card ul li {
+      padding: 0.4rem 0;
+      color: #94a3b8; font-size: 0.88rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .tech-card ul li:last-child { border: none; }
+    .tech-card ul li::before {
+      content: '▸'; color: var(--ocean-1); font-size: 0.7rem; flex-shrink: 0;
+    }
+
+    /* ── SPECS TABLE ─────────────────────────────── */
+    .specifications-section {
+      position: relative; z-index: 1;
+      background: rgba(255,255,255,0.015);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 5rem 2rem;
+    }
+    .specifications-container { max-width: 1100px; margin: 0 auto; }
+    .specifications-container h2, .specifications-container .subtitle {
+      text-align: center; margin-bottom: 0.5rem;
+    }
+    .specifications-container h2 {
+      font-size: 2.5rem; font-weight: 800;
+      background: linear-gradient(135deg, #fff, #94a3b8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .specifications-container .subtitle { color: #64748b; margin-bottom: 3rem; }
+
+    .specs-table-wrapper {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .specs-table { width: 100%; border-collapse: collapse; }
+    .specs-table thead tr { background: rgba(14,165,233,0.08); }
+    .specs-table th {
+      padding: 1rem 1.5rem;
+      text-align: left; font-size: 0.78rem;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      color: var(--ocean-1); font-weight: 700;
+      border-bottom: 1px solid rgba(14,165,233,0.15);
+    }
+    .specs-table td {
+      padding: 1rem 1.5rem;
+      color: #cbd5e1; font-size: 0.9rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: top;
+    }
+    .specs-table tbody tr { transition: background 0.2s; }
+    .specs-table tbody tr:hover { background: rgba(14,165,233,0.04); }
+    .specs-table tbody tr:last-child td { border-bottom: none; }
+    .specs-table ol { padding-left: 1.2rem; margin: 0.5rem 0; }
+    .specs-table ol li { margin: 0.3rem 0; line-height: 1.6; }
+    .nested-row td:first-child { color: var(--ocean-1); font-weight: 700; }
+
+    /* ── PROTOTYPE GALLERY ───────────────────────── */
+    .prototype-section {
+      position: relative; z-index: 1;
+      padding: 5rem 2rem;
+    }
+    .prototype-container { max-width: 1200px; margin: 0 auto; }
+    .prototype-container h2 {
+      text-align: center; font-size: 2.5rem; font-weight: 800;
+      background: linear-gradient(135deg, #fff, #94a3b8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    .prototype-container .subtitle { text-align: center; color: #64748b; margin-bottom: 1rem; }
+    .prototype-container > p { color: #94a3b8; }
+
+    .prototype-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+    .prototype-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px; overflow: hidden;
+      transition: all 0.35s ease;
+      group: true;
+    }
+    .prototype-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      border-color: rgba(14,165,233,0.3);
+      box-shadow: var(--glow-blue);
+    }
+    .prototype-card img {
+      width: 100%; height: 220px; object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .prototype-card:hover img { transform: scale(1.06); }
+    .prototype-info { padding: 1.25rem 1.5rem; }
+    .prototype-info h3 { font-size: 0.95rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.4rem; }
+    .prototype-info p  { font-size: 0.82rem; color: #64748b; line-height: 1.6; }
+
+    /* ── TEAM SECTION ────────────────────────────── */
+    .team-section {
+      position: relative; z-index: 1;
+      background: rgba(255,255,255,0.015);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 5rem 2rem;
+    }
+    .team-container { max-width: 1200px; margin: 0 auto; }
+    .team-container h2 {
+      text-align: center; font-size: 2.5rem; font-weight: 800;
+      background: linear-gradient(135deg, #fff, #94a3b8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    .team-container .subtitle { text-align: center; color: #64748b; margin-bottom: 3rem; }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.25rem;
+    }
+    .team-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px; padding: 1.75rem 1.25rem;
+      text-align: center;
+      transition: all 0.35s ease;
+      position: relative; overflow: hidden;
+    }
+    .team-card::after {
+      content: ''; position: absolute;
+      bottom: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--ocean-1), var(--ocean-3));
+      transform: scaleX(0); transform-origin: center;
+      transition: transform 0.35s ease;
+    }
+    .team-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(14,165,233,0.3);
+      box-shadow: var(--glow-blue);
+      background: rgba(14,165,233,0.04);
+    }
+    .team-card:hover::after { transform: scaleX(1); }
+    .team-photo {
+      width: 84px; height: 84px;
+      border-radius: 50%; overflow: hidden;
+      margin: 0 auto 1rem;
+      border: 2px solid rgba(14,165,233,0.3);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .team-card:hover .team-photo {
+      border-color: var(--ocean-1);
+      box-shadow: 0 0 20px rgba(14,165,233,0.3);
+    }
+    .team-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .team-card h3 { font-size: 0.92rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.3rem; }
+    .team-card .role { font-size: 0.75rem; color: #64748b; margin-bottom: 1rem; line-height: 1.4; }
+    .team-card .affiliation { font-size: 0.72rem; color: #475569; margin-bottom: 0.75rem; }
+    .mentor-card { max-width: 260px; }
+
+    .linkedin-btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.45rem 1rem; border-radius: 8px; font-size: 0.78rem;
+      font-weight: 600; color: #e2e8f0; text-decoration: none;
+      background: rgba(14,165,233,0.1);
+      border: 1px solid rgba(14,165,233,0.2);
+      transition: all 0.25s ease;
+    }
+    .linkedin-btn:hover {
+      background: rgba(14,165,233,0.2);
+      border-color: var(--ocean-1);
+      color: var(--ocean-1);
+      transform: translateY(-1px);
+    }
+
+    /* ── PROBLEM SECTION ─────────────────────────── */
+    .problem-section {
+      position: relative; z-index: 1; padding: 5rem 2rem;
+    }
+    .problem-container { max-width: 1200px; margin: 0 auto; }
+    .problem-container h2 {
+      text-align: center; font-size: 2.5rem; font-weight: 800;
+      background: linear-gradient(135deg, #fff, #94a3b8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    .problem-container .subtitle { text-align: center; color: #64748b; margin-bottom: 3rem; }
+
+    .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; }
+    .problem-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px; overflow: hidden;
+      transition: all 0.35s ease;
+    }
+    .problem-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(239,68,68,0.3);
+      box-shadow: 0 0 40px rgba(239,68,68,0.1);
+    }
+    .problem-card img { width: 100%; height: 200px; object-fit: cover; }
+    .problem-content { padding: 1.5rem; }
+    .location-badge {
+      display: inline-block;
+      background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.2);
+      color: var(--ocean-1); padding: 0.3rem 0.75rem;
+      border-radius: 100px; font-size: 0.72rem; font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    .problem-content h3 { font-size: 1rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.5rem; }
+    .problem-content p  { font-size: 0.88rem; color: #94a3b8; margin-bottom: 0.5rem; line-height: 1.7; }
+    .impact-list { list-style: none; padding: 0; margin: 0.5rem 0 0; }
+    .impact-list li { font-size: 0.82rem; color: #94a3b8; padding: 0.3rem 0; line-height: 1.5; }
+
+    /* ── FEATURES ────────────────────────────────── */
+    .features-section {
+      position: relative; z-index: 1;
+      background: rgba(255,255,255,0.015);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 5rem 2rem;
+    }
+    .features-section h2 {
+      text-align: center; font-size: 2.5rem; font-weight: 800;
+      background: linear-gradient(135deg, #fff, #94a3b8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 3rem;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem; max-width: 1100px; margin: 0 auto;
+    }
+    .feature-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px; padding: 2rem 1.5rem;
+      text-align: center; transition: all 0.35s ease;
+      position: relative; overflow: hidden;
+    }
+    .feature-card::before {
+      content: ''; position: absolute; inset: 0; border-radius: 18px;
+      background: linear-gradient(135deg, rgba(14,165,233,0.06), rgba(139,92,246,0.06));
+      opacity: 0; transition: opacity 0.35s;
+    }
+    .feature-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(14,165,233,0.3);
+      box-shadow: var(--glow-blue);
+    }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-card .icon {
+      font-size: 2.5rem; margin-bottom: 1rem;
+      display: block;
+      animation: iconBob 3s ease-in-out infinite;
+    }
+    @keyframes iconBob {
+      0%,100%{ transform: translateY(0); }
+      50%    { transform: translateY(-6px); }
+    }
+    .feature-card:nth-child(2) .icon { animation-delay: -0.75s; }
+    .feature-card:nth-child(3) .icon { animation-delay: -1.5s; }
+    .feature-card:nth-child(4) .icon { animation-delay: -2.25s; }
+    .feature-card h3 { font-size: 1rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.5rem; }
+    .feature-card p  { font-size: 0.85rem; color: #64748b; line-height: 1.6; }
+
+    /* ── CTA ─────────────────────────────────────── */
+    .cta-section {
+      position: relative; z-index: 1;
+      text-align: center; padding: 6rem 2rem;
+      background: linear-gradient(135deg,
+        rgba(14,165,233,0.06) 0%,
+        rgba(139,92,246,0.06) 50%,
+        rgba(6,182,212,0.06) 100%);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .cta-section h2 {
+      font-size: 2.8rem; font-weight: 800;
+      background: linear-gradient(135deg, #fff, #bae6fd, var(--ocean-3));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+    }
+    .cta-section p { font-size: 1.1rem; color: #94a3b8; max-width: 640px; margin: 0 auto 2.5rem; line-height: 1.7; }
+
+    /* ── BUTTONS ─────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.8rem 1.8rem; border-radius: 12px;
+      background: linear-gradient(135deg, var(--ocean-1), var(--ocean-2));
+      color: #fff; font-weight: 700; text-decoration: none;
+      font-family: 'Outfit', sans-serif;
+      border: none; cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(14,165,233,0.3);
+      position: relative; overflow: hidden;
+    }
+    .btn::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(14,165,233,0.45);
+    }
+    .btn:hover::after { opacity: 1; }
+
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.8rem 1.8rem; border-radius: 12px;
+      background: transparent;
+      color: var(--ocean-1); font-weight: 700; text-decoration: none;
+      font-family: 'Outfit', sans-serif;
+      border: 1.5px solid rgba(14,165,233,0.4); cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .btn-outline:hover {
+      background: rgba(14,165,233,0.08);
+      border-color: var(--ocean-1);
+      transform: translateY(-3px);
+      box-shadow: 0 4px 20px rgba(14,165,233,0.15);
+    }
+
+    /* ── KEYFRAMES ───────────────────────────────── */
+    @keyframes fadeSlideUp   { from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);} }
+    @keyframes fadeSlideDown { from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);} }
+  </style>
 </head>
 
 <body>
+  <!-- Animated Background -->
+  <div class="bg-gradient"></div>
+  <canvas id="particlesCanvas"></canvas>
 
-  <nav class="navbar">
-    <div class="logo">
-      <span>🌊</span>
-      <span>R-TECH</span>
-    </div>
+  <!-- ── NAV ──────────────────────────────────────── -->
+  <nav class="navbar" id="mainNav">
+    <div class="logo"><span>🌊</span><span>R-TECH</span></div>
     <div class="nav-links">
-      <a href="/dashboard" class="btn">Dashboard</a>
-      <a href="/reports" class="btn-outline">Reports</a>
+      <a href="/dashboard" class="btn" style="font-size:0.9rem;padding:0.6rem 1.4rem;">Dashboard</a>
+      <a href="/reports" class="btn-outline" style="font-size:0.9rem;padding:0.6rem 1.4rem;">Reports</a>
     </div>
   </nav>
 
-  <!-- HERO CAROUSEL - REBUILT FROM SCRATCH -->
+  <!-- ── HERO ─────────────────────────────────────── -->
   <div class="hero-carousel">
-    <!-- Slide 1: R-TECH Project - VISIBLE BY DEFAULT -->
-    <div class="hero-slide" style="display: block;">
-      <div class="hero-content">
-        <h1>R-TECH</h1>
-        <p class="subtitle">Autonomous Water Quality Monitoring Robot</p>
-        <p>Advanced robotic multispectral technology for real-time monitoring of chlorophyll concentrations, plastic
-          pollution, and water quality parameters across rivers, estuaries, and coastal areas. Revolutionary
-          environmental conservation through innovation.</p>
-        <a href="/dashboard" class="btn" style="font-size: 1.2rem; padding: 1rem 2rem;">View Live Dashboard</a>
+    <div class="hero-slide" style="display:block;">
+      <div style="position:relative;">
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+        <div class="hero-orb hero-orb-3"></div>
+
+        <div class="hero-content">
+          <div class="hero-tag">
+            <span class="tag-dot"></span>
+            Live Monitoring Active
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+            <span class="hero-wave-line"></span>
+            <span style="font-size:0.8rem;color:#475569;letter-spacing:2px;text-transform:uppercase;">Autonomous Water Intelligence</span>
+            <span class="hero-wave-line"></span>
+          </div>
+
+          <h1 class="hero-title">R-TECH</h1>
+          <p class="hero-subtitle">Autonomous Water Quality Monitoring Robot</p>
+          <p class="hero-desc">
+            Advanced robotic multispectral technology for real-time monitoring of chlorophyll concentrations,
+            plastic pollution, and water quality parameters across rivers, estuaries, and coastal areas.
+          </p>
+          <div class="hero-cta-row">
+            <a href="/dashboard" class="btn" style="font-size:1.05rem;padding:0.9rem 2.2rem;">
+              🗺️ View Live Dashboard
+            </a>
+            <a href="#overview" class="btn-outline" style="font-size:1.05rem;padding:0.9rem 2rem;">
+              Learn More ↓
+            </a>
+          </div>
+        </div>
+
+        <!-- Stats bar -->
+        <div class="hero-stats">
+          <div class="hero-stat-item">
+            <div class="hero-stat-num" data-target="15">0</div>
+            <div class="hero-stat-label">Monitoring Locations</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num" data-target="95">0</div>
+            <div class="hero-stat-label">Detection Accuracy %</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num" data-target="3">0</div>
+            <div class="hero-stat-label">Sensor Payloads</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num" data-target="4">0</div>
+            <div class="hero-stat-label">Hours Operation</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Project Overview Section -->
-  <section class="project-overview">
+  <!-- ── PROJECT OVERVIEW ─────────────────────────── -->
+  <section class="project-overview reveal" id="overview">
     <div class="project-container">
       <h2>💡 Project Overview</h2>
       <p class="subtitle">R-TECH: Robotic Monitoring for Chlorophyll and Plastic Signatures</p>
-
-      <div class="tech-grid">
-        <div class="tech-card">
+      <div class="tech-grid" style="display:flex!important;flex-wrap:nowrap!important;flex-direction:row!important;gap:1rem!important;">
+        <div class="tech-card reveal" style="transition-delay:0.0s;">
           <h3>🤖 Hardware Components</h3>
           <ul>
             <li>ESP32 Microcontroller</li>
@@ -56,20 +698,18 @@
             <li>Camera Module (YOLO)</li>
           </ul>
         </div>
-
-        <div class="tech-card">
+        <div class="tech-card reveal" style="transition-delay:0.1s;">
           <h3>🛠️ Software Stack</h3>
           <ul>
-            <li>Python Backend (Flask)</li>
-            <li>React.js Frontend</li>
-            <li>Firebase Realtime DB</li>
+            <li>Node.js + Express Backend</li>
+            <li>EJS Templating</li>
+            <li>Firebase Firestore</li>
             <li>YOLO v8 ML Model</li>
             <li>Leaflet.js Maps</li>
             <li>Spectral Analysis Algorithms</li>
           </ul>
         </div>
-
-        <div class="tech-card">
+        <div class="tech-card reveal" style="transition-delay:0.2s;">
           <h3>🛰️ Satellite Integration</h3>
           <ul>
             <li>OceanSat-3 OCM</li>
@@ -78,8 +718,7 @@
             <li>Ground-truth Validation</li>
           </ul>
         </div>
-
-        <div class="tech-card">
+        <div class="tech-card reveal" style="transition-delay:0.3s;">
           <h3>🎯 Key Features</h3>
           <ul>
             <li>Real-time Water Monitoring</li>
@@ -93,92 +732,54 @@
     </div>
   </section>
 
-  <!-- Technical Specifications Section -->
+  <!-- ── SPECS ─────────────────────────────────────── -->
   <section class="specifications-section">
-    <div class="specifications-container">
+    <div class="specifications-container reveal">
       <h2>📋 Technical Specifications</h2>
-      <p class="subtitle">Detailed specifications for R-TECH autonomous water monitoring robot</p>
-
+      <p class="subtitle">Detailed specifications for the R-TECH autonomous water monitoring robot</p>
       <div class="specs-table-wrapper">
         <table class="specs-table">
           <thead>
-            <tr>
-              <th>Sl No.</th>
-              <th>Parameter</th>
-              <th>Specifications</th>
-            </tr>
+            <tr><th>Sl No.</th><th>Parameter</th><th>Specifications</th></tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1.</td>
-              <td>Mission Duration</td>
-              <td>3-4 hours continuous operation per charge cycle</td>
-            </tr>
-
-            <tr>
-              <td>2.</td>
-              <td>Deployment Area</td>
-              <td>Rivers, estuaries, coastal areas, and inland water bodies across India</td>
-            </tr>
-
+            <tr><td>1.</td><td>Mission Duration</td><td>3–4 hours continuous operation per charge cycle</td></tr>
+            <tr><td>2.</td><td>Deployment Area</td><td>Rivers, estuaries, coastal areas, and inland water bodies across India</td></tr>
             <tr class="nested-row">
-              <td>3.</td>
-              <td>Sensor Payloads</td>
+              <td>3.</td><td>Sensor Payloads</td>
               <td>
                 <strong>Water Quality Sensors:</strong>
-                <ol>
-                  <li>pH Sensor (E201-C BNC electrode)</li>
-                  <li>Temperature Sensor (DS18B20 - Waterproof)</li>
-                  <li>Turbidity Sensor</li>
-                  <li>Spectral Sensors (AS7265x) for chlorophyll-a measurement</li>
-                </ol>
+                <ol><li>pH Sensor (E201-C BNC electrode)</li><li>Temperature Sensor (DS18B20 - Waterproof)</li><li>Turbidity Sensor</li><li>Spectral Sensors (AS7265x) for chlorophyll-a measurement</li></ol>
                 <strong>Environmental Monitoring:</strong>
-                <ol start="6">
-                  <li>Camera Module for plastic detection (with YOLO ML model)</li>
-                  <li>GPS Module for location tracking</li>
-                  <li>IMU (Inertial Measurement Unit) for navigation</li>
-                </ol>
+                <ol start="5"><li>Camera Module for plastic detection (YOLO ML model)</li><li>GPS Module for location tracking</li><li>IMU (Inertial Measurement Unit) for navigation</li></ol>
               </td>
             </tr>
-
             <tr class="nested-row">
-              <td>4.</td>
-              <td>Robot Configuration</td>
-              <td>
-                <ol>
-                  <li><strong>Catamaran Hull:</strong> Triple pontoon design for stability</li>
-                  <li><strong>Propulsion System:</strong> Dual DC motors (775 motors) with 3D-printed propellers</li>
-                  <li><strong>Control Unit:</strong> ESP32 for data processing</li>
-                  <li><strong>ML Processing:</strong> Jetson Orin Nano for real-time AI inference</li>
-                </ol>
-              </td>
+              <td>4.</td><td>Robot Configuration</td>
+              <td><ol>
+                <li><strong>Catamaran Hull:</strong> Triple pontoon design for stability</li>
+                <li><strong>Propulsion:</strong> Dual DC motors (775) with 3D-printed propellers</li>
+                <li><strong>Control Unit:</strong> ESP32 for data processing</li>
+                <li><strong>ML Processing:</strong> Jetson Orin Nano for real-time AI inference</li>
+              </ol></td>
             </tr>
-
             <tr class="nested-row">
-              <td>5.</td>
-              <td>Data Processing</td>
-              <td>
-                <ol>
-                  <li><strong>Edge Computing:</strong> Jetson Orin Nano for sensor data aggregation</li>
-                  <li><strong>Machine Learning:</strong> YOLO v8 for plastic detection</li>
-                  <li><strong>Spectral Analysis:</strong> Simple algorithms for chlorophyll-a concentration calculation
-                  </li>
-                  <li><strong>Real-time Dashboard:</strong> React.js frontend with Leaflet.js for map visualization</li>
-                </ol>
-              </td>
+              <td>5.</td><td>Data Processing</td>
+              <td><ol>
+                <li><strong>Edge Computing:</strong> Jetson Orin Nano for sensor data aggregation</li>
+                <li><strong>Machine Learning:</strong> YOLO v8 for plastic detection</li>
+                <li><strong>Spectral Analysis:</strong> Algorithms for chlorophyll-a concentration calculation</li>
+                <li><strong>Dashboard:</strong> EJS + Leaflet.js for map visualization</li>
+              </ol></td>
             </tr>
-
             <tr class="nested-row">
-              <td>6.</td>
-              <td>Environmental Ratings</td>
-              <td>
-                <ol>
-                  <li><strong>Water Resistance:</strong> IP67 rated electronics enclosure</li>
-                  <li><strong>Operating Temperature:</strong> 10°C to 45°C</li>
-                  <li><strong>Wave Tolerance:</strong> Up to 0.5m wave height</li>
-                  <li><strong>Wind Speed:</strong> Up to 40 km/h</li>
-                </ol>
-              </td>
+              <td>6.</td><td>Environmental Ratings</td>
+              <td><ol>
+                <li><strong>Water Resistance:</strong> IP67 rated electronics enclosure</li>
+                <li><strong>Operating Temp:</strong> 10°C to 45°C</li>
+                <li><strong>Wave Tolerance:</strong> Up to 0.5m wave height</li>
+                <li><strong>Wind Speed:</strong> Up to 40 km/h</li>
+              </ol></td>
             </tr>
           </tbody>
         </table>
@@ -186,39 +787,34 @@
     </div>
   </section>
 
-  <!-- Prototype Design Section -->
+  <!-- ── PROTOTYPE GALLERY ─────────────────────────── -->
   <section class="prototype-section">
     <div class="prototype-container">
-      <h2>🚧 Prototype Development</h2>
-      <p class="subtitle">Early-Stage CAD Models & Design Iterations</p>
-      <p
-        style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #555; font-size: 1.1rem; line-height: 1.8;">
+      <h2 class="reveal">🚧 Prototype Development</h2>
+      <p class="subtitle reveal">Early-Stage CAD Models & Design Iterations</p>
+      <p style="text-align:center;max-width:800px;margin:0 auto 2rem;font-size:1rem;line-height:1.8;color:#94a3b8;" class="reveal">
         Our team is actively developing the autonomous catamaran robot. These CAD models represent the initial design
-        phase,
-        showcasing the dual-pontoon structure, propulsion system, and sensor mounting platform.
+        phase, showcasing the triple-pontoon structure, propulsion system, and sensor mounting platform.
       </p>
-
       <div class="prototype-gallery">
-        <div class="prototype-card">
+        <div class="prototype-card reveal" style="transition-delay:0s;">
           <img src="/images/cad_1.jpg" alt="R-TECH Catamaran - Final Model">
           <div class="prototype-info">
-            <h3>Final Design - Triple Pontoon Design</h3>
-            <p>Catamaran structure with solar panel mounting and dual propulsion system for stable navigation</p>
+            <h3>Final Design — Triple Pontoon</h3>
+            <p>Catamaran structure with solar panel mounting and dual propulsion for stable navigation</p>
           </div>
         </div>
-
-        <div class="prototype-card">
-          <img src="/images/cad_2.jpg" alt="R-TECH Catamaran - Earlier CAD Model">
+        <div class="prototype-card reveal" style="transition-delay:0.15s;">
+          <img src="/images/cad_2.jpg" alt="R-TECH Catamaran - Earlier Model">
           <div class="prototype-info">
-            <h3>Earlier Designs - Propulsion System</h3>
+            <h3>Earlier Designs — Propulsion System</h3>
             <p>Dual motor configuration with propellers for enhanced maneuverability in water bodies</p>
           </div>
         </div>
-
-        <div class="prototype-card">
-          <img src="/images/cad_3.jpg" alt="R-TECH Catamaran - Earlier CAD Model">
+        <div class="prototype-card reveal" style="transition-delay:0.3s;">
+          <img src="/images/cad_3.jpg" alt="R-TECH Catamaran - Streamlined">
           <div class="prototype-info">
-            <h3>Earlier Designs - Streamlined Profile</h3>
+            <h3>Earlier Designs — Streamlined Profile</h3>
             <p>Low-profile design for minimal water resistance and stable sensor deployment</p>
           </div>
         </div>
@@ -226,228 +822,204 @@
     </div>
   </section>
 
-  <!-- Team Section -->
+  <!-- ── TEAM ──────────────────────────────────────── -->
   <section class="team-section">
     <div class="team-container">
-      <h2>👥 Our Team</h2>
-      <p class="subtitle">Meet the innovators behind R-TECH</p>
-
+      <h2 class="reveal">👥 Our Team</h2>
+      <p class="subtitle reveal">Meet the innovators behind R-TECH</p>
       <div class="team-grid">
-        <div class="team-card">
-          <div class="team-photo">
-            <img src="/images/team/chandru.jpeg" alt="Team Member 1">
-          </div>
-          <h3>Chandru P</h3>
-          <p class="role">Team Leader / Embedded Systems and IOT</p>
-          <a href="https://www.linkedin.com/in/chandru-p-13bb99333/" target="_blank" class="linkedin-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-              <path
-                d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
-            </svg>
-            LinkedIn
-          </a>
-        </div>
-
-        <div class="team-card">
-          <div class="team-photo">
-            <img src="/images/team/sudhar.jpeg" alt="Team Member 2">
-          </div>
-          <h3>Sudharsan D</h3>
-          <p class="role">AI/ML Engineer</p>
-          <a href="https://www.linkedin.com/in/sudharsan-d-30bb79364/" target="_blank" class="linkedin-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-              <path
-                d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
-            </svg>
-            LinkedIn
-          </a>
-        </div>
-
-        <div class="team-card">
-          <div class="team-photo">
-            <img src="/images/team/prabu.jpeg" alt="Team Member 3">
-          </div>
-          <h3>Prabu Kumar S P</h3>
-          <p class="role">Full-Stack Developer</p>
-          <a href="https://www.linkedin.com/in/prabu-kumar-s-p-79998326a" target="_blank" class="linkedin-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-              <path
-                d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
-            </svg>
-            LinkedIn
-          </a>
-        </div>
-
-        <div class="team-card">
-          <div class="team-photo">
-            <img src="/images/team/deepiga.jpeg" alt="Team Member 4">
-          </div>
-          <h3>Deepiga M</h3>
-          <p class="role">AI/ML Engineer and Data Analyst</p>
-          <a href="https://www.linkedin.com/in/deepiga-m-179986362/" target="_blank" class="linkedin-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-              <path
-                d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
-            </svg>
-            LinkedIn
-          </a>
-        </div>
-
-        <div class="team-card">
-          <div class="team-photo">
-            <img src="/images/team/saranya.jpeg" alt="Team Member 5">
-          </div>
-          <h3>Saranya D</h3>
-          <p class="role">Data Analyst and Research Lead</p>
-          <a href="https://www.linkedin.com/in/saranya-dhulasiraman-4463a0352/" target="_blank" class="linkedin-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-              <path
-                d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
-            </svg>
-            LinkedIn
-          </a>
-        </div>
-
-        <div class="team-card">
-          <div class="team-photo">
-            <img src="/images/team/aakash.jpeg" alt="Team Member 6">
-          </div>
-          <h3>Aakash R</h3>
-          <p class="role">CAD Designer</p>
-          <a href="https://www.linkedin.com/in/aakash-r-cs07/" target="_blank" class="linkedin-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-              <path
-                d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
-            </svg>
-            LinkedIn
-          </a>
-        </div>
+        <div class="team-card reveal" style="transition-delay:0s;"><div class="team-photo"><img src="/images/team/chandru.jpeg" alt="Chandru P"></div><h3>Chandru P</h3><p class="role">Team Leader / Embedded Systems & IoT</p><a href="https://www.linkedin.com/in/chandru-p-13bb99333/" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
+        <div class="team-card reveal" style="transition-delay:0.08s;"><div class="team-photo"><img src="/images/team/sudhar.jpeg" alt="Sudharsan D"></div><h3>Sudharsan D</h3><p class="role">AI/ML Engineer</p><a href="https://www.linkedin.com/in/sudharsan-d-30bb79364/" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
+        <div class="team-card reveal" style="transition-delay:0.16s;"><div class="team-photo"><img src="/images/team/prabu.jpeg" alt="Prabu Kumar"></div><h3>Prabu Kumar S P</h3><p class="role">Full-Stack Developer</p><a href="https://www.linkedin.com/in/prabu-kumar-s-p-79998326a" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
+        <div class="team-card reveal" style="transition-delay:0.24s;"><div class="team-photo"><img src="/images/team/deepiga.jpeg" alt="Deepiga M"></div><h3>Deepiga M</h3><p class="role">AI/ML Engineer & Data Analyst</p><a href="https://www.linkedin.com/in/deepiga-m-179986362/" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
+        <div class="team-card reveal" style="transition-delay:0.32s;"><div class="team-photo"><img src="/images/team/saranya.jpeg" alt="Saranya D"></div><h3>Saranya D</h3><p class="role">Data Analyst & Research Lead</p><a href="https://www.linkedin.com/in/saranya-dhulasiraman-4463a0352/" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
+        <div class="team-card reveal" style="transition-delay:0.40s;"><div class="team-photo"><img src="/images/team/aakash.jpeg" alt="Aakash R"></div><h3>Aakash R</h3><p class="role">CAD Designer</p><a href="https://www.linkedin.com/in/aakash-r-cs07/" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
       </div>
 
-      <h3 style="text-align: center; margin-top: 3rem; margin-bottom: 2rem; color: #333; font-size: 2rem;">🎓 Our Mentor
-      </h3>
-      <div style="display: flex; justify-content: center;">
+      <h3 style="text-align:center;margin-top:3.5rem;margin-bottom:2rem;font-size:1.8rem;color:#e2e8f0;" class="reveal">🎓 Our Mentor</h3>
+      <div style="display:flex;justify-content:center;" class="reveal">
         <div class="team-card mentor-card">
-          <div class="team-photo">
-            <img src="/images/team/mentor.jpeg" alt="Mentor">
-          </div>
+          <div class="team-photo" style="width:96px;height:96px;"><img src="/images/team/mentor.jpeg" alt="Mentor"></div>
           <h3>Gajendran Parthasarathi</h3>
           <p class="role">Mentor</p>
-          <p class="affiliation">Head - School of Design and Innovation</p>
-          <a href="https://www.linkedin.com/in/er-gajendran-parthasarathi-9689a2109/" target="_blank"
-            class="linkedin-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-              <path
-                d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
-            </svg>
-            LinkedIn
-          </a>
+          <p class="affiliation">Head — School of Design and Innovation</p>
+          <a href="https://www.linkedin.com/in/er-gajendran-parthasarathi-9689a2109/" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Problem Statement Section -->
+  <!-- ── PROBLEM SECTION ───────────────────────────── -->
   <section class="problem-section">
     <div class="problem-container">
-      <h2>🚨 The Water Crisis We're Solving</h2>
-      <p class="subtitle">Real evidence from Tamil Nadu's water bodies showing urgent environmental threats</p>
+      <h2 class="reveal">🚨 The Water Crisis We're Solving</h2>
+      <p class="subtitle reveal">Real evidence from Tamil Nadu's water bodies showing urgent environmental threats</p>
       <div class="problem-grid">
-        <div class="problem-card">
-          <img src="/images/algae-pollution.jpg" alt="Algae pollution in Coimbatore water body">
+        <div class="problem-card reveal-left">
+          <img src="/images/algae-pollution.jpg" alt="Algae pollution in Coimbatore">
           <div class="problem-content">
             <span class="location-badge">📍 Coimbatore, Tamil Nadu</span>
             <h3>🦠 Excessive Algal Blooms</h3>
-            <p>This image shows severe <strong>algal bloom pollution</strong> caused by excess nutrients and high
-              chlorophyll-a concentrations in local water bodies.</p>
-            <p><strong>Environmental Impact:</strong></p>
+            <p>Severe algal bloom pollution caused by excess nutrients and high chlorophyll-a concentrations in local water bodies.</p>
+            <p><strong style="color:#e2e8f0;">Environmental Impact:</strong></p>
             <ul class="impact-list">
-              <li>🐟 <strong>Fish kills:</strong> Depletes dissolved oxygen, suffocating aquatic life</li>
-              <li>☠️ <strong>Toxic blooms:</strong> Some algae produce harmful toxins affecting wildlife and humans</li>
-              <li>💧 <strong>Water contamination:</strong> Makes water unsafe for drinking, irrigation, and recreation
-              </li>
-              <li>🌡️ <strong>Ecosystem disruption:</strong> Blocks sunlight to underwater plants, destroying habitats
-              </li>
-              <li>⚠️ <strong>Health risks:</strong> Exposure can cause skin irritation, respiratory problems, and
-                gastrointestinal illness</li>
+              <li>🐟 Fish kills — depletes dissolved oxygen</li>
+              <li>☠️ Toxic blooms — harmful to wildlife and humans</li>
+              <li>💧 Water contamination — unsafe for drinking/irrigation</li>
+              <li>🌡️ Ecosystem disruption — blocks sunlight to underwater plants</li>
+              <li>⚠️ Health risks — skin, respiratory and GI issues</li>
             </ul>
           </div>
         </div>
-
-        <div class="problem-card">
-          <img src="/images/plastic-pollution.jpg" alt="Plastic debris along riverbank in Coimbatore">
+        <div class="problem-card reveal-right">
+          <img src="/images/plastic-pollution.jpg" alt="Plastic debris in Coimbatore">
           <div class="problem-content">
             <span class="location-badge">📍 Coimbatore, Tamil Nadu</span>
             <h3>🗑️ Plastic & Solid Waste Pollution</h3>
-            <p>Visible plastic debris and solid waste accumulation along riverbanks and water bodies, creating long-term
-              environmental damage.</p>
-            <p><strong>Environmental Impact:</strong></p>
+            <p>Visible plastic debris and solid waste accumulation along riverbanks creating long-term environmental damage.</p>
+            <p><strong style="color:#e2e8f0;">Environmental Impact:</strong></p>
             <ul class="impact-list">
-              <li>🐢 <strong>Wildlife harm:</strong> Animals ingest or become entangled in plastic waste</li>
-              <li>🔬 <strong>Microplastics:</strong> Break down into tiny particles that enter the food chain</li>
-              <li>💀 <strong>Toxic leaching:</strong> Chemicals from plastics contaminate water and soil</li>
-              <li>🌊 <strong>Waterway blockage:</strong> Restricts water flow and increases flood risk</li>
-              <li>🏞️ <strong>Habitat destruction:</strong> Smothers aquatic vegetation and spawning grounds</li>
+              <li>🐢 Wildlife harm — animals ingest or entangle in plastic</li>
+              <li>🔬 Microplastics — enter the food chain</li>
+              <li>💀 Toxic leaching — contaminates water and soil</li>
+              <li>🌊 Waterway blockage — increases flood risk</li>
+              <li>🏞️ Habitat destruction — smothers aquatic vegetation</li>
             </ul>
           </div>
         </div>
       </div>
 
-      <div
-        style="text-align: center; margin-top: 3rem; padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
-        <h3 style="margin-bottom: 1rem; font-size: 1.8rem;">🎯 Our Monitoring Solution</h3>
-        <p style="font-size: 1.1rem; line-height: 1.8; max-width: 900px; margin: 0 auto;">
-          R-TECH's autonomous robotic multispectral radiometer system continuously monitors water quality parameters
-          including
-          <strong>chlorophyll-a levels, turbidity, plastic signatures, and pH</strong>. Our data trains and validates
-          satellite observations from <strong>OceanSat-3 OCM and Sentinel-2/3</strong>, providing real-time alerts to
-          authorities
-          for immediate action. This cost-effective solution aligns with national water protection initiatives.
+      <div style="text-align:center;margin-top:3rem;padding:2.5rem;background:rgba(255,255,255,0.02);border:1px solid rgba(14,165,233,0.15);border-radius:18px;backdrop-filter:blur(12px);" class="reveal">
+        <h3 style="margin-bottom:1rem;font-size:1.6rem;color:#e2e8f0;">🎯 Our Monitoring Solution</h3>
+        <p style="font-size:1rem;line-height:1.9;max-width:900px;margin:0 auto;color:#94a3b8;">
+          R-TECH's autonomous robotic multispectral radiometer system continuously monitors
+          <strong style="color:var(--ocean-1);">chlorophyll-a levels, turbidity, plastic signatures, and pH</strong>.
+          Our data trains and validates satellite observations from
+          <strong style="color:#e2e8f0;">OceanSat-3 OCM and Sentinel-2/3</strong>, providing real-time alerts
+          to authorities for immediate action.
         </p>
       </div>
     </div>
   </section>
 
-  <!-- Features Section -->
-  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding-top: 3rem;">
-    <h2 style="text-align: center; color: white; font-size: 2.5rem; margin-bottom: 1rem;">⚡ Platform Features</h2>
+  <!-- ── FEATURES ──────────────────────────────────── -->
+  <section class="features-section">
+    <h2 class="reveal">⚡ Platform Features</h2>
     <div class="features">
-      <div class="feature-card">
-        <div class="icon">🗺️</div>
+      <div class="feature-card reveal" style="transition-delay:0s;">
+        <span class="icon">🗺️</span>
         <h3>Interactive Maps</h3>
         <p>Visualize pollution hotspots in real-time with color-coded severity markers</p>
       </div>
-      <div class="feature-card">
-        <div class="icon">📊</div>
+      <div class="feature-card reveal" style="transition-delay:0.1s;">
+        <span class="icon">📊</span>
         <h3>Data Analytics</h3>
-        <p>Track trends and monitor water quality changes over time</p>
+        <p>Track trends and monitor water quality changes over time with full export support</p>
       </div>
-      <div class="feature-card">
-        <div class="icon">🚨</div>
+      <div class="feature-card reveal" style="transition-delay:0.2s;">
+        <span class="icon">🚨</span>
         <h3>Smart Alerts</h3>
-        <p>Automated notifications when pollution exceeds thresholds</p>
+        <p>Automated notifications when pollution levels exceed critical thresholds</p>
       </div>
-      <div class="feature-card">
-        <div class="icon">🛰️</div>
+      <div class="feature-card reveal" style="transition-delay:0.3s;">
+        <span class="icon">🛰️</span>
         <h3>Satellite Integration</h3>
-        <p>Train OceanSat-3 & Sentinel satellites with ground-truth data</p>
+        <p>Ground-truth validation for OceanSat-3 & Sentinel-2/3 satellite data</p>
       </div>
     </div>
+  </section>
+
+  <!-- ── CTA ───────────────────────────────────────── -->
+  <div class="cta-section reveal">
+    <h2>🌍 Join the Fight for Clean Water</h2>
+    <p>Access real-time water quality data from our autonomous monitoring system. Together, we can protect India's water resources and create a sustainable future.</p>
+    <a href="/dashboard" class="btn" style="font-size:1.1rem;padding:1rem 2.5rem;">View Water Quality Dashboard 🌊</a>
   </div>
 
-  <div class="cta-section">
-    <h2 style="margin-bottom: 1rem; font-size: 2.5rem;">🌍 Join the Fight for Clean Water</h2>
-    <p
-      style="font-size: 1.2rem; margin-bottom: 1rem; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.6;">
-      Access real-time water quality data from our autonomous monitoring system. Together, we can protect India's water
-      resources and create a sustainable future.
-    </p>
-    <a href="/dashboard" class="btn" style="font-size: 1.2rem; padding: 1rem 2.5rem;">View Water Quality Dashboard</a>
-  </div>
+  <!-- ══════════════════════════════════════════════
+       JAVASCRIPT: Particles + Scroll + Counters
+  ══════════════════════════════════════════════ -->
+  <script>
+    // ── Particle Canvas ───────────────────────────
+    (function () {
+      const canvas = document.getElementById('particlesCanvas');
+      const ctx    = canvas.getContext('2d');
+      let W, H, particles = [];
 
-  <!-- External JavaScript -->
-  <script src="/js/carousel.js"></script>
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      function Particle() {
+        this.x    = Math.random() * W;
+        this.y    = Math.random() * H;
+        this.r    = Math.random() * 1.5 + 0.3;
+        this.vx   = (Math.random() - 0.5) * 0.3;
+        this.vy   = -Math.random() * 0.5 - 0.1;
+        this.life = Math.random();
+        this.colors = ['rgba(14,165,233,', 'rgba(6,182,212,', 'rgba(139,92,246,'];
+        this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+      }
+      Particle.prototype.update = function () {
+        this.x += this.vx; this.y += this.vy;
+        this.life -= 0.003;
+        if (this.life <= 0 || this.y < -10) { this.y = H + 5; this.x = Math.random() * W; this.life = Math.random() * 0.6 + 0.4; }
+      };
+      Particle.prototype.draw = function () {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = this.color + Math.min(this.life, 0.8) + ')';
+        ctx.fill();
+      };
+
+      for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+      function animate() {
+        ctx.clearRect(0, 0, W, H);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+      }
+      animate();
+    })();
+
+    // ── Navbar scroll shrink ──────────────────────
+    window.addEventListener('scroll', () => {
+      document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ── Intersection Observer (reveal) ────────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+
+    // ── Animated counters ─────────────────────────
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el     = e.target;
+        const target = parseInt(el.dataset.target);
+        const dur    = 1800;
+        const step   = 16;
+        const inc    = target / (dur / step);
+        let cur = 0;
+        const tick = setInterval(() => {
+          cur += inc;
+          if (cur >= target) { cur = target; clearInterval(tick); }
+          el.textContent = Math.floor(cur) + (target >= 95 ? '%' : target >= 4 ? 'h' : '+');
+        }, step);
+        counterObserver.unobserve(el);
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('[data-target]').forEach(el => counterObserver.observe(el));
+  </script>
 
 </body>
-
 </html>

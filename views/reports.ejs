@@ -1,469 +1,632 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>R-TECH - Water Quality Reports</title>
+    <title>Reports | R-TECH Water Monitoring</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/home.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
-        }
-        
-        .header {
-            background: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #667eea;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-        
-        .card {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-        
-        h2 {
-            color: #667eea;
-            margin-bottom: 1.5rem;
+        body { background: #0f172a !important; color: #f8fafc !important; min-height: 100vh; }
+
+        .reports-container { max-width: 1280px; margin: 2rem auto; padding: 0 1.5rem; }
+
+        .reports-header {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        h3 {
-            color: #555;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
-        }
-        
-        .download-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .download-btn {
-            background: #667eea;
-            color: white;
-            padding: 1rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-        
-        .download-btn:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-        }
-
-        .download-btn.state-btn {
-            background: #28a745;
-        }
-
-        .download-btn.state-btn:hover {
-            background: #218838;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            font-size: 14px;
-        }
-        
-        th, td {
-            padding: 1rem 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-        
-        th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #333;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        
-        .severity-high { color: #d73027; font-weight: bold; }
-        .severity-medium { color: #fdae61; font-weight: bold; }
-        .severity-low { color: #4CAF50; font-weight: bold; }
-        .status-active { background: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 12px; font-size: 12px; }
-        .status-cleaned { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 12px; font-size: 12px; }
-        
-        .nav-links a {
-            margin-left: 1rem;
-            text-decoration: none;
-            color: #667eea;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            transition: all 0.3s;
-        }
-        
-        .nav-links a:hover {
-            background: #f0f4ff;
-        }
-
-        .action-btn {
-            padding: 0.5rem 1rem;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .action-btn:hover {
-            background: #5568d3;
-        }
-
+        /* ── STATS ─────────────────────────────────── */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2.5rem;
         }
-
         .stat-card {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
             padding: 1.5rem;
-            border-radius: 12px;
-            text-align: center;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
         }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 0.25rem;
+        .stat-card:hover { transform: translateY(-4px); border-color: var(--primary); }
+        .stat-icon {
+            font-size: 1.75rem;
+            background: rgba(99,102,241,0.1);
+            width: 56px; height: 56px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 14px; flex-shrink: 0;
         }
+        .stat-info h3 { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-info p  { font-size: 1.7rem; font-weight: 700; }
 
-        .loading {
-            text-align: center;
-            padding: 4rem;
-            color: #666;
+        /* ── FILTER CARD ─────────────────────────────── */
+        .filter-export-card {
+            background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(168,85,247,0.1) 100%);
+            border: 1px solid var(--glass-border);
+            padding: 1.75rem 2rem;
+            border-radius: 22px;
+            margin-bottom: 2.5rem;
+            backdrop-filter: blur(8px);
         }
+        .filter-export-card h2 { font-size: 1.35rem; margin-bottom: 0.3rem; }
+        .filter-export-card > p { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.5rem; }
 
-        .section-divider {
-            border-top: 2px solid #e0e0e0;
-            margin: 2rem 0 1rem 0;
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .filter-group label {
+            display: block;
+            font-size: 0.73rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .filter-group select,
+        .filter-group input[type="date"] {
+            width: 100%;
+            background: rgba(15,23,42,0.85);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #f8fafc;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+        }
+        .filter-group select:focus,
+        .filter-group input[type="date"]:focus { border-color: var(--primary); }
+        .filter-group select option { background: #1e293b; }
+
+        .export-actions { display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center; }
+        .btn-export {
+            padding: 0.7rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+        .btn-export:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
+        .btn-filter { background: rgba(99,102,241,0.2);  color: #818cf8; }
+        .btn-reset  { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+        .btn-pdf    { background: rgba(239,68,68,0.15);  color: #f87171; }
+        .btn-csv    { background: rgba(16,185,129,0.15); color: #34d399; }
+        .btn-excel  { background: rgba(14,165,233,0.15); color: #38bdf8; }
+
+        /* ── TABLE ───────────────────────────────────── */
+        .table-header-row {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .table-header-row h2 { display: flex; align-items: center; gap: 0.65rem; font-size: 1.25rem; }
+        .live-dot {
+            width: 8px; height: 8px; background: #34d399;
+            border-radius: 50%; display: inline-block;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+
+        .table-wrapper {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            overflow: hidden;
+            margin-bottom: 4rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th {
+            background: var(--surface);
+            padding: 1rem 1.1rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--glass-border);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        td {
+            padding: 1rem 1.1rem;
+            color: var(--text-main);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.88rem;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.03); }
+
+        .severity-badge {
+            padding: 4px 10px; border-radius: 100px;
+            font-size: 0.68rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+        }
+        .sev-high   { background: rgba(239,68,68,0.15);   color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+        .sev-medium { background: rgba(245,158,11,0.15);  color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+        .sev-low    { background: rgba(16,185,129,0.15);  color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+
+        /* ── PAGINATION ──────────────────────────────── */
+        .pagination {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.9rem 1.4rem;
+            background: var(--surface);
+            border-top: 1px solid var(--glass-border);
+            font-size: 0.8rem; color: var(--text-muted);
+        }
+        .page-btns { display: flex; gap: 0.45rem; }
+        .page-btn {
+            padding: 5px 13px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #f8fafc; border-radius: 8px;
+            cursor: pointer; font-size: 0.78rem; font-family: inherit;
+            transition: background 0.2s;
+        }
+        .page-btn:hover  { background: rgba(255,255,255,0.1); }
+        .page-btn.active { background: var(--primary); border-color: var(--primary); }
+
+        /* ── STATES ──────────────────────────────────── */
+        #emptyState { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+        #errorState { text-align: center; padding: 3rem 2rem; color: #f87171; display: none; }
+        .state-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+
+        .pulse { animation: pulse-anim 2s infinite; }
+        @keyframes pulse-anim {
+            0%,100%{ transform:scale(1); opacity:1; }
+            50%     { transform:scale(1.06); opacity:0.7; }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">ðŸ“Š R-TECH Reports</div>
-        <div class="nav-links">
-            <a href="/">ðŸ  Home</a>
-            <a href="/dashboard">ðŸ—ºï¸ Dashboard</a>
+<div class="bg-gradient"></div>
+
+<nav class="navbar">
+    <a href="/" class="logo" style="text-decoration:none;"><span>🌊</span><span>R-TECH</span></a>
+    <div class="nav-links">
+        <a href="/"          style="color:var(--text-muted);font-weight:500;">Home</a>
+        <a href="/dashboard" style="color:var(--text-muted);font-weight:500;">Dashboard</a>
+        <a href="/reports"   style="color:var(--primary);font-weight:600;">Reports</a>
+    </div>
+</nav>
+
+<div class="reports-container">
+
+    <!-- HEADER -->
+    <div class="reports-header">
+        <h1 style="font-size:2.6rem;font-weight:700;margin-bottom:0.4rem;
+            background:linear-gradient(135deg,#fff 0%,#94a3b8 100%);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+            Reports & Analysis
+        </h1>
+        <p style="color:var(--text-muted);font-size:1rem;">
+            Comprehensive environmental data from autonomous sensor nodes
+        </p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-info">
+                <h3>Total Log Entries</h3>
+                <p id="totalReportsCount" style="color:#818cf8;">0</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(239,68,68,0.1);">🔥</div>
+            <div class="stat-info">
+                <h3>High Risk Alerts</h3>
+                <p id="criticalAlertsCount" style="color:#f87171;">0</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(245,158,11,0.1);">🧪</div>
+            <div class="stat-info">
+                <h3>Avg Chlorophyll</h3>
+                <p id="avgChlorophyll" style="color:#fbbf24;">—</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(16,185,129,0.1);">🛰️</div>
+            <div class="stat-info">
+                <h3>System Health</h3>
+                <p id="healthStatus" style="color:#34d399;">Connecting...</p>
+            </div>
         </div>
     </div>
 
-    <div class="container">
-        <div class="card">
-            <h2>ðŸ“ˆ Data Summary</h2>
-            <div class="stats-grid" id="statsGrid">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalHotspots">0</div>
-                    <div>Total Monitoring Points</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="highSeverity">0</div>
-                    <div>High Severity Alerts</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="activePoints">0</div>
-                    <div>Active Monitoring</div>
-                </div>
+    <!-- FILTER + EXPORT -->
+    <div class="filter-export-card">
+        <h2>📥 Export Historical Data</h2>
+        <p>Filter by region, severity or date — then download reports for compliance and research.</p>
+
+        <div class="filter-row">
+            <div class="filter-group">
+                <label>State</label>
+                <select id="filterState" onchange="updateDistricts()">
+                    <option value="">All States</option>
+                    <option>Tamil Nadu</option>
+                    <option>Kerala</option>
+                    <option>Karnataka</option>
+                    <option>Andhra Pradesh</option>
+                    <option>Telangana</option>
+                    <option>Maharashtra</option>
+                    <option>Gujarat</option>
+                    <option>Rajasthan</option>
+                    <option>West Bengal</option>
+                    <option>Odisha</option>
+                    <option>Madhya Pradesh</option>
+                    <option>Uttar Pradesh</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>District</label>
+                <select id="filterDistrict">
+                    <option value="">All Districts</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Risk Level</label>
+                <select id="filterSeverity">
+                    <option value="">All Levels</option>
+                    <option>High</option>
+                    <option>Medium</option>
+                    <option>Low</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Date</label>
+                <input type="date" id="filterDate" />
+            </div>
+            <div class="filter-group">
+                <label>Location</label>
+                <select id="filterLocation">
+                    <option value="">All Locations</option>
+                </select>
             </div>
         </div>
 
-        <div class="card">
-            <h2>ðŸ“¥ Download Reports</h2>
-            
-            <!-- Full Report Button -->
-            <div class="download-section">
-                <button class="download-btn" onclick="downloadReport('all', 'all')">ðŸ“Š Full Report (All Data)</button>
-            </div>
-
-            <!-- By State Section -->
-            <div class="section-divider"></div>
-            <h3>ðŸ—ºï¸ Download by State</h3>
-            <div class="download-section" id="stateButtons">
-                <!-- State buttons will be dynamically generated here -->
-            </div>
-
-            <!-- By District Section -->
-            <div class="section-divider"></div>
-            <h3>ðŸ™ï¸ Download by District</h3>
-            <div class="download-section" id="districtButtons">
-                <!-- District buttons will be dynamically generated here -->
-            </div>
-        </div>
-        
-        <div class="card">
-            <h2>ðŸ” All Sensor Data - Real Time</h2>
-            <table id="hotspotsTable">
-                <thead>
-                    <tr>
-                        <th>Location</th>
-                        <th>District</th>
-                        <th>State</th>
-                        <th>Type</th>
-                        <th>Severity</th>
-                        <th>Status</th>
-                        <th>Chl-a (Âµg/L)</th>
-                        <th>Turb (NTU)</th>
-                        <th>pH</th>
-                        <th>Temp (Â°C)</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr><td colspan="11" class="loading">Connecting to Firebase sensor_data...</td></tr>
-                </tbody>
-            </table>
+        <div class="export-actions">
+            <button class="btn-export btn-filter" onclick="applyFilters()">🔍 Apply Filter</button>
+            <button class="btn-export btn-reset"  onclick="resetFilters()">✕ Reset</button>
+            <button class="btn-export btn-pdf"    onclick="exportPDF()">📄 PDF Report</button>
+            <button class="btn-export btn-csv"    onclick="exportCSV()">📜 CSV Dataset</button>
+            <button class="btn-export btn-excel"  onclick="exportExcel()">📊 Excel Sheet</button>
         </div>
     </div>
 
-    <!-- Firebase JS -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- TABLE -->
+    <div class="table-header-row">
+        <h2>🔍 Live Sensor Logs <span class="live-dot"></span></h2>
+        <span id="entryCount" style="font-size:0.8rem;color:var(--text-muted);"></span>
+    </div>
 
-    <script>
-        // Firebase configuration
-        const firebaseConfig = <%- JSON.stringify(firebaseConfig) %>;
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Location</th>
+                    <th>State</th>
+                    <th>District</th>
+                    <th>pH</th>
+                    <th>Temp (°C)</th>
+                    <th>Turbidity (NTU)</th>
+                    <th>Chlorophyll</th>
+                    <th>Plastic Score</th>
+                    <th>Risk</th>
+                </tr>
+            </thead>
+            <tbody id="logsTableBody"></tbody>
+        </table>
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        <div id="emptyState">
+            <div class="pulse state-icon">📡</div>
+            <p>Connecting to Firestore sensor nodes...</p>
+        </div>
+        <div id="errorState">
+            <div class="state-icon">⚠️</div>
+            <p id="errorMsg">Failed to reach Firebase. Check your connection or Firestore rules.</p>
+        </div>
 
-        let allData = [];
-        let uniqueStates = new Set();
-        let uniqueDistricts = new Set();
+        <div class="pagination" id="paginationBar" style="display:none;">
+            <span id="pageInfo">Page 1 of 1</span>
+            <div class="page-btns">
+                <button class="page-btn" onclick="changePage(-1)">← Prev</button>
+                <button class="page-btn active" id="currentPageBtn">1</button>
+                <button class="page-btn" onclick="changePage(1)">Next →</button>
+            </div>
+        </div>
+    </div>
 
-        function getSeverityInfo(chlorophyll) {
-            const severity = Math.min(Math.floor(chlorophyll / 3), 10);
-            if (severity <= 4) return { rating: severity, class: 'severity-low' };
-            if (severity <= 7) return { rating: severity, class: 'severity-medium' };
-            return { rating: severity, class: 'severity-high' };
+</div>
+
+<!-- Firebase Compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+// ── Init ─────────────────────────────────────────────────────────────────────
+const firebaseConfig = <%- JSON.stringify(firebaseConfig) %>;
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const firestore = firebase.firestore();
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let allDocs      = [];   // raw array of Firestore docs
+let filteredDocs = [];
+let currentPage  = 1;
+const PAGE_SIZE  = 15;
+
+// ── District map ──────────────────────────────────────────────────────────────
+const districtMap = {
+    "Tamil Nadu":     ["Coimbatore","Chennai","Madurai","Salem","Tiruchirappalli","Erode",
+                       "Tirunelveli","Vellore","Thanjavur","Dindigul","Tiruppur","Kancheepuram"],
+    "Kerala":         ["Thiruvananthapuram","Kochi","Kozhikode","Thrissur","Kannur",
+                       "Palakkad","Alappuzha","Kollam","Malappuram"],
+    "Karnataka":      ["Bengaluru","Mysuru","Mangaluru","Hubli","Belagavi","Kalaburagi","Tumakuru"],
+    "Andhra Pradesh": ["Visakhapatnam","Vijayawada","Guntur","Tirupati","Kakinada","Nellore","Kurnool"],
+    "Telangana":      ["Hyderabad","Warangal","Nizamabad","Khammam","Karimnagar"],
+    "Maharashtra":    ["Mumbai","Pune","Nagpur","Nashik","Aurangabad","Thane","Solapur"],
+    "Gujarat":        ["Ahmedabad","Surat","Vadodara","Rajkot","Gandhinagar","Anand","Bharuch"],
+    "Rajasthan":      ["Jaipur","Jodhpur","Udaipur","Kota","Ajmer","Bikaner"],
+    "West Bengal":    ["Kolkata","Howrah","Darjeeling","Siliguri","Durgapur","Asansol"],
+    "Odisha":         ["Bhubaneswar","Cuttack","Rourkela","Puri","Berhampur","Sambalpur"],
+    "Madhya Pradesh": ["Bhopal","Indore","Jabalpur","Gwalior","Ujjain","Sagar"],
+    "Uttar Pradesh":  ["Lucknow","Kanpur","Varanasi","Agra","Allahabad","Meerut","Noida"]
+};
+
+window.updateDistricts = function () {
+    const state = document.getElementById("filterState").value;
+    const sel   = document.getElementById("filterDistrict");
+    sel.innerHTML = '<option value="">All Districts</option>';
+    (districtMap[state] || []).forEach(d => {
+        sel.innerHTML += `<option value="${d}">${d}</option>`;
+    });
+};
+
+// ── Risk logic (uses microplastic_risk_grade if present) ──────────────────────
+function getRisk(doc) {
+    // Prefer the stored grade
+    const grade = (doc.microplastic_risk_grade || doc["microplastic_risk_grade:"] || "").trim();
+    if (grade) {
+        const g = grade.charAt(0).toUpperCase() + grade.slice(1).toLowerCase();
+        if (g === "High")   return { label: "High",   cls: "sev-high" };
+        if (g === "Medium") return { label: "Medium", cls: "sev-medium" };
+        if (g === "Low")    return { label: "Low",    cls: "sev-low" };
+    }
+    // Fallback: calculate from ph + turbidity
+    const ph   = parseFloat(doc.ph)        || 7;
+    const turb = parseFloat(doc.turbidity) || 0;
+    if (ph < 6.0 || ph > 9.0 || turb > 15) return { label: "High",   cls: "sev-high" };
+    if (ph < 6.5 || ph > 8.5 || turb > 8)  return { label: "Medium", cls: "sev-medium" };
+    return                                          { label: "Low",    cls: "sev-low" };
+}
+
+// ── Parse Firestore timestamp ─────────────────────────────────────────────────
+function parseTs(ts) {
+    if (!ts) return null;
+    if (typeof ts.toDate === "function")   return ts.toDate();
+    if (ts.seconds)                        return new Date(ts.seconds * 1000);
+    return new Date(ts);
+}
+
+// ── Build stats ───────────────────────────────────────────────────────────────
+function updateStats(docs) {
+    const total    = docs.length;
+    const highs    = docs.filter(d => getRisk(d).label === "High").length;
+    const chlorArr = docs.map(d => parseFloat(d.chlorophyll)).filter(n => !isNaN(n));
+    const avgChlor = chlorArr.length
+        ? (chlorArr.reduce((s, n) => s + n, 0) / chlorArr.length).toFixed(1)
+        : "—";
+
+    document.getElementById("totalReportsCount").textContent  = total;
+    document.getElementById("criticalAlertsCount").textContent = highs;
+    document.getElementById("avgChlorophyll").textContent      = avgChlor !== "—" ? avgChlor + " μg/L" : "—";
+    document.getElementById("healthStatus").textContent        = total > 0 ? "Active" : "Idle";
+}
+
+// ── Populate location filter dropdown ─────────────────────────────────────────
+function populateLocationFilter(docs) {
+    const locs = [...new Set(docs.map(d => d.location).filter(Boolean))].sort();
+    const sel  = document.getElementById("filterLocation");
+    sel.innerHTML = '<option value="">All Locations</option>';
+    locs.forEach(l => { sel.innerHTML += `<option value="${l}">${l}</option>`; });
+}
+
+// ── Render table ──────────────────────────────────────────────────────────────
+function renderTable() {
+    const body  = document.getElementById("logsTableBody");
+    const empty = document.getElementById("emptyState");
+    const pgBar = document.getElementById("paginationBar");
+    const total = filteredDocs.length;
+    const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+    currentPage = Math.min(Math.max(currentPage, 1), pages);
+
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const page  = filteredDocs.slice(start, start + PAGE_SIZE);
+
+    document.getElementById("pageInfo").textContent       = `Page ${currentPage} of ${pages}`;
+    document.getElementById("currentPageBtn").textContent = currentPage;
+    document.getElementById("entryCount").textContent     = total > 0
+        ? `Showing ${start + 1}–${Math.min(start + PAGE_SIZE, total)} of ${total} entries` : "";
+
+    if (page.length === 0) {
+        body.innerHTML        = "";
+        empty.style.display   = "block";
+        pgBar.style.display   = "none";
+        return;
+    }
+
+    empty.style.display = "none";
+    pgBar.style.display = "flex";
+
+    body.innerHTML = page.map(doc => {
+        const ts      = parseTs(doc.timestamp);
+        const timeStr = ts ? ts.toLocaleString("en-IN", { dateStyle: "short", timeStyle: "short" }) : "N/A";
+        const ph      = parseFloat(doc.ph)          || 0;
+        const turb    = parseFloat(doc.turbidity)   || 0;
+        const temp    = parseFloat(doc.temperature) || 0;
+        const chlor   = doc.chlorophyll != null ? parseFloat(doc.chlorophyll).toFixed(1) : "—";
+        const score   = doc.microplastic_risk_score != null ? doc.microplastic_risk_score : "—";
+        const risk    = getRisk(doc);
+        const phColor = (ph < 6.5 || ph > 8.5) ? "#f87171" : "inherit";
+
+        return `<tr>
+            <td style="color:var(--text-muted);font-family:monospace;font-size:0.78rem;">${timeStr}</td>
+            <td style="font-weight:600;">${doc.location || "—"}</td>
+            <td>${doc.state    || "—"}</td>
+            <td>${doc.district || "—"}</td>
+            <td style="font-weight:700;color:${phColor};">${ph.toFixed(2)}</td>
+            <td>${temp.toFixed(1)}</td>
+            <td>${turb.toFixed(1)}</td>
+            <td style="color:#fbbf24;">${chlor}</td>
+            <td style="color:#a78bfa;">${score}</td>
+            <td><span class="severity-badge ${risk.cls}">${risk.label}</span></td>
+        </tr>`;
+    }).join("");
+}
+
+window.changePage = function (dir) {
+    const pages = Math.max(1, Math.ceil(filteredDocs.length / PAGE_SIZE));
+    currentPage = Math.max(1, Math.min(pages, currentPage + dir));
+    renderTable();
+};
+
+// ── Filters ───────────────────────────────────────────────────────────────────
+window.applyFilters = function () {
+    const state    = document.getElementById("filterState").value;
+    const district = document.getElementById("filterDistrict").value;
+    const severity = document.getElementById("filterSeverity").value;
+    const date     = document.getElementById("filterDate").value;
+    const location = document.getElementById("filterLocation").value;
+
+    filteredDocs = allDocs.filter(doc => {
+        if (state    && (doc.state    || "") !== state)    return false;
+        if (district && (doc.district || "") !== district) return false;
+        if (location && (doc.location || "") !== location) return false;
+        if (severity && getRisk(doc).label !== severity)   return false;
+        if (date) {
+            const ts = parseTs(doc.timestamp);
+            if (!ts) return false;
+            if (ts.toISOString().split("T")[0] !== date)   return false;
         }
+        return true;
+    });
 
-        function getStatus(severity) {
-            return severity <= 4 ? 'cleaned' : 'active';
-        }
+    currentPage = 1;
+    updateStats(filteredDocs);
+    renderTable();
+};
 
-        function getPollutionType(chlorophyll) {
-            return chlorophyll > 15 ? 'Algae Bloom' : 'Organic Matter';
-        }
+window.resetFilters = function () {
+    ["filterState","filterDistrict","filterSeverity","filterDate","filterLocation"]
+        .forEach(id => { document.getElementById(id).value = ""; });
+    document.getElementById("filterDistrict").innerHTML = '<option value="">All Districts</option>';
+    filteredDocs = [...allDocs];
+    currentPage  = 1;
+    updateStats(filteredDocs);
+    renderTable();
+};
 
-        function updateStats() {
-            const total = allData.length;
-            const highSeverity = allData.filter(d => d.severity >= 8).length;
-            const active = allData.filter(d => d.status === 'active').length;
+// ── Export ────────────────────────────────────────────────────────────────────
+function getExportRows() {
+    return filteredDocs.map(doc => {
+        const ts = parseTs(doc.timestamp);
+        return {
+            Time:              ts ? ts.toLocaleString("en-IN") : "N/A",
+            Location:          doc.location  || "N/A",
+            State:             doc.state     || "N/A",
+            District:          doc.district  || "N/A",
+            pH:                parseFloat(doc.ph || 0).toFixed(2),
+            Temperature_C:     parseFloat(doc.temperature || 0).toFixed(1),
+            Turbidity_NTU:     parseFloat(doc.turbidity   || 0).toFixed(1),
+            Chlorophyll:       doc.chlorophyll          != null ? doc.chlorophyll          : "N/A",
+            Microplastic_Score:doc.microplastic_risk_score != null ? doc.microplastic_risk_score : "N/A",
+            Risk:              getRisk(doc).label,
+            Microplastic_Notes:doc.microplastic_notes   || ""
+        };
+    });
+}
+function downloadFile(blob, name) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(a.href);
+}
+window.exportCSV = function () {
+    const rows = getExportRows();
+    if (!rows.length) return alert("No data to export.");
+    const h   = Object.keys(rows[0]);
+    const csv = [h.join(","), ...rows.map(r => h.map(k => `"${r[k]}"`).join(","))].join("\n");
+    downloadFile(new Blob([csv], {type:"text/csv"}), `rtech_${Date.now()}.csv`);
+};
+window.exportExcel = function () {
+    const rows = getExportRows();
+    if (!rows.length) return alert("No data to export.");
+    const h   = Object.keys(rows[0]);
+    let tbl   = "<table><tr>" + h.map(k => `<th>${k}</th>`).join("") + "</tr>";
+    rows.forEach(r => { tbl += "<tr>" + h.map(k => `<td>${r[k]}</td>`).join("") + "</tr>"; });
+    tbl += "</table>";
+    downloadFile(new Blob([tbl], {type:"application/vnd.ms-excel"}), `rtech_${Date.now()}.xls`);
+};
+window.exportPDF = function () { window.print(); };
 
-            document.getElementById('totalHotspots').textContent = total;
-            document.getElementById('highSeverity').textContent = highSeverity;
-            document.getElementById('activePoints').textContent = active;
-        }
+// ── Firestore listener ────────────────────────────────────────────────────────
+// NOTE: Only Firestore is used — no Realtime Database in this project
+firestore.collection("sensor_data")
+    .orderBy("timestamp", "desc")
+    .onSnapshot((snapshot) => {
+        allDocs = snapshot.docs.map(doc => ({ _id: doc.id, ...doc.data() }));
 
-        // Generate state and district download buttons dynamically
-        function generateDownloadButtons() {
-            const stateSection = document.getElementById('stateButtons');
-            const districtSection = document.getElementById('districtButtons');
-            
-            // Clear previous buttons
-            stateSection.innerHTML = '';
-            districtSection.innerHTML = '';
-            
-            // Sort states and districts alphabetically
-            const sortedStates = Array.from(uniqueStates).sort();
-            const sortedDistricts = Array.from(uniqueDistricts).sort();
-            
-            // Create state buttons
-            sortedStates.forEach(state => {
-                const button = document.createElement('button');
-                button.className = 'download-btn state-btn';
-                button.onclick = () => downloadReport('state', state);
-                button.innerHTML = `ðŸ“¥ ${state}`;
-                stateSection.appendChild(button);
-            });
-
-            // Create district buttons
-            sortedDistricts.forEach(districtInfo => {
-                const button = document.createElement('button');
-                button.className = 'download-btn';
-                button.onclick = () => downloadReport('district', districtInfo);
-                button.innerHTML = `ðŸ“¥ ${districtInfo}`;
-                districtSection.appendChild(button);
-            });
-        }
-
-        db.collection('sensor_data').onSnapshot((snapshot) => {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '<tr><td colspan="11" class="loading">Loading data...</td></tr>';
-            allData = [];
-            uniqueStates.clear();
-            uniqueDistricts.clear();
-
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const severity = getSeverityInfo(data.chlorophyll);
-                const status = getStatus(severity.rating);
-                const pollutionType = getPollutionType(data.chlorophyll);
-
-                // Use district and state directly from Firebase
-                const district = data.district || 'Unknown District';
-                const state = data.state || 'Unknown State';
-
-                // Add to unique sets
-                uniqueStates.add(state);
-                uniqueDistricts.add(`${district}, ${state}`);
-
-                const waterBody = {
-                    id: doc.id,
-                    name: data.location,
-                    district: district,
-                    state: state,
-                    type: pollutionType,
-                    severity: severity.rating,
-                    status: status,
-                    chlorophyll: data.chlorophyll,
-                    turbidity: data.turbidity,
-                    ph: data.ph,
-                    temperature: data.temperature,
-                    lat: data.gps.lat,
-                    lng: data.gps.lng,
-                    timestamp: data.timestamp ? new Date(data.timestamp.seconds * 1000).toISOString() : new Date().toISOString()
-                };
-
-                allData.push(waterBody);
-
-                const severityClass = severity.rating > 7 ? 'severity-high' : severity.rating > 4 ? 'severity-medium' : 'severity-low';
-                const statusClass = status === 'active' ? 'status-active' : 'status-cleaned';
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${waterBody.name}</td>
-                    <td>${waterBody.district}</td>
-                    <td>${waterBody.state}</td>
-                    <td>${waterBody.type}</td>
-                    <td class="${severityClass}">${waterBody.severity}/10</td>
-                    <td><span class="${statusClass}">${waterBody.status.toUpperCase()}</span></td>
-                    <td>${waterBody.chlorophyll.toFixed(1)}</td>
-                    <td>${waterBody.turbidity.toFixed(1)}</td>
-                    <td>${waterBody.ph.toFixed(1)}</td>
-                    <td>${waterBody.temperature.toFixed(1)}</td>
-                    <td><button class="action-btn" onclick='downloadSingleHotspot(${JSON.stringify(waterBody).replace(/"/g, '&quot;')})'>ðŸ“¥ Report</button></td>
-                `;
-                tbody.appendChild(row);
-            });
-
-            if (allData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" style="text-align: center; padding: 4rem;">No sensor data available.</td></tr>';
-            } else {
-                updateStats();
-                generateDownloadButtons();
-            }
+        // Sort newest first (already done by query, but ensure consistency)
+        allDocs.sort((a, b) => {
+            const ta = parseTs(a.timestamp); const tb = parseTs(b.timestamp);
+            return (tb ? tb.getTime() : 0) - (ta ? ta.getTime() : 0);
         });
 
-        function downloadReport(filterType, filterValue) {
-            let filteredData = allData;
+        filteredDocs = [...allDocs];
+        populateLocationFilter(allDocs);
+        updateStats(filteredDocs);
 
-            if (filterType === 'state') {
-                // Filter by state only
-                filteredData = allData.filter(wb => wb.state === filterValue);
-            } else if (filterType === 'district') {
-                // Filter by district, state combination
-                filteredData = allData.filter(wb => {
-                    return `${wb.district}, ${wb.state}` === filterValue;
-                });
-            }
-            // If filterType === 'all', use all data
+        document.getElementById("errorState").style.display = "none";
+        renderTable();
 
-            if (filteredData.length === 0) {
-                alert('No data available for ' + filterValue);
-                return;
-            }
+        console.log(`✅ Firestore: loaded ${allDocs.length} sensor_data docs`);
 
-            let csv = 'Location,District,State,Type,Severity,Status,Chlorophyll-a,Turbidity,pH,Temperature,Latitude,Longitude,Timestamp\n';
-
-            filteredData.forEach(wb => {
-                csv += `"${wb.name}","${wb.district}","${wb.state}","${wb.type}",${wb.severity},"${wb.status}",${wb.chlorophyll},${wb.turbidity},${wb.ph},${wb.temperature},${wb.lat},${wb.lng},"${wb.timestamp}"\n`;
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            
-            let fileName = 'All_Locations';
-            if (filterType !== 'all') {
-                fileName = filterValue.replace(/[,\s]+/g, '_');
-            }
-            
-            a.download = `${fileName}_Report_${new Date().toISOString().split('T')[0]}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }
-
-        function downloadSingleHotspot(waterBody) {
-            const csvData = `R-TECH Water Quality Report - ${waterBody.name}
-Generated: ${new Date().toLocaleString('en-IN')}
-
-ðŸ“ LOCATION: ${waterBody.name}
-ðŸ™ï¸  District: ${waterBody.district}
-ðŸ—ºï¸  State: ${waterBody.state}
-ðŸ“Œ Coordinates: ${waterBody.lat}Â°N, ${waterBody.lng}Â°E
-
-ðŸ“Š WATER QUALITY PARAMETERS:
-â€¢ Chlorophyll-a: ${waterBody.chlorophyll} Âµg/L
-â€¢ Turbidity: ${waterBody.turbidity} NTU  
-â€¢ pH: ${waterBody.ph}
-â€¢ Temperature: ${waterBody.temperature} Â°C
-
-âš ï¸  ASSESSMENT:
-â€¢ Pollution Type: ${waterBody.type}
-â€¢ Severity: ${waterBody.severity}/10
-â€¢ Status: ${waterBody.status.toUpperCase()}
-
-ðŸ”— Source: R-TECH Real-Time Monitoring System`;
-
-            const blob = new Blob([csvData], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `R-TECH_${waterBody.name.replace(/\s+/g, '_')}_Report.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }
-    </script>
+    }, (err) => {
+        console.error("❌ Firestore error:", err.code, err.message);
+        document.getElementById("emptyState").style.display = "none";
+        document.getElementById("errorState").style.display = "block";
+        document.getElementById("errorMsg").textContent =
+            err.code === "permission-denied"
+                ? "Access denied — update Firestore rules to allow reads."
+                : `Firebase error: ${err.message}`;
+    });
+</script>
 </body>
 </html>
