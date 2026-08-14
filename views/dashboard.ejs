@@ -49,8 +49,9 @@
         .stat-value { font-weight:700; font-size:15px; }
         .stat-label { opacity:0.6; font-size:10px; text-transform:uppercase; letter-spacing:0.8px; }
         .stat-divider { width:1px; height:28px; background:rgba(255,255,255,0.1); margin:0 4px; }
-        .stat-alert { color:#f87171; }
-        .stat-good  { color:#4ade80; }
+        .stat-alert  { color:#f87171; }
+        .stat-good   { color:#4ade80; }
+        .stat-orange { color:#fb923c; }
 
         /* ── MAP ── */
         #map { position:absolute; top:111px; bottom:0; width:100%; }
@@ -80,8 +81,10 @@
         .popup-body     { padding:15px; }
         .data-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px; width:100%; }
         .data-item { background:#f8f9fa; padding:10px; border-radius:6px; border-left:3px solid #667eea; min-width:0; }
+        .data-item.plastic { border-left-color:#f97316; }
         .data-label { font-size:11px; color:#666; text-transform:uppercase; margin-bottom:4px; }
         .data-value { font-size:16px; font-weight:bold; color:#333; }
+        .data-section-title { font-size:10px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; font-weight:700; margin:12px 0 8px; padding-left:2px; }
         .meta-info { display:flex; justify-content:space-between; align-items:center; margin:12px 0; font-size:12px; color:#666; }
         .meta-item { display:flex; align-items:center; gap:4px; }
         .severity-badge { display:inline-block; padding:6px 12px; border-radius:20px; font-size:13px; font-weight:bold; }
@@ -90,8 +93,7 @@
         .severity-high     { background:#f8d7da; color:#721c24; }
         .status-active { display:inline-block; padding:4px 12px; background:#28a745; color:white; border-radius:12px; font-size:12px; font-weight:bold; }
         .source-badge { display:inline-block; padding:4px 10px; border-radius:12px; font-size:11px; font-weight:bold; margin-left:8px; }
-        .source-firestore { background:#e3f2fd; color:#1976d2; }
-        .source-esp32     { background:#e0f7fa; color:#00838f; }
+        .source-esp32 { background:#e0f7fa; color:#00838f; }
         .download-btn { display:block; width:100%; padding:12px; background:#5b7dff; color:white; text-align:center; border:none; border-radius:6px; cursor:pointer; font-size:14px; font-weight:600; margin-top:15px; }
         .download-btn:hover { background:#4a6ae8; }
         .loading { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:9999; background:rgba(255,255,255,0.95); padding:40px; border-radius:10px; }
@@ -132,7 +134,6 @@
         }
         .filter-panel.open { display:block; animation:panelIn 0.18s ease; }
         @keyframes panelIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
-
         .fp-head {
             background:rgba(14,165,233,0.08);
             border-bottom:1px solid rgba(14,165,233,0.12);
@@ -142,37 +143,22 @@
         .fp-head-title { font-size:0.8rem; font-weight:700; color:#f1f5f9; text-transform:uppercase; letter-spacing:0.5px; }
         .fp-reset { font-size:0.72rem; color:#0ea5e9; cursor:pointer; background:none; border:none; font-weight:600; }
         .fp-reset:hover { color:#38bdf8; }
-
         .fp-section { padding:11px 14px; border-bottom:1px solid rgba(255,255,255,0.05); }
         .fp-section:last-child { border-bottom:none; }
         .fp-label { font-size:0.68rem; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; font-weight:600; }
-
-        /* toggle */
         .fp-toggle-row { display:flex; justify-content:space-between; align-items:center; }
         .fp-toggle-txt { font-size:0.82rem; color:#cbd5e1; }
-        .tog {
-            width:36px; height:20px;
-            background:rgba(14,165,233,0.15); border:1px solid rgba(14,165,233,0.25);
-            border-radius:100px; position:relative; cursor:pointer; transition:all 0.25s;
-        }
+        .tog { width:36px; height:20px; background:rgba(14,165,233,0.15); border:1px solid rgba(14,165,233,0.25); border-radius:100px; position:relative; cursor:pointer; transition:all 0.25s; }
         .tog.on { background:rgba(14,165,233,0.45); border-color:#0ea5e9; }
         .tog::after { content:''; position:absolute; width:14px; height:14px; border-radius:50%; background:#64748b; top:2px; left:2px; transition:all 0.25s; }
         .tog.on::after { background:#fff; left:18px; }
-
-        /* chips */
         .fp-chips { display:flex; flex-wrap:wrap; gap:6px; }
         .chip { padding:4px 10px; border-radius:100px; font-size:0.72rem; font-weight:600; cursor:pointer; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04); color:#64748b; transition:all 0.18s; user-select:none; }
-        .chip.sel-good     { background:rgba(34,197,94,0.15);  border-color:rgba(34,197,94,0.45);  color:#4ade80; }
-        .chip.sel-warn     { background:rgba(245,158,11,0.15); border-color:rgba(245,158,11,0.45); color:#fbbf24; }
-        .chip.sel-danger   { background:rgba(239,68,68,0.15);  border-color:rgba(239,68,68,0.45);  color:#f87171; }
-        .chip.sel-blue     { background:rgba(14,165,233,0.15); border-color:rgba(14,165,233,0.45); color:#0ea5e9; }
-
-        /* state select */
-        .fp-select {
-            width:100%; padding:7px 10px;
-            background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
-            border-radius:8px; color:#e2e8f0; font-size:0.82rem; outline:none; cursor:pointer;
-        }
+        .chip.sel-good   { background:rgba(34,197,94,0.15);  border-color:rgba(34,197,94,0.45);  color:#4ade80; }
+        .chip.sel-warn   { background:rgba(245,158,11,0.15); border-color:rgba(245,158,11,0.45); color:#fbbf24; }
+        .chip.sel-danger { background:rgba(239,68,68,0.15);  border-color:rgba(239,68,68,0.45);  color:#f87171; }
+        .chip.sel-blue   { background:rgba(14,165,233,0.15); border-color:rgba(14,165,233,0.45); color:#0ea5e9; }
+        .fp-select { width:100%; padding:7px 10px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#e2e8f0; font-size:0.82rem; outline:none; cursor:pointer; }
         .fp-select:focus { border-color:rgba(14,165,233,0.4); }
         .fp-select option { background:#1e293b; color:#e2e8f0; }
 
@@ -233,6 +219,8 @@
     <div class="stat-divider"></div>
     <div class="stat-item"><span class="stat-icon">📍</span><div><div class="stat-value" id="statLocations">—</div><div class="stat-label">Locations Monitored</div></div></div>
     <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-icon">🧴</span><div><div class="stat-value stat-orange" id="statPlastic">—</div><div class="stat-label">Plastic Hotspots</div></div></div>
+    <div class="stat-divider"></div>
     <div class="stat-item"><span class="stat-icon">🕐</span><div><div class="stat-value stat-good" id="statLastUpdate">—</div><div class="stat-label">Last Updated</div></div></div>
 </div>
 
@@ -249,7 +237,6 @@
         <span class="fp-head-title">🗂 Filter Markers</span>
         <button class="fp-reset" onclick="resetFilters()">Reset All</button>
     </div>
-
     <div class="fp-section">
         <div class="fp-label">Visibility</div>
         <div class="fp-toggle-row">
@@ -257,7 +244,6 @@
             <div class="tog on" id="visTog" onclick="toggleVis(this)"></div>
         </div>
     </div>
-
     <div class="fp-section">
         <div class="fp-label">Severity</div>
         <div class="fp-chips">
@@ -266,14 +252,12 @@
             <div class="chip sel-danger" data-g="sev" data-v="alert"    onclick="toggleChip(this)">🔴 Alert</div>
         </div>
     </div>
-
     <div class="fp-section">
         <div class="fp-label">State</div>
         <select class="fp-select" id="stateSelect" onchange="applyFilters()">
             <option value="all">All States</option>
         </select>
     </div>
-
     <div class="fp-section">
         <div class="fp-label">Data Source</div>
         <div class="fp-chips">
@@ -323,9 +307,19 @@
                            return {rating:Math.min(Math.floor(c/3),10), class:'severity-high',     markerClass:'marker-alert'};
     }
     function getPollutionType(c) { return c>15?'Algae Bloom':'Organic Matter'; }
-    function createDownloadFn(location,chlorophyll,turbidity,ph,temperature) {
+
+    // ── Format Firestore Timestamp ──
+    function formatTimestamp(ts) {
+        if (!ts) return 'N/A';
+        try {
+            const date = typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts);
+            return date.toLocaleString('en-IN', { dateStyle:'short', timeStyle:'short' });
+        } catch(e) { return 'N/A'; }
+    }
+
+    function createDownloadFn(location, chlorophyll, turbidity, ph, temperature, microplasticIndex, plasticDensity) {
         return function() {
-            const csv=`Water Quality Report - ${location}\nDate: ${new Date().toLocaleDateString()}\n\nParameter,Value,Unit\nChlorophyll-a,${chlorophyll},µg/L\nTurbidity,${turbidity},NTU\npH,${ph},-\nTemperature,${temperature},°C`;
+            const csv=`Water Quality Report - ${location}\nDate: ${new Date().toLocaleDateString()}\n\nParameter,Value,Unit\nChlorophyll-a,${chlorophyll},µg/L\nTurbidity,${turbidity},NTU\npH,${ph},-\nTemperature,${temperature},°C\nMicroplastic Index,${microplasticIndex ?? 'N/A'},µg/L\nPlastic Density,${plasticDensity ?? 'N/A'},/m²`;
             const blob=new Blob([csv],{type:'text/csv'}), url=window.URL.createObjectURL(blob), a=document.createElement('a');
             a.href=url; a.download=`${location.replace(/\s+/g,'_')}_Report.csv`;
             document.body.appendChild(a); a.click(); document.body.removeChild(a); window.URL.revokeObjectURL(url);
@@ -338,32 +332,69 @@
         const markerClass=source==='esp32'?'marker-esp32':sev.markerClass;
         const icon=L.divIcon({ className:`custom-marker ${markerClass}`, html:'<div style="text-align:center;line-height:26px;color:white;font-weight:bold;font-size:18px;">💧</div>', iconSize:[32,32] });
         const fn=`dl_${docId.replace(/[^a-zA-Z0-9]/g,'_')}`;
-        window[fn]=createDownloadFn(data.location,data.chlorophyll,data.turbidity,data.ph,data.temperature);
-        const hc=source==='esp32'?'popup-header esp32-header':'popup-header';
-        const bc=source==='esp32'?'source-badge source-esp32':'source-badge source-firestore';
-        const sl=source==='esp32'?'🤖 ESP32':'☁️ Firestore';
-        const popup=`<div class="${hc}"><div class="popup-title">${data.location}<span class="${bc}">${sl}</span></div><div class="popup-subtitle">${data.district||'N/A'}, ${data.state||'N/A'}</div></div><div class="popup-body"><div class="data-grid"><div class="data-item"><div class="data-label">Chlorophyll-a</div><div class="data-value">${data.chlorophyll} µg/L</div></div><div class="data-item"><div class="data-label">Turbidity</div><div class="data-value">${data.turbidity} NTU</div></div><div class="data-item"><div class="data-label">pH</div><div class="data-value">${data.ph}</div></div><div class="data-item"><div class="data-label">Temperature</div><div class="data-value">${data.temperature}°C</div></div></div><div class="meta-info"><div class="meta-item"><strong>Type:</strong> ${getPollutionType(data.chlorophyll)}</div><div class="meta-item"><strong>Severity:</strong><span class="severity-badge ${sev.class}">${sev.rating}/10</span></div></div><div class="meta-info"><div class="meta-item"><span class="status-active">ACTIVE</span></div><div class="meta-item" style="font-size:10px;color:#999;">${data.timestamp||'N/A'}</div></div><button class="download-btn" onclick="${fn}()">📥 Download Data Report</button></div>`;
-        mcg.addLayer(L.marker([lat,lng],{icon}).bindPopup(popup,{maxWidth:380,minWidth:340}));
+        window[fn]=createDownloadFn(data.location,data.chlorophyll,data.turbidity,data.ph,data.temperature,data.microplasticIndex,data.plasticDensity);
+
+        // Only show source badge for ESP32
+        const sourceBadge = source==='esp32'
+            ? '<span class="source-badge source-esp32">🤖 ESP32</span>'
+            : '';
+
+        const hc = source==='esp32' ? 'popup-header esp32-header' : 'popup-header';
+
+        const popup=`
+            <div class="${hc}">
+                <div class="popup-title">${data.location} ${sourceBadge}</div>
+                <div class="popup-subtitle">${data.district||'N/A'}, ${data.state||'N/A'}</div>
+            </div>
+            <div class="popup-body">
+                <div class="data-section-title">🌊 Water Quality</div>
+                <div class="data-grid">
+                    <div class="data-item"><div class="data-label">Chlorophyll-a</div><div class="data-value">${data.chlorophyll} µg/L</div></div>
+                    <div class="data-item"><div class="data-label">Turbidity</div><div class="data-value">${data.turbidity} NTU</div></div>
+                    <div class="data-item"><div class="data-label">pH</div><div class="data-value">${data.ph}</div></div>
+                    <div class="data-item"><div class="data-label">Temperature</div><div class="data-value">${data.temperature}°C</div></div>
+                </div>
+                <div class="data-section-title">🧴 Microplastics (Spectral)</div>
+                <div class="data-grid">
+                    <div class="data-item plastic"><div class="data-label">Microplastic Index</div><div class="data-value">${data.microplasticIndex != null ? data.microplasticIndex+' µg/L' : 'N/A'}</div></div>
+                    <div class="data-item plastic"><div class="data-label">Plastic Density</div><div class="data-value">${data.plasticDensity != null ? data.plasticDensity+' /m²' : 'N/A'}</div></div>
+                </div>
+                <div class="meta-info">
+                    <div class="meta-item"><strong>Type:</strong> ${getPollutionType(data.chlorophyll)}</div>
+                    <div class="meta-item"><strong>Severity:</strong><span class="severity-badge ${sev.class}">${sev.rating}/10</span></div>
+                </div>
+                <div class="meta-info">
+                    <div class="meta-item"><span class="status-active">ACTIVE</span></div>
+                    <div class="meta-item" style="font-size:10px;color:#999;">${formatTimestamp(data.timestamp)}</div>
+                </div>
+                <button class="download-btn" onclick="${fn}()">📥 Download Data Report</button>
+            </div>`;
+        mcg.addLayer(L.marker([lat,lng],{icon}).bindPopup(popup,{maxWidth:400,minWidth:360}));
     }
 
     // ── Data Store ──
-    let allData = [];   // {data, source, docId}
+    let allData = [];
     function clearMarkers() { mcg.clearLayers(); }
 
     function updateStatsBar(docs) {
-        if(!docs||!docs.length) { ['statSensors','statAlerts','statStates','statLocations'].forEach(id=>document.getElementById(id).textContent='0'); document.getElementById('statLastUpdate').textContent='—'; return; }
-        const states=new Set(), locations=new Set(); let lastTs=0, alerts=0;
+        if(!docs||!docs.length) {
+            ['statSensors','statAlerts','statStates','statLocations','statPlastic'].forEach(id=>document.getElementById(id).textContent='0');
+            document.getElementById('statLastUpdate').textContent='—'; return;
+        }
+        const states=new Set(), locations=new Set(); let lastTs=0, alerts=0, plastic=0;
         docs.forEach(d=>{
             if(d.state) states.add(d.state); if(d.location) locations.add(d.location);
             let ts=0; if(d.timestamp&&typeof d.timestamp.toDate==='function') ts=d.timestamp.toDate().getTime(); else if(d.timestamp) ts=new Date(d.timestamp).getTime();
             if(ts>lastTs) lastTs=ts;
             if(Math.min(Math.floor((d.chlorophyll||0)/3),10)>=8) alerts++;
+            if((d.microplasticIndex||0)>8) plastic++;
         });
         document.getElementById('statSensors').textContent=docs.length;
         document.getElementById('statAlerts').textContent=alerts;
         document.getElementById('statAlerts').className=alerts>0?'stat-value stat-alert':'stat-value stat-good';
         document.getElementById('statStates').textContent=states.size;
         document.getElementById('statLocations').textContent=locations.size;
+        document.getElementById('statPlastic').textContent=plastic;
         document.getElementById('statLastUpdate').textContent=lastTs>0?new Date(lastTs).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'—';
     }
 
@@ -389,9 +420,7 @@
     }
 
     function applyFilters() { F.state=document.getElementById('stateSelect').value; redrawMarkers(); updateBadge(); }
-
     function togglePanel() { document.getElementById('filterPanel').classList.toggle('open'); }
-
     function toggleVis(el) { el.classList.toggle('on'); F.visible=el.classList.contains('on'); F.visible?map.addLayer(mcg):map.removeLayer(mcg); }
 
     function toggleChip(chip) {

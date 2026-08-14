@@ -93,7 +93,6 @@
       margin: 0 auto;
     }
 
-    /* floating glow orbs behind hero text */
     .hero-orb {
       position: absolute; border-radius: 50%; filter: blur(80px);
       animation: orbFloat 8s ease-in-out infinite;
@@ -123,7 +122,6 @@
       66%       { transform: translateY(15px) translateX(-10px); }
     }
 
-    /* wave decoration */
     .hero-wave-line {
       display: inline-block;
       width: 60px; height: 3px;
@@ -210,32 +208,28 @@
     .hero-stat-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
 
     /* ── WAVE DIVIDER ────────────────────────────── */
-    .wave-divider {
-      position: relative; overflow: hidden;
-      height: 80px; margin-bottom: -2px;
-    }
+    .wave-divider { position: relative; overflow: hidden; height: 80px; margin-bottom: -2px; }
     .wave-divider svg { position: absolute; bottom: 0; width: 100%; }
 
     /* ── SECTION FADE-IN ─────────────────────────── */
     .reveal {
-      opacity: 0;
-      transform: translateY(40px);
+      opacity: 0; transform: translateY(40px);
       transition: opacity 0.7s ease, transform 0.7s ease;
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
     .reveal-left  { opacity:0; transform: translateX(-40px); transition: opacity 0.7s ease, transform 0.7s ease; }
     .reveal-right { opacity:0; transform: translateX(40px);  transition: opacity 0.7s ease, transform 0.7s ease; }
     .reveal-left.visible, .reveal-right.visible { opacity:1; transform: translateX(0); }
 
-    /* ── TECH CARDS ──────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       TECH GRID — CSS Grid with full !important
+       override to beat any conflicting home.css rules
+    ══════════════════════════════════════════════ */
     .project-overview {
       position: relative; z-index: 1;
       padding: 5rem 2rem;
     }
-    .project-container { max-width: 1400px; width: 100%; margin: 0 auto; }
+    .project-container { max-width: 1200px; margin: 0 auto; }
     .project-container h2 {
       text-align: center; font-size: 2.5rem; font-weight: 800; font-family: 'Outfit', sans-serif;
       background: linear-gradient(135deg, #fff, #94a3b8);
@@ -243,32 +237,37 @@
       margin-bottom: 0.5rem;
     }
     .project-container .subtitle {
-      text-align: center; color: #64748b; margin-bottom: 3.5rem;
-      font-size: 1rem;
+      text-align: center; color: #64748b; margin-bottom: 3.5rem; font-size: 1rem;
     }
 
     .tech-grid {
-      display: flex !important;
-      flex-direction: row !important;
-      flex-wrap: nowrap !important;
-      gap: 1rem !important;
-      align-items: stretch !important;
+      display: grid !important;
+      grid-template-columns: repeat(4, 1fr) !important;
+      gap: 1.25rem !important;
+      /* Reset any flex properties from home.css */
+      flex-wrap: unset !important;
+      flex-direction: unset !important;
+      align-items: unset !important;
     }
-    @media (max-width: 1024px) {
-      .tech-grid { flex-wrap: wrap !important; }
-      .tech-card  { flex: 1 1 calc(50% - 1rem) !important; }
+    @media (max-width: 900px) {
+      .tech-grid { grid-template-columns: repeat(2, 1fr) !important; }
     }
-    @media (max-width: 540px) {
-      .tech-card  { flex: 1 1 100% !important; }
+    @media (max-width: 500px) {
+      .tech-grid { grid-template-columns: 1fr !important; }
     }
+
     .tech-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 18px; padding: 1.25rem;
-      transition: all 0.35s ease;
-      position: relative; overflow: hidden;
-      flex: 1 1 0 !important;
-      min-width: 0 !important;
+      background: rgba(255,255,255,0.03) !important;
+      border: 1px solid rgba(255,255,255,0.07) !important;
+      border-radius: 18px !important;
+      padding: 1.75rem !important;
+      transition: all 0.35s ease !important;
+      position: relative !important;
+      overflow: hidden !important;
+      /* Reset any flex-child properties from home.css */
+      flex: unset !important;
+      min-width: unset !important;
+      width: unset !important;
     }
     .tech-card::before {
       content: ''; position: absolute;
@@ -276,20 +275,17 @@
       background: linear-gradient(135deg, rgba(14,165,233,0.07), rgba(139,92,246,0.07));
       transition: opacity 0.35s ease;
     }
-    .tech-card:hover { transform: translateY(-8px); border-color: rgba(14,165,233,0.3); box-shadow: var(--glow-blue); }
+    .tech-card:hover { transform: translateY(-8px); border-color: rgba(14,165,233,0.3) !important; box-shadow: var(--glow-blue); }
     .tech-card:hover::before { opacity: 1; }
     .tech-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; color: #e2e8f0; }
     .tech-card ul { list-style: none; padding: 0; }
     .tech-card ul li {
-      padding: 0.4rem 0;
-      color: #94a3b8; font-size: 0.88rem;
+      padding: 0.4rem 0; color: #94a3b8; font-size: 0.88rem;
       border-bottom: 1px solid rgba(255,255,255,0.04);
       display: flex; align-items: center; gap: 0.5rem;
     }
     .tech-card ul li:last-child { border: none; }
-    .tech-card ul li::before {
-      content: '▸'; color: var(--ocean-1); font-size: 0.7rem; flex-shrink: 0;
-    }
+    .tech-card ul li::before { content: '▸'; color: var(--ocean-1); font-size: 0.7rem; flex-shrink: 0; }
 
     /* ── SPECS TABLE ─────────────────────────────── */
     .specifications-section {
@@ -300,36 +296,28 @@
       padding: 5rem 2rem;
     }
     .specifications-container { max-width: 1100px; margin: 0 auto; }
-    .specifications-container h2, .specifications-container .subtitle {
-      text-align: center; margin-bottom: 0.5rem;
-    }
+    .specifications-container h2, .specifications-container .subtitle { text-align: center; margin-bottom: 0.5rem; }
     .specifications-container h2 {
       font-size: 2.5rem; font-weight: 800;
       background: linear-gradient(135deg, #fff, #94a3b8);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     .specifications-container .subtitle { color: #64748b; margin-bottom: 3rem; }
-
     .specs-table-wrapper {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 18px; overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
     .specs-table { width: 100%; border-collapse: collapse; }
     .specs-table thead tr { background: rgba(14,165,233,0.08); }
     .specs-table th {
-      padding: 1rem 1.5rem;
-      text-align: left; font-size: 0.78rem;
+      padding: 1rem 1.5rem; text-align: left; font-size: 0.78rem;
       text-transform: uppercase; letter-spacing: 1.5px;
       color: var(--ocean-1); font-weight: 700;
       border-bottom: 1px solid rgba(14,165,233,0.15);
     }
     .specs-table td {
-      padding: 1rem 1.5rem;
-      color: #cbd5e1; font-size: 0.9rem;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      vertical-align: top;
+      padding: 1rem 1.5rem; color: #cbd5e1; font-size: 0.9rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top;
     }
     .specs-table tbody tr { transition: background 0.2s; }
     .specs-table tbody tr:hover { background: rgba(14,165,233,0.04); }
@@ -339,42 +327,24 @@
     .nested-row td:first-child { color: var(--ocean-1); font-weight: 700; }
 
     /* ── PROTOTYPE GALLERY ───────────────────────── */
-    .prototype-section {
-      position: relative; z-index: 1;
-      padding: 5rem 2rem;
-    }
+    .prototype-section { position: relative; z-index: 1; padding: 5rem 2rem; }
     .prototype-container { max-width: 1200px; margin: 0 auto; }
     .prototype-container h2 {
       text-align: center; font-size: 2.5rem; font-weight: 800;
       background: linear-gradient(135deg, #fff, #94a3b8);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem;
     }
     .prototype-container .subtitle { text-align: center; color: #64748b; margin-bottom: 1rem; }
-    .prototype-container > p { color: #94a3b8; }
-
     .prototype-gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-top: 2.5rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem; margin-top: 2.5rem;
     }
     .prototype-card {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 18px; overflow: hidden;
-      transition: all 0.35s ease;
-      group: true;
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px; overflow: hidden; transition: all 0.35s ease;
     }
-    .prototype-card:hover {
-      transform: translateY(-8px) scale(1.01);
-      border-color: rgba(14,165,233,0.3);
-      box-shadow: var(--glow-blue);
-    }
-    .prototype-card img {
-      width: 100%; height: 220px; object-fit: cover;
-      transition: transform 0.5s ease;
-    }
+    .prototype-card:hover { transform: translateY(-8px) scale(1.01); border-color: rgba(14,165,233,0.3); box-shadow: var(--glow-blue); }
+    .prototype-card img { width: 100%; height: 220px; object-fit: cover; transition: transform 0.5s ease; }
     .prototype-card:hover img { transform: scale(1.06); }
     .prototype-info { padding: 1.25rem 1.5rem; }
     .prototype-info h3 { font-size: 0.95rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.4rem; }
@@ -384,110 +354,68 @@
     .team-section {
       position: relative; z-index: 1;
       background: rgba(255,255,255,0.015);
-      border-top: 1px solid rgba(255,255,255,0.06);
-      padding: 5rem 2rem;
+      border-top: 1px solid rgba(255,255,255,0.06); padding: 5rem 2rem;
     }
     .team-container { max-width: 1200px; margin: 0 auto; }
     .team-container h2 {
       text-align: center; font-size: 2.5rem; font-weight: 800;
       background: linear-gradient(135deg, #fff, #94a3b8);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem;
     }
     .team-container .subtitle { text-align: center; color: #64748b; margin-bottom: 3rem; }
-
-    .team-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1.25rem;
-    }
+    .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.25rem; }
     .team-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 20px; padding: 1.75rem 1.25rem;
-      text-align: center;
-      transition: all 0.35s ease;
-      position: relative; overflow: hidden;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px; padding: 1.75rem 1.25rem; text-align: center;
+      transition: all 0.35s ease; position: relative; overflow: hidden;
     }
     .team-card::after {
-      content: ''; position: absolute;
-      bottom: 0; left: 0; right: 0; height: 3px;
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
       background: linear-gradient(90deg, var(--ocean-1), var(--ocean-3));
-      transform: scaleX(0); transform-origin: center;
-      transition: transform 0.35s ease;
+      transform: scaleX(0); transform-origin: center; transition: transform 0.35s ease;
     }
-    .team-card:hover {
-      transform: translateY(-8px);
-      border-color: rgba(14,165,233,0.3);
-      box-shadow: var(--glow-blue);
-      background: rgba(14,165,233,0.04);
-    }
+    .team-card:hover { transform: translateY(-8px); border-color: rgba(14,165,233,0.3); box-shadow: var(--glow-blue); background: rgba(14,165,233,0.04); }
     .team-card:hover::after { transform: scaleX(1); }
     .team-photo {
-      width: 84px; height: 84px;
-      border-radius: 50%; overflow: hidden;
-      margin: 0 auto 1rem;
-      border: 2px solid rgba(14,165,233,0.3);
+      width: 84px; height: 84px; border-radius: 50%; overflow: hidden;
+      margin: 0 auto 1rem; border: 2px solid rgba(14,165,233,0.3);
       transition: border-color 0.3s, box-shadow 0.3s;
     }
-    .team-card:hover .team-photo {
-      border-color: var(--ocean-1);
-      box-shadow: 0 0 20px rgba(14,165,233,0.3);
-    }
+    .team-card:hover .team-photo { border-color: var(--ocean-1); box-shadow: 0 0 20px rgba(14,165,233,0.3); }
     .team-photo img { width: 100%; height: 100%; object-fit: cover; }
     .team-card h3 { font-size: 0.92rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.3rem; }
     .team-card .role { font-size: 0.75rem; color: #64748b; margin-bottom: 1rem; line-height: 1.4; }
     .team-card .affiliation { font-size: 0.72rem; color: #475569; margin-bottom: 0.75rem; }
     .mentor-card { max-width: 260px; }
-
     .linkedin-btn {
       display: inline-flex; align-items: center; gap: 0.4rem;
       padding: 0.45rem 1rem; border-radius: 8px; font-size: 0.78rem;
       font-weight: 600; color: #e2e8f0; text-decoration: none;
-      background: rgba(14,165,233,0.1);
-      border: 1px solid rgba(14,165,233,0.2);
+      background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.2);
       transition: all 0.25s ease;
     }
-    .linkedin-btn:hover {
-      background: rgba(14,165,233,0.2);
-      border-color: var(--ocean-1);
-      color: var(--ocean-1);
-      transform: translateY(-1px);
-    }
+    .linkedin-btn:hover { background: rgba(14,165,233,0.2); border-color: var(--ocean-1); color: var(--ocean-1); transform: translateY(-1px); }
 
     /* ── PROBLEM SECTION ─────────────────────────── */
-    .problem-section {
-      position: relative; z-index: 1; padding: 5rem 2rem;
-    }
+    .problem-section { position: relative; z-index: 1; padding: 5rem 2rem; }
     .problem-container { max-width: 1200px; margin: 0 auto; }
     .problem-container h2 {
       text-align: center; font-size: 2.5rem; font-weight: 800;
       background: linear-gradient(135deg, #fff, #94a3b8);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem;
     }
     .problem-container .subtitle { text-align: center; color: #64748b; margin-bottom: 3rem; }
-
     .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; }
     .problem-card {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 20px; overflow: hidden;
-      transition: all 0.35s ease;
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px; overflow: hidden; transition: all 0.35s ease;
     }
-    .problem-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(239,68,68,0.3);
-      box-shadow: 0 0 40px rgba(239,68,68,0.1);
-    }
+    .problem-card:hover { transform: translateY(-6px); border-color: rgba(239,68,68,0.3); box-shadow: 0 0 40px rgba(239,68,68,0.1); }
     .problem-card img { width: 100%; height: 200px; object-fit: cover; }
     .problem-content { padding: 1.5rem; }
     .location-badge {
-      display: inline-block;
-      background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.2);
-      color: var(--ocean-1); padding: 0.3rem 0.75rem;
-      border-radius: 100px; font-size: 0.72rem; font-weight: 600;
-      margin-bottom: 0.75rem;
+      display: inline-block; background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.2);
+      color: var(--ocean-1); padding: 0.3rem 0.75rem; border-radius: 100px; font-size: 0.72rem; font-weight: 600; margin-bottom: 0.75rem;
     }
     .problem-content h3 { font-size: 1rem; font-weight: 700; color: #e2e8f0; margin-bottom: 0.5rem; }
     .problem-content p  { font-size: 0.88rem; color: #94a3b8; margin-bottom: 0.5rem; line-height: 1.7; }
@@ -496,27 +424,18 @@
 
     /* ── FEATURES ────────────────────────────────── */
     .features-section {
-      position: relative; z-index: 1;
-      background: rgba(255,255,255,0.015);
-      border-top: 1px solid rgba(255,255,255,0.06);
-      padding: 5rem 2rem;
+      position: relative; z-index: 1; background: rgba(255,255,255,0.015);
+      border-top: 1px solid rgba(255,255,255,0.06); padding: 5rem 2rem;
     }
     .features-section h2 {
       text-align: center; font-size: 2.5rem; font-weight: 800;
       background: linear-gradient(135deg, #fff, #94a3b8);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      margin-bottom: 3rem;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 3rem;
     }
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.25rem; max-width: 1100px; margin: 0 auto;
-    }
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; max-width: 1100px; margin: 0 auto; }
     .feature-card {
-      background: rgba(255,255,255,0.025);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 18px; padding: 2rem 1.5rem;
-      text-align: center; transition: all 0.35s ease;
+      background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px; padding: 2rem 1.5rem; text-align: center; transition: all 0.35s ease;
       position: relative; overflow: hidden;
     }
     .feature-card::before {
@@ -524,21 +443,10 @@
       background: linear-gradient(135deg, rgba(14,165,233,0.06), rgba(139,92,246,0.06));
       opacity: 0; transition: opacity 0.35s;
     }
-    .feature-card:hover {
-      transform: translateY(-8px);
-      border-color: rgba(14,165,233,0.3);
-      box-shadow: var(--glow-blue);
-    }
+    .feature-card:hover { transform: translateY(-8px); border-color: rgba(14,165,233,0.3); box-shadow: var(--glow-blue); }
     .feature-card:hover::before { opacity: 1; }
-    .feature-card .icon {
-      font-size: 2.5rem; margin-bottom: 1rem;
-      display: block;
-      animation: iconBob 3s ease-in-out infinite;
-    }
-    @keyframes iconBob {
-      0%,100%{ transform: translateY(0); }
-      50%    { transform: translateY(-6px); }
-    }
+    .feature-card .icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; animation: iconBob 3s ease-in-out infinite; }
+    @keyframes iconBob { 0%,100%{ transform: translateY(0); } 50% { transform: translateY(-6px); } }
     .feature-card:nth-child(2) .icon { animation-delay: -0.75s; }
     .feature-card:nth-child(3) .icon { animation-delay: -1.5s; }
     .feature-card:nth-child(4) .icon { animation-delay: -2.25s; }
@@ -547,19 +455,14 @@
 
     /* ── CTA ─────────────────────────────────────── */
     .cta-section {
-      position: relative; z-index: 1;
-      text-align: center; padding: 6rem 2rem;
-      background: linear-gradient(135deg,
-        rgba(14,165,233,0.06) 0%,
-        rgba(139,92,246,0.06) 50%,
-        rgba(6,182,212,0.06) 100%);
+      position: relative; z-index: 1; text-align: center; padding: 6rem 2rem;
+      background: linear-gradient(135deg, rgba(14,165,233,0.06) 0%, rgba(139,92,246,0.06) 50%, rgba(6,182,212,0.06) 100%);
       border-top: 1px solid rgba(255,255,255,0.06);
     }
     .cta-section h2 {
       font-size: 2.8rem; font-weight: 800;
       background: linear-gradient(135deg, #fff, #bae6fd, var(--ocean-3));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      margin-bottom: 1rem;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem;
     }
     .cta-section p { font-size: 1.1rem; color: #94a3b8; max-width: 640px; margin: 0 auto 2.5rem; line-height: 1.7; }
 
@@ -569,38 +472,20 @@
       padding: 0.8rem 1.8rem; border-radius: 12px;
       background: linear-gradient(135deg, var(--ocean-1), var(--ocean-2));
       color: #fff; font-weight: 700; text-decoration: none;
-      font-family: 'Outfit', sans-serif;
-      border: none; cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(14,165,233,0.3);
+      font-family: 'Outfit', sans-serif; border: none; cursor: pointer;
+      transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(14,165,233,0.3);
       position: relative; overflow: hidden;
     }
-    .btn::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
-      opacity: 0; transition: opacity 0.3s;
-    }
-    .btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px rgba(14,165,233,0.45);
-    }
+    .btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); opacity: 0; transition: opacity 0.3s; }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(14,165,233,0.45); }
     .btn:hover::after { opacity: 1; }
-
     .btn-outline {
       display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.8rem 1.8rem; border-radius: 12px;
-      background: transparent;
+      padding: 0.8rem 1.8rem; border-radius: 12px; background: transparent;
       color: var(--ocean-1); font-weight: 700; text-decoration: none;
-      font-family: 'Outfit', sans-serif;
-      border: 1.5px solid rgba(14,165,233,0.4); cursor: pointer;
-      transition: all 0.3s ease;
+      font-family: 'Outfit', sans-serif; border: 1.5px solid rgba(14,165,233,0.4); cursor: pointer; transition: all 0.3s ease;
     }
-    .btn-outline:hover {
-      background: rgba(14,165,233,0.08);
-      border-color: var(--ocean-1);
-      transform: translateY(-3px);
-      box-shadow: 0 4px 20px rgba(14,165,233,0.15);
-    }
+    .btn-outline:hover { background: rgba(14,165,233,0.08); border-color: var(--ocean-1); transform: translateY(-3px); box-shadow: 0 4px 20px rgba(14,165,233,0.15); }
 
     /* ── KEYFRAMES ───────────────────────────────── */
     @keyframes fadeSlideUp   { from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);} }
@@ -609,7 +494,6 @@
 </head>
 
 <body>
-  <!-- Animated Background -->
   <div class="bg-gradient"></div>
   <canvas id="particlesCanvas"></canvas>
 
@@ -629,19 +513,13 @@
         <div class="hero-orb hero-orb-1"></div>
         <div class="hero-orb hero-orb-2"></div>
         <div class="hero-orb hero-orb-3"></div>
-
         <div class="hero-content">
-          <div class="hero-tag">
-            <span class="tag-dot"></span>
-            Live Monitoring Active
-          </div>
-
+          <div class="hero-tag"><span class="tag-dot"></span>Live Monitoring Active</div>
           <div style="display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
             <span class="hero-wave-line"></span>
             <span style="font-size:0.8rem;color:#475569;letter-spacing:2px;text-transform:uppercase;">Autonomous Water Intelligence</span>
             <span class="hero-wave-line"></span>
           </div>
-
           <h1 class="hero-title">R-TECH</h1>
           <p class="hero-subtitle">Autonomous Water Quality Monitoring Robot</p>
           <p class="hero-desc">
@@ -649,33 +527,15 @@
             plastic pollution, and water quality parameters across rivers, estuaries, and coastal areas.
           </p>
           <div class="hero-cta-row">
-            <a href="/dashboard" class="btn" style="font-size:1.05rem;padding:0.9rem 2.2rem;">
-              🗺️ View Live Dashboard
-            </a>
-            <a href="#overview" class="btn-outline" style="font-size:1.05rem;padding:0.9rem 2rem;">
-              Learn More ↓
-            </a>
+            <a href="/dashboard" class="btn" style="font-size:1.05rem;padding:0.9rem 2.2rem;">🗺️ View Live Dashboard</a>
+            <a href="#overview" class="btn-outline" style="font-size:1.05rem;padding:0.9rem 2rem;">Learn More ↓</a>
           </div>
         </div>
-
-        <!-- Stats bar -->
         <div class="hero-stats">
-          <div class="hero-stat-item">
-            <div class="hero-stat-num" data-target="15">0</div>
-            <div class="hero-stat-label">Monitoring Locations</div>
-          </div>
-          <div class="hero-stat-item">
-            <div class="hero-stat-num" data-target="95">0</div>
-            <div class="hero-stat-label">Detection Accuracy %</div>
-          </div>
-          <div class="hero-stat-item">
-            <div class="hero-stat-num" data-target="3">0</div>
-            <div class="hero-stat-label">Sensor Payloads</div>
-          </div>
-          <div class="hero-stat-item">
-            <div class="hero-stat-num" data-target="4">0</div>
-            <div class="hero-stat-label">Hours Operation</div>
-          </div>
+          <div class="hero-stat-item"><div class="hero-stat-num" data-target="15" data-suffix="">0</div><div class="hero-stat-label">Monitoring Locations</div></div>
+          <div class="hero-stat-item"><div class="hero-stat-num" data-target="95" data-suffix="%">0</div><div class="hero-stat-label">Detection Accuracy %</div></div>
+          <div class="hero-stat-item"><div class="hero-stat-num" data-target="3" data-suffix="+">0</div><div class="hero-stat-label">Sensor Payloads</div></div>
+          <div class="hero-stat-item"><div class="hero-stat-num" data-target="4" data-suffix="h">0</div><div class="hero-stat-label">Hours Operation</div></div>
         </div>
       </div>
     </div>
@@ -686,45 +546,35 @@
     <div class="project-container">
       <h2>💡 Project Overview</h2>
       <p class="subtitle">R-TECH: Robotic Monitoring for Chlorophyll and Plastic Signatures</p>
-      <div class="tech-grid" style="display:flex!important;flex-wrap:nowrap!important;flex-direction:row!important;gap:1rem!important;">
+      <div class="tech-grid">
         <div class="tech-card reveal" style="transition-delay:0.0s;">
           <h3>🤖 Hardware Components</h3>
           <ul>
-            <li>ESP32 Microcontroller</li>
-            <li>Jetson Orin Nano</li>
-            <li>AS7265x Spectral Sensors</li>
-            <li>pH & Turbidity Sensors</li>
-            <li>GPS + IMU Navigation</li>
-            <li>Camera Module (YOLO)</li>
+            <li>ESP32 Microcontroller</li><li>Jetson Orin Nano</li>
+            <li>AS7265x Spectral Sensors</li><li>pH &amp; Turbidity Sensors</li>
+            <li>GPS + IMU Navigation</li><li>Camera Module (YOLO)</li>
           </ul>
         </div>
         <div class="tech-card reveal" style="transition-delay:0.1s;">
           <h3>🛠️ Software Stack</h3>
           <ul>
-            <li>Node.js + Express Backend</li>
-            <li>EJS Templating</li>
-            <li>Firebase Firestore</li>
-            <li>YOLO v8 ML Model</li>
-            <li>Leaflet.js Maps</li>
-            <li>Spectral Analysis Algorithms</li>
+            <li>Node.js + Express Backend</li><li>EJS Templating</li>
+            <li>Firebase Firestore</li><li>YOLO v8 ML Model</li>
+            <li>Leaflet.js Maps</li><li>Spectral Analysis Algorithms</li>
           </ul>
         </div>
         <div class="tech-card reveal" style="transition-delay:0.2s;">
           <h3>🛰️ Satellite Integration</h3>
           <ul>
-            <li>OceanSat-3 OCM</li>
-            <li>Sentinel-2 MSI</li>
-            <li>Sentinel-3 OLCI</li>
-            <li>Ground-truth Validation</li>
+            <li>OceanSat-3 OCM</li><li>Sentinel-2 MSI</li>
+            <li>Sentinel-3 OLCI</li><li>Ground-truth Validation</li>
           </ul>
         </div>
         <div class="tech-card reveal" style="transition-delay:0.3s;">
           <h3>🎯 Key Features</h3>
           <ul>
-            <li>Real-time Water Monitoring</li>
-            <li>Chlorophyll-a Detection</li>
-            <li>Plastic Debris Identification</li>
-            <li>Autonomous Navigation</li>
+            <li>Real-time Water Monitoring</li><li>Chlorophyll-a Detection</li>
+            <li>Plastic Debris Identification</li><li>Autonomous Navigation</li>
             <li>Cloud-based Dashboard</li>
           </ul>
         </div>
@@ -739,9 +589,7 @@
       <p class="subtitle">Detailed specifications for the R-TECH autonomous water monitoring robot</p>
       <div class="specs-table-wrapper">
         <table class="specs-table">
-          <thead>
-            <tr><th>Sl No.</th><th>Parameter</th><th>Specifications</th></tr>
-          </thead>
+          <thead><tr><th>Sl No.</th><th>Parameter</th><th>Specifications</th></tr></thead>
           <tbody>
             <tr><td>1.</td><td>Mission Duration</td><td>3–4 hours continuous operation per charge cycle</td></tr>
             <tr><td>2.</td><td>Deployment Area</td><td>Rivers, estuaries, coastal areas, and inland water bodies across India</td></tr>
@@ -791,7 +639,7 @@
   <section class="prototype-section">
     <div class="prototype-container">
       <h2 class="reveal">🚧 Prototype Development</h2>
-      <p class="subtitle reveal">Early-Stage CAD Models & Design Iterations</p>
+      <p class="subtitle reveal">Early-Stage CAD Models &amp; Design Iterations</p>
       <p style="text-align:center;max-width:800px;margin:0 auto 2rem;font-size:1rem;line-height:1.8;color:#94a3b8;" class="reveal">
         Our team is actively developing the autonomous catamaran robot. These CAD models represent the initial design
         phase, showcasing the triple-pontoon structure, propulsion system, and sensor mounting platform.
@@ -799,24 +647,15 @@
       <div class="prototype-gallery">
         <div class="prototype-card reveal" style="transition-delay:0s;">
           <img src="/images/cad_1.jpg" alt="R-TECH Catamaran - Final Model">
-          <div class="prototype-info">
-            <h3>Final Design — Triple Pontoon</h3>
-            <p>Catamaran structure with solar panel mounting and dual propulsion for stable navigation</p>
-          </div>
+          <div class="prototype-info"><h3>Final Design — Triple Pontoon</h3><p>Catamaran structure with solar panel mounting and dual propulsion for stable navigation</p></div>
         </div>
         <div class="prototype-card reveal" style="transition-delay:0.15s;">
           <img src="/images/cad_2.jpg" alt="R-TECH Catamaran - Earlier Model">
-          <div class="prototype-info">
-            <h3>Earlier Designs — Propulsion System</h3>
-            <p>Dual motor configuration with propellers for enhanced maneuverability in water bodies</p>
-          </div>
+          <div class="prototype-info"><h3>Earlier Designs — Propulsion System</h3><p>Dual motor configuration with propellers for enhanced maneuverability in water bodies</p></div>
         </div>
         <div class="prototype-card reveal" style="transition-delay:0.3s;">
           <img src="/images/cad_3.jpg" alt="R-TECH Catamaran - Streamlined">
-          <div class="prototype-info">
-            <h3>Earlier Designs — Streamlined Profile</h3>
-            <p>Low-profile design for minimal water resistance and stable sensor deployment</p>
-          </div>
+          <div class="prototype-info"><h3>Earlier Designs — Streamlined Profile</h3><p>Low-profile design for minimal water resistance and stable sensor deployment</p></div>
         </div>
       </div>
     </div>
@@ -828,11 +667,11 @@
       <h2 class="reveal">👥 Our Team</h2>
       <p class="subtitle reveal">Meet the innovators behind R-TECH</p>
       <div class="team-grid">
-        <div class="team-card reveal" style="transition-delay:0s;"><div class="team-photo"><img src="/images/team/chandru.jpeg" alt="Chandru P"></div><h3>Chandru P</h3><p class="role">Team Leader / Embedded Systems & IoT</p><a href="https://www.linkedin.com/in/chandru-p-13bb99333/" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
+        <div class="team-card reveal" style="transition-delay:0s;"><div class="team-photo"><img src="/images/team/chandru.jpeg" alt="Chandru P"></div><h3>Chandru P</h3><p class="role">Team Leader / Embedded Systems &amp; IoT</p><a href="https://www.linkedin.com/in/chandru-p-13bb99333/" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
         <div class="team-card reveal" style="transition-delay:0.08s;"><div class="team-photo"><img src="/images/team/sudhar.jpeg" alt="Sudharsan D"></div><h3>Sudharsan D</h3><p class="role">AI/ML Engineer</p><a href="https://www.linkedin.com/in/sudharsan-d-30bb79364/" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
         <div class="team-card reveal" style="transition-delay:0.16s;"><div class="team-photo"><img src="/images/team/prabu.jpeg" alt="Prabu Kumar"></div><h3>Prabu Kumar S P</h3><p class="role">Full-Stack Developer</p><a href="https://www.linkedin.com/in/prabu-kumar-s-p-79998326a" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
-        <div class="team-card reveal" style="transition-delay:0.24s;"><div class="team-photo"><img src="/images/team/deepiga.jpeg" alt="Deepiga M"></div><h3>Deepiga M</h3><p class="role">AI/ML Engineer & Data Analyst</p><a href="https://www.linkedin.com/in/deepiga-m-179986362/" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
-        <div class="team-card reveal" style="transition-delay:0.32s;"><div class="team-photo"><img src="/images/team/saranya.jpeg" alt="Saranya D"></div><h3>Saranya D</h3><p class="role">Data Analyst & Research Lead</p><a href="https://www.linkedin.com/in/saranya-dhulasiraman-4463a0352/" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
+        <div class="team-card reveal" style="transition-delay:0.24s;"><div class="team-photo"><img src="/images/team/deepiga.jpeg" alt="Deepiga M"></div><h3>Deepiga M</h3><p class="role">AI/ML Engineer &amp; Data Analyst</p><a href="https://www.linkedin.com/in/deepiga-m-179986362/" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
+        <div class="team-card reveal" style="transition-delay:0.32s;"><div class="team-photo"><img src="/images/team/saranya.jpeg" alt="Saranya D"></div><h3>Saranya D</h3><p class="role">Data Analyst &amp; Research Lead</p><a href="https://www.linkedin.com/in/saranya-dhulasiraman-4463a0352/" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
         <div class="team-card reveal" style="transition-delay:0.40s;"><div class="team-photo"><img src="/images/team/aakash.jpeg" alt="Aakash R"></div><h3>Aakash R</h3><p class="role">CAD Designer</p><a href="https://www.linkedin.com/in/aakash-r-cs07/" target="_blank" class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>LinkedIn</a></div>
       </div>
 
@@ -875,7 +714,7 @@
           <img src="/images/plastic-pollution.jpg" alt="Plastic debris in Coimbatore">
           <div class="problem-content">
             <span class="location-badge">📍 Coimbatore, Tamil Nadu</span>
-            <h3>🗑️ Plastic & Solid Waste Pollution</h3>
+            <h3>🗑️ Plastic &amp; Solid Waste Pollution</h3>
             <p>Visible plastic debris and solid waste accumulation along riverbanks creating long-term environmental damage.</p>
             <p><strong style="color:#e2e8f0;">Environmental Impact:</strong></p>
             <ul class="impact-list">
@@ -888,15 +727,13 @@
           </div>
         </div>
       </div>
-
       <div style="text-align:center;margin-top:3rem;padding:2.5rem;background:rgba(255,255,255,0.02);border:1px solid rgba(14,165,233,0.15);border-radius:18px;backdrop-filter:blur(12px);" class="reveal">
         <h3 style="margin-bottom:1rem;font-size:1.6rem;color:#e2e8f0;">🎯 Our Monitoring Solution</h3>
         <p style="font-size:1rem;line-height:1.9;max-width:900px;margin:0 auto;color:#94a3b8;">
           R-TECH's autonomous robotic multispectral radiometer system continuously monitors
           <strong style="color:var(--ocean-1);">chlorophyll-a levels, turbidity, plastic signatures, and pH</strong>.
           Our data trains and validates satellite observations from
-          <strong style="color:#e2e8f0;">OceanSat-3 OCM and Sentinel-2/3</strong>, providing real-time alerts
-          to authorities for immediate action.
+          <strong style="color:#e2e8f0;">OceanSat-3 OCM and Sentinel-2/3</strong>, providing real-time alerts to authorities for immediate action.
         </p>
       </div>
     </div>
@@ -906,26 +743,10 @@
   <section class="features-section">
     <h2 class="reveal">⚡ Platform Features</h2>
     <div class="features">
-      <div class="feature-card reveal" style="transition-delay:0s;">
-        <span class="icon">🗺️</span>
-        <h3>Interactive Maps</h3>
-        <p>Visualize pollution hotspots in real-time with color-coded severity markers</p>
-      </div>
-      <div class="feature-card reveal" style="transition-delay:0.1s;">
-        <span class="icon">📊</span>
-        <h3>Data Analytics</h3>
-        <p>Track trends and monitor water quality changes over time with full export support</p>
-      </div>
-      <div class="feature-card reveal" style="transition-delay:0.2s;">
-        <span class="icon">🚨</span>
-        <h3>Smart Alerts</h3>
-        <p>Automated notifications when pollution levels exceed critical thresholds</p>
-      </div>
-      <div class="feature-card reveal" style="transition-delay:0.3s;">
-        <span class="icon">🛰️</span>
-        <h3>Satellite Integration</h3>
-        <p>Ground-truth validation for OceanSat-3 & Sentinel-2/3 satellite data</p>
-      </div>
+      <div class="feature-card reveal" style="transition-delay:0s;"><span class="icon">🗺️</span><h3>Interactive Maps</h3><p>Visualize pollution hotspots in real-time with color-coded severity markers</p></div>
+      <div class="feature-card reveal" style="transition-delay:0.1s;"><span class="icon">📊</span><h3>Data Analytics</h3><p>Track trends and monitor water quality changes over time with full export support</p></div>
+      <div class="feature-card reveal" style="transition-delay:0.2s;"><span class="icon">🚨</span><h3>Smart Alerts</h3><p>Automated notifications when pollution levels exceed critical thresholds</p></div>
+      <div class="feature-card reveal" style="transition-delay:0.3s;"><span class="icon">🛰️</span><h3>Satellite Integration</h3><p>Ground-truth validation for OceanSat-3 &amp; Sentinel-2/3 satellite data</p></div>
     </div>
   </section>
 
@@ -937,87 +758,58 @@
   </div>
 
   <!-- ══════════════════════════════════════════════
-       JAVASCRIPT: Particles + Scroll + Counters
+       JAVASCRIPT
   ══════════════════════════════════════════════ -->
   <script>
-    // ── Particle Canvas ───────────────────────────
     (function () {
       const canvas = document.getElementById('particlesCanvas');
       const ctx    = canvas.getContext('2d');
       let W, H, particles = [];
-
-      function resize() {
-        W = canvas.width  = window.innerWidth;
-        H = canvas.height = window.innerHeight;
-      }
-      resize();
-      window.addEventListener('resize', resize);
-
+      function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+      resize(); window.addEventListener('resize', resize);
       function Particle() {
-        this.x    = Math.random() * W;
-        this.y    = Math.random() * H;
-        this.r    = Math.random() * 1.5 + 0.3;
-        this.vx   = (Math.random() - 0.5) * 0.3;
-        this.vy   = -Math.random() * 0.5 - 0.1;
+        this.x = Math.random() * W; this.y = Math.random() * H;
+        this.r = Math.random() * 1.5 + 0.3;
+        this.vx = (Math.random() - 0.5) * 0.3; this.vy = -Math.random() * 0.5 - 0.1;
         this.life = Math.random();
         this.colors = ['rgba(14,165,233,', 'rgba(6,182,212,', 'rgba(139,92,246,'];
         this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
       }
       Particle.prototype.update = function () {
-        this.x += this.vx; this.y += this.vy;
-        this.life -= 0.003;
+        this.x += this.vx; this.y += this.vy; this.life -= 0.003;
         if (this.life <= 0 || this.y < -10) { this.y = H + 5; this.x = Math.random() * W; this.life = Math.random() * 0.6 + 0.4; }
       };
       Particle.prototype.draw = function () {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-        ctx.fillStyle = this.color + Math.min(this.life, 0.8) + ')';
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = this.color + Math.min(this.life, 0.8) + ')'; ctx.fill();
       };
-
       for (let i = 0; i < 120; i++) particles.push(new Particle());
-
-      function animate() {
-        ctx.clearRect(0, 0, W, H);
-        particles.forEach(p => { p.update(); p.draw(); });
-        requestAnimationFrame(animate);
-      }
+      function animate() { ctx.clearRect(0, 0, W, H); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate); }
       animate();
     })();
 
-    // ── Navbar scroll shrink ──────────────────────
     window.addEventListener('scroll', () => {
       document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
     });
 
-    // ── Intersection Observer (reveal) ────────────
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
-      });
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
     }, { threshold: 0.12 });
-
     document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
 
-    // ── Animated counters ─────────────────────────
     const counterObserver = new IntersectionObserver((entries) => {
       entries.forEach(e => {
         if (!e.isIntersecting) return;
-        const el     = e.target;
-        const target = parseInt(el.dataset.target);
-        const dur    = 1800;
-        const step   = 16;
-        const inc    = target / (dur / step);
-        let cur = 0;
+        const el = e.target; const target = parseInt(el.dataset.target); const dur = 1800; const step = 16;
+        const inc = target / (dur / step); let cur = 0;
         const tick = setInterval(() => {
           cur += inc;
           if (cur >= target) { cur = target; clearInterval(tick); }
-          el.textContent = Math.floor(cur) + (target >= 95 ? '%' : target >= 4 ? 'h' : '+');
+          el.textContent = Math.floor(cur) + (el.dataset.suffix || '');
         }, step);
         counterObserver.unobserve(el);
       });
     }, { threshold: 0.5 });
-
     document.querySelectorAll('[data-target]').forEach(el => counterObserver.observe(el));
   </script>
 

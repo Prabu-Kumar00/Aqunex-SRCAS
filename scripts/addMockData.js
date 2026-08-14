@@ -29,6 +29,8 @@ function generateMockData() {
     temperature: getRandomValue(18, 32, 1),
     timestamp: admin.firestore.Timestamp.now(),
     turbidity: Math.floor(getRandomValue(5, 50, 0)),
+    microplasticIndex: parseFloat((Math.random() * 15).toFixed(2)),
+    plasticDensity: parseFloat((Math.random() * 8).toFixed(2)),
     isMockData: true
   };
 }
@@ -37,15 +39,15 @@ async function addMockData() {
   try {
     const mockData = generateMockData();
 
-    // Add to Firestore (it will auto-generate document ID)
-    const docRef = await db.collection('waterQualityData').add(mockData);
+    const docRef = await db.collection('sensor_data').add(mockData);
 
     console.log(`✓ [${new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' })}] Mock data added`);
     console.log(`  ID: ${docRef.id}`);
     console.log(`  Location: ${mockData.location} (${mockData.district})`);
     console.log(`  GPS: ${mockData.gps.lat}, ${mockData.gps.lng}`);
     console.log(`  pH: ${mockData.ph} | Temp: ${mockData.temperature}°C | Turbidity: ${mockData.turbidity}`);
-    console.log(`  Chlorophyll: ${mockData.chlorophyll}\n`);
+    console.log(`  Chlorophyll: ${mockData.chlorophyll} µg/L`);
+    console.log(`  Microplastic Index: ${mockData.microplasticIndex} µg/L | Plastic Density: ${mockData.plasticDensity} /m²\n`);
   } catch (error) {
     console.error('❌ Error adding mock data:', error.message);
   }
@@ -54,7 +56,7 @@ async function addMockData() {
 // Start the generator
 console.log('🚀 AQUNEX Mock Data Generator Started');
 console.log('📊 Adding random water quality data every 10 seconds...');
-console.log('🌍 GPS variation: ±15km radius per location');
+console.log('🌍 GPS variation: ±5km radius per location');
 console.log('📍 Total locations: 15 lakes across India');
 console.log('⏰ Time: ' + new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }));
 console.log('Press Ctrl+C to stop\n');

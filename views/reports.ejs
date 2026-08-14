@@ -10,192 +10,63 @@
     <link rel="stylesheet" href="/css/home.css">
     <style>
         body { background: #0f172a !important; color: #f8fafc !important; min-height: 100vh; }
-
         .reports-container { max-width: 1280px; margin: 2rem auto; padding: 0 1.5rem; }
+        .reports-header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
 
-        .reports-header {
-            margin-bottom: 2.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        /* ── STATS ─────────────────────────────────── */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.25rem;
-            margin-bottom: 2.5rem;
-        }
-        .stat-card {
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            padding: 1.5rem;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: var(--transition);
-        }
+        /* ── STATS ── */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem; }
+        .stat-card { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 18px; display: flex; align-items: center; gap: 1rem; transition: var(--transition); }
         .stat-card:hover { transform: translateY(-4px); border-color: var(--primary); }
-        .stat-icon {
-            font-size: 1.75rem;
-            background: rgba(99,102,241,0.1);
-            width: 56px; height: 56px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 14px; flex-shrink: 0;
-        }
+        .stat-icon { font-size: 1.75rem; background: rgba(99,102,241,0.1); width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 14px; flex-shrink: 0; }
         .stat-info h3 { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
         .stat-info p  { font-size: 1.7rem; font-weight: 700; }
 
-        /* ── FILTER CARD ─────────────────────────────── */
-        .filter-export-card {
-            background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(168,85,247,0.1) 100%);
-            border: 1px solid var(--glass-border);
-            padding: 1.75rem 2rem;
-            border-radius: 22px;
-            margin-bottom: 2.5rem;
-            backdrop-filter: blur(8px);
-        }
+        /* ── FILTER CARD ── */
+        .filter-export-card { background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(168,85,247,0.1) 100%); border: 1px solid var(--glass-border); padding: 1.75rem 2rem; border-radius: 22px; margin-bottom: 2.5rem; backdrop-filter: blur(8px); }
         .filter-export-card h2 { font-size: 1.35rem; margin-bottom: 0.3rem; }
         .filter-export-card > p { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.5rem; }
-
-        .filter-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.25rem;
-        }
-        .filter-group label {
-            display: block;
-            font-size: 0.73rem;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-        .filter-group select,
-        .filter-group input[type="date"] {
-            width: 100%;
-            background: rgba(15,23,42,0.85);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #f8fafc;
-            padding: 9px 12px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-family: inherit;
-            outline: none;
-            cursor: pointer;
-            transition: border-color 0.2s;
-            -webkit-appearance: none;
-        }
-        .filter-group select:focus,
-        .filter-group input[type="date"]:focus { border-color: var(--primary); }
+        .filter-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.25rem; }
+        .filter-group label { display: block; font-size: 0.73rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 5px; font-weight: 600; }
+        .filter-group select, .filter-group input[type="date"] { width: 100%; background: rgba(15,23,42,0.85); border: 1px solid rgba(255,255,255,0.1); color: #f8fafc; padding: 9px 12px; border-radius: 10px; font-size: 0.85rem; font-family: inherit; outline: none; cursor: pointer; transition: border-color 0.2s; -webkit-appearance: none; }
+        .filter-group select:focus, .filter-group input[type="date"]:focus { border-color: var(--primary); }
         .filter-group select option { background: #1e293b; }
-
         .export-actions { display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center; }
-        .btn-export {
-            padding: 0.7rem 1.25rem;
-            border-radius: 10px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.45rem;
-            cursor: pointer;
-            transition: var(--transition);
-            border: 1px solid rgba(255,255,255,0.1);
-            font-size: 0.85rem;
-            font-family: inherit;
-        }
+        .btn-export { padding: 0.7rem 1.25rem; border-radius: 10px; font-weight: 600; display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer; transition: var(--transition); border: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; font-family: inherit; }
         .btn-export:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
         .btn-filter { background: rgba(99,102,241,0.2);  color: #818cf8; }
         .btn-reset  { background: rgba(255,255,255,0.05); color: var(--text-muted); }
-        .btn-pdf    { background: rgba(239,68,68,0.15);  color: #f87171; }
         .btn-csv    { background: rgba(16,185,129,0.15); color: #34d399; }
-        .btn-excel  { background: rgba(14,165,233,0.15); color: #38bdf8; }
 
-        /* ── TABLE ───────────────────────────────────── */
-        .table-header-row {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 1rem;
-        }
+        /* ── TABLE ── */
+        .table-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
         .table-header-row h2 { display: flex; align-items: center; gap: 0.65rem; font-size: 1.25rem; }
-        .live-dot {
-            width: 8px; height: 8px; background: #34d399;
-            border-radius: 50%; display: inline-block;
-            animation: blink 1.5s infinite;
-        }
+        .live-dot { width: 8px; height: 8px; background: #34d399; border-radius: 50%; display: inline-block; animation: blink 1.5s infinite; }
         @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
-
-        .table-wrapper {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 18px;
-            overflow: hidden;
-            margin-bottom: 4rem;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-        }
+        .table-wrapper { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 18px; overflow: hidden; margin-bottom: 4rem; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th {
-            background: var(--surface);
-            padding: 1rem 1.1rem;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            border-bottom: 1px solid var(--glass-border);
-            font-weight: 700;
-            white-space: nowrap;
-        }
-        td {
-            padding: 1rem 1.1rem;
-            color: var(--text-main);
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-            font-size: 0.88rem;
-        }
+        th { background: var(--surface); padding: 1rem 1.1rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); border-bottom: 1px solid var(--glass-border); font-weight: 700; white-space: nowrap; }
+        td { padding: 1rem 1.1rem; color: var(--text-main); border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.88rem; }
         tr:last-child td { border-bottom: none; }
         tr:hover td { background: rgba(255,255,255,0.03); }
+        .severity-badge { padding: 4px 10px; border-radius: 100px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+        .sev-high   { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+        .sev-medium { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+        .sev-low    { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+        .plastic-val { color: #fb923c; font-weight: 600; }
 
-        .severity-badge {
-            padding: 4px 10px; border-radius: 100px;
-            font-size: 0.68rem; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
-        }
-        .sev-high   { background: rgba(239,68,68,0.15);   color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
-        .sev-medium { background: rgba(245,158,11,0.15);  color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
-        .sev-low    { background: rgba(16,185,129,0.15);  color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
-
-        /* ── PAGINATION ──────────────────────────────── */
-        .pagination {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0.9rem 1.4rem;
-            background: var(--surface);
-            border-top: 1px solid var(--glass-border);
-            font-size: 0.8rem; color: var(--text-muted);
-        }
+        /* ── PAGINATION ── */
+        .pagination { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.4rem; background: var(--surface); border-top: 1px solid var(--glass-border); font-size: 0.8rem; color: var(--text-muted); }
         .page-btns { display: flex; gap: 0.45rem; }
-        .page-btn {
-            padding: 5px 13px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.08);
-            color: #f8fafc; border-radius: 8px;
-            cursor: pointer; font-size: 0.78rem; font-family: inherit;
-            transition: background 0.2s;
-        }
+        .page-btn { padding: 5px 13px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #f8fafc; border-radius: 8px; cursor: pointer; font-size: 0.78rem; font-family: inherit; transition: background 0.2s; }
         .page-btn:hover  { background: rgba(255,255,255,0.1); }
         .page-btn.active { background: var(--primary); border-color: var(--primary); }
 
-        /* ── STATES ──────────────────────────────────── */
+        /* ── STATES ── */
         #emptyState { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
         #errorState { text-align: center; padding: 3rem 2rem; color: #f87171; display: none; }
         .state-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
-
         .pulse { animation: pulse-anim 2s infinite; }
-        @keyframes pulse-anim {
-            0%,100%{ transform:scale(1); opacity:1; }
-            50%     { transform:scale(1.06); opacity:0.7; }
-        }
+        @keyframes pulse-anim { 0%,100%{ transform:scale(1); opacity:1; } 50% { transform:scale(1.06); opacity:0.7; } }
     </style>
 </head>
 <body>
@@ -245,6 +116,13 @@
             <div class="stat-info">
                 <h3>Avg Chlorophyll</h3>
                 <p id="avgChlorophyll" style="color:#fbbf24;">—</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(251,146,60,0.1);">🧴</div>
+            <div class="stat-info">
+                <h3>Avg Microplastic</h3>
+                <p id="avgMicroplastic" style="color:#fb923c;">—</p>
             </div>
         </div>
         <div class="stat-card">
@@ -310,9 +188,7 @@
         <div class="export-actions">
             <button class="btn-export btn-filter" onclick="applyFilters()">🔍 Apply Filter</button>
             <button class="btn-export btn-reset"  onclick="resetFilters()">✕ Reset</button>
-            <button class="btn-export btn-pdf"    onclick="exportPDF()">📄 PDF Report</button>
             <button class="btn-export btn-csv"    onclick="exportCSV()">📜 CSV Dataset</button>
-            <button class="btn-export btn-excel"  onclick="exportExcel()">📊 Excel Sheet</button>
         </div>
     </div>
 
@@ -333,8 +209,9 @@
                     <th>pH</th>
                     <th>Temp (°C)</th>
                     <th>Turbidity (NTU)</th>
-                    <th>Chlorophyll</th>
-                    <th>Plastic Score</th>
+                    <th>Chlorophyll (µg/L)</th>
+                    <th>Microplastic (µg/L)</th>
+                    <th>Plastic Density (/m²)</th>
                     <th>Risk</th>
                 </tr>
             </thead>
@@ -367,7 +244,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-// ── Init ─────────────────────────────────────────────────────────────────────
+// ── Init ──────────────────────────────────────────────────────────────────────
 const firebaseConfig = <%- JSON.stringify(firebaseConfig) %>;
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
@@ -375,17 +252,15 @@ if (!firebase.apps.length) {
 const firestore = firebase.firestore();
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let allDocs      = [];   // raw array of Firestore docs
+let allDocs      = [];
 let filteredDocs = [];
 let currentPage  = 1;
 const PAGE_SIZE  = 15;
 
 // ── District map ──────────────────────────────────────────────────────────────
 const districtMap = {
-    "Tamil Nadu":     ["Coimbatore","Chennai","Madurai","Salem","Tiruchirappalli","Erode",
-                       "Tirunelveli","Vellore","Thanjavur","Dindigul","Tiruppur","Kancheepuram"],
-    "Kerala":         ["Thiruvananthapuram","Kochi","Kozhikode","Thrissur","Kannur",
-                       "Palakkad","Alappuzha","Kollam","Malappuram"],
+    "Tamil Nadu":     ["Coimbatore","Chennai","Madurai","Salem","Tiruchirappalli","Erode","Tirunelveli","Vellore","Thanjavur","Dindigul","Tiruppur","Kancheepuram"],
+    "Kerala":         ["Thiruvananthapuram","Kochi","Kozhikode","Thrissur","Kannur","Palakkad","Alappuzha","Kollam","Malappuram"],
     "Karnataka":      ["Bengaluru","Mysuru","Mangaluru","Hubli","Belagavi","Kalaburagi","Tumakuru"],
     "Andhra Pradesh": ["Visakhapatnam","Vijayawada","Guntur","Tirupati","Kakinada","Nellore","Kurnool"],
     "Telangana":      ["Hyderabad","Warangal","Nizamabad","Khammam","Karimnagar"],
@@ -407,17 +282,8 @@ window.updateDistricts = function () {
     });
 };
 
-// ── Risk logic (uses microplastic_risk_grade if present) ──────────────────────
+// ── Risk logic ────────────────────────────────────────────────────────────────
 function getRisk(doc) {
-    // Prefer the stored grade
-    const grade = (doc.microplastic_risk_grade || doc["microplastic_risk_grade:"] || "").trim();
-    if (grade) {
-        const g = grade.charAt(0).toUpperCase() + grade.slice(1).toLowerCase();
-        if (g === "High")   return { label: "High",   cls: "sev-high" };
-        if (g === "Medium") return { label: "Medium", cls: "sev-medium" };
-        if (g === "Low")    return { label: "Low",    cls: "sev-low" };
-    }
-    // Fallback: calculate from ph + turbidity
     const ph   = parseFloat(doc.ph)        || 7;
     const turb = parseFloat(doc.turbidity) || 0;
     if (ph < 6.0 || ph > 9.0 || turb > 15) return { label: "High",   cls: "sev-high" };
@@ -428,8 +294,8 @@ function getRisk(doc) {
 // ── Parse Firestore timestamp ─────────────────────────────────────────────────
 function parseTs(ts) {
     if (!ts) return null;
-    if (typeof ts.toDate === "function")   return ts.toDate();
-    if (ts.seconds)                        return new Date(ts.seconds * 1000);
+    if (typeof ts.toDate === "function") return ts.toDate();
+    if (ts.seconds)                      return new Date(ts.seconds * 1000);
     return new Date(ts);
 }
 
@@ -439,16 +305,19 @@ function updateStats(docs) {
     const highs    = docs.filter(d => getRisk(d).label === "High").length;
     const chlorArr = docs.map(d => parseFloat(d.chlorophyll)).filter(n => !isNaN(n));
     const avgChlor = chlorArr.length
-        ? (chlorArr.reduce((s, n) => s + n, 0) / chlorArr.length).toFixed(1)
-        : "—";
+        ? (chlorArr.reduce((s, n) => s + n, 0) / chlorArr.length).toFixed(1) : "—";
+    const mpArr = docs.map(d => parseFloat(d.microplasticIndex)).filter(n => !isNaN(n));
+    const avgMp = mpArr.length
+        ? (mpArr.reduce((s, n) => s + n, 0) / mpArr.length).toFixed(2) : "—";
 
-    document.getElementById("totalReportsCount").textContent  = total;
+    document.getElementById("totalReportsCount").textContent   = total;
     document.getElementById("criticalAlertsCount").textContent = highs;
-    document.getElementById("avgChlorophyll").textContent      = avgChlor !== "—" ? avgChlor + " μg/L" : "—";
+    document.getElementById("avgChlorophyll").textContent      = avgChlor !== "—" ? avgChlor + " µg/L" : "—";
+    document.getElementById("avgMicroplastic").textContent     = avgMp    !== "—" ? avgMp    + " µg/L" : "—";
     document.getElementById("healthStatus").textContent        = total > 0 ? "Active" : "Idle";
 }
 
-// ── Populate location filter dropdown ─────────────────────────────────────────
+// ── Populate location filter ──────────────────────────────────────────────────
 function populateLocationFilter(docs) {
     const locs = [...new Set(docs.map(d => d.location).filter(Boolean))].sort();
     const sel  = document.getElementById("filterLocation");
@@ -465,7 +334,6 @@ function renderTable() {
     const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
     currentPage = Math.min(Math.max(currentPage, 1), pages);
-
     const start = (currentPage - 1) * PAGE_SIZE;
     const page  = filteredDocs.slice(start, start + PAGE_SIZE);
 
@@ -475,9 +343,9 @@ function renderTable() {
         ? `Showing ${start + 1}–${Math.min(start + PAGE_SIZE, total)} of ${total} entries` : "";
 
     if (page.length === 0) {
-        body.innerHTML        = "";
-        empty.style.display   = "block";
-        pgBar.style.display   = "none";
+        body.innerHTML      = "";
+        empty.style.display = "block";
+        pgBar.style.display = "none";
         return;
     }
 
@@ -490,8 +358,9 @@ function renderTable() {
         const ph      = parseFloat(doc.ph)          || 0;
         const turb    = parseFloat(doc.turbidity)   || 0;
         const temp    = parseFloat(doc.temperature) || 0;
-        const chlor   = doc.chlorophyll != null ? parseFloat(doc.chlorophyll).toFixed(1) : "—";
-        const score   = doc.microplastic_risk_score != null ? doc.microplastic_risk_score : "—";
+        const chlor   = doc.chlorophyll       != null ? parseFloat(doc.chlorophyll).toFixed(1)       : "—";
+        const mpIdx   = doc.microplasticIndex != null ? parseFloat(doc.microplasticIndex).toFixed(2) : "—";
+        const mpDens  = doc.plasticDensity    != null ? parseFloat(doc.plasticDensity).toFixed(2)    : "—";
         const risk    = getRisk(doc);
         const phColor = (ph < 6.5 || ph > 8.5) ? "#f87171" : "inherit";
 
@@ -504,7 +373,8 @@ function renderTable() {
             <td>${temp.toFixed(1)}</td>
             <td>${turb.toFixed(1)}</td>
             <td style="color:#fbbf24;">${chlor}</td>
-            <td style="color:#a78bfa;">${score}</td>
+            <td class="plastic-val">${mpIdx}</td>
+            <td class="plastic-val">${mpDens}</td>
             <td><span class="severity-badge ${risk.cls}">${risk.label}</span></td>
         </tr>`;
     }).join("");
@@ -552,72 +422,53 @@ window.resetFilters = function () {
     renderTable();
 };
 
-// ── Export ────────────────────────────────────────────────────────────────────
+// ── CSV Export only ───────────────────────────────────────────────────────────
 function getExportRows() {
     return filteredDocs.map(doc => {
         const ts = parseTs(doc.timestamp);
         return {
-            Time:              ts ? ts.toLocaleString("en-IN") : "N/A",
-            Location:          doc.location  || "N/A",
-            State:             doc.state     || "N/A",
-            District:          doc.district  || "N/A",
-            pH:                parseFloat(doc.ph || 0).toFixed(2),
-            Temperature_C:     parseFloat(doc.temperature || 0).toFixed(1),
-            Turbidity_NTU:     parseFloat(doc.turbidity   || 0).toFixed(1),
-            Chlorophyll:       doc.chlorophyll          != null ? doc.chlorophyll          : "N/A",
-            Microplastic_Score:doc.microplastic_risk_score != null ? doc.microplastic_risk_score : "N/A",
-            Risk:              getRisk(doc).label,
-            Microplastic_Notes:doc.microplastic_notes   || ""
+            Time:               ts ? ts.toLocaleString("en-IN") : "N/A",
+            Location:           doc.location  || "N/A",
+            State:              doc.state     || "N/A",
+            District:           doc.district  || "N/A",
+            pH:                 parseFloat(doc.ph          || 0).toFixed(2),
+            Temperature_C:      parseFloat(doc.temperature || 0).toFixed(1),
+            Turbidity_NTU:      parseFloat(doc.turbidity   || 0).toFixed(1),
+            Chlorophyll_ugL:    doc.chlorophyll       != null ? parseFloat(doc.chlorophyll).toFixed(1)       : "N/A",
+            Microplastic_ugL:   doc.microplasticIndex != null ? parseFloat(doc.microplasticIndex).toFixed(2) : "N/A",
+            Plastic_Density_m2: doc.plasticDensity   != null ? parseFloat(doc.plasticDensity).toFixed(2)    : "N/A",
+            Risk:               getRisk(doc).label
         };
     });
 }
-function downloadFile(blob, name) {
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = name;
-    a.click();
-    URL.revokeObjectURL(a.href);
-}
+
 window.exportCSV = function () {
     const rows = getExportRows();
     if (!rows.length) return alert("No data to export.");
     const h   = Object.keys(rows[0]);
     const csv = [h.join(","), ...rows.map(r => h.map(k => `"${r[k]}"`).join(","))].join("\n");
-    downloadFile(new Blob([csv], {type:"text/csv"}), `rtech_${Date.now()}.csv`);
+    const a   = document.createElement("a");
+    a.href    = URL.createObjectURL(new Blob([csv], {type:"text/csv"}));
+    a.download = `aqunex_report_${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
 };
-window.exportExcel = function () {
-    const rows = getExportRows();
-    if (!rows.length) return alert("No data to export.");
-    const h   = Object.keys(rows[0]);
-    let tbl   = "<table><tr>" + h.map(k => `<th>${k}</th>`).join("") + "</tr>";
-    rows.forEach(r => { tbl += "<tr>" + h.map(k => `<td>${r[k]}</td>`).join("") + "</tr>"; });
-    tbl += "</table>";
-    downloadFile(new Blob([tbl], {type:"application/vnd.ms-excel"}), `rtech_${Date.now()}.xls`);
-};
-window.exportPDF = function () { window.print(); };
 
 // ── Firestore listener ────────────────────────────────────────────────────────
-// NOTE: Only Firestore is used — no Realtime Database in this project
 firestore.collection("sensor_data")
     .orderBy("timestamp", "desc")
     .onSnapshot((snapshot) => {
         allDocs = snapshot.docs.map(doc => ({ _id: doc.id, ...doc.data() }));
-
-        // Sort newest first (already done by query, but ensure consistency)
         allDocs.sort((a, b) => {
             const ta = parseTs(a.timestamp); const tb = parseTs(b.timestamp);
             return (tb ? tb.getTime() : 0) - (ta ? ta.getTime() : 0);
         });
-
         filteredDocs = [...allDocs];
         populateLocationFilter(allDocs);
         updateStats(filteredDocs);
-
         document.getElementById("errorState").style.display = "none";
         renderTable();
-
         console.log(`✅ Firestore: loaded ${allDocs.length} sensor_data docs`);
-
     }, (err) => {
         console.error("❌ Firestore error:", err.code, err.message);
         document.getElementById("emptyState").style.display = "none";

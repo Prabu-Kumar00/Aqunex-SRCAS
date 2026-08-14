@@ -4,13 +4,16 @@ const path = require('path');
 const admin = require('firebase-admin');
 const { getRandomLocation, addGPSVariation, getRandomValue } = require('./scripts/locations');
 
+
 const app = express();
 const port = process.env.PORT || 3001;
+
 
 // Initialize Firebase Admin (only once)
 let serviceAccount;
 const fs = require('fs');
 const serviceAccountPath = path.join(__dirname, 'serviceAccountKey.json');
+
 
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   try {
@@ -25,10 +28,12 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   }
 }
 
+
 if (!serviceAccount && fs.existsSync(serviceAccountPath)) {
   serviceAccount = require(serviceAccountPath);
   console.log('✅ Firebase Admin initialized via local JSON file');
 }
+
 
 if (!serviceAccount) {
   console.error('❌ CRITICAL ERROR: No Firebase credentials found!');
@@ -43,6 +48,7 @@ if (!serviceAccount) {
   }
 }
 
+
 // Global Firebase Web Config to pass to views
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY || "AIzaSyARC-G4soX4WRO26ncZE19l9BeFUsTyHlw",
@@ -54,6 +60,7 @@ const firebaseConfig = {
   appId: process.env.FIREBASE_APP_ID || "1:501715709742:web:8204e44f3219e6584954bf"
 };
 
+
 let db;
 try {
   db = admin.firestore();
@@ -61,29 +68,35 @@ try {
   console.error('⚠️ Could not initialize Firestore database:', e.message);
 }
 
+
 // Middleware
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
 app.use(express.json());
 
+
 // ✅ CORRECT FLOW: Home → Dashboard → Reports
 app.get('/', (req, res) => {
   res.render('home', { firebaseConfig });  // ✅ Home page first
 });
 
+
 app.get('/dashboard', (req, res) => {
   res.render('dashboard', { firebaseConfig });
 });
+
 
 app.get('/reports', (req, res) => {
   res.render('reports', { firebaseConfig });
 });
 
+
 // ✅ Home page links to dashboard
 app.get('/map', (req, res) => {
   res.redirect('/dashboard');
 });
+
 
 // API endpoint
 app.get('/api/data', async (req, res) => {
@@ -93,12 +106,15 @@ app.get('/api/data', async (req, res) => {
   });
 });
 
+
 // ==========================================
-// MOCK DATA CONTROL API ENDPOINTS
+// MOCK DATA CONTROL API ENDPOINTS — FIXED ✅
 // ==========================================
+
 
 let mockInterval = null;
 let isMockRunning = false;
+
 
 
 async function addMockDataEntry() {
@@ -118,13 +134,17 @@ async function addMockDataEntry() {
       temperature: getRandomValue(18, 32, 1),
       timestamp: admin.firestore.Timestamp.now(),
       turbidity: Math.floor(getRandomValue(5, 50, 0)),
+      // ✅ FIXED — PLASTIC DATA ALWAYS PRESENT
+      microplasticIndex: parseFloat((Math.random() * 15).toFixed(2)),
+      plasticDensity: parseFloat((Math.random() * 8).toFixed(2)),
       isMockData: true
     });
-    console.log(`✓ Mock data added: ${loc.name}`);
+    console.log(`✓ Mock data added: ${loc.name} | Plastic: ${Math.random()*15 | 0}.XX µg/L`);
   } catch (error) {
     console.error('❌ Error adding mock data:', error.message);
   }
 }
+
 
 // Start mock data generation
 app.post('/api/mock/start', async (req, res) => {
@@ -147,6 +167,7 @@ app.post('/api/mock/start', async (req, res) => {
   }
 });
 
+
 // Stop mock data generation
 app.post('/api/mock/stop', (req, res) => {
   if (!isMockRunning) {
@@ -160,6 +181,7 @@ app.post('/api/mock/stop', (req, res) => {
   console.log('🛑 Mock data generation stopped from dashboard');
   res.json({ success: true, message: 'Mock data stopped' });
 });
+
 
 // Cleanup all mock data
 app.post('/api/mock/cleanup', async (req, res) => {
@@ -183,19 +205,23 @@ app.post('/api/mock/cleanup', async (req, res) => {
   }
 });
 
+
 // Get mock status
 app.get('/api/mock/status', (req, res) => {
   res.json({ running: isMockRunning });
 });
 
+
 // ==========================================
 // END MOCK DATA CONTROL
 // ==========================================
+
 
 // 404 handler
 app.use((req, res) => {
   res.redirect('/');
 });
+
 
 app.listen(port, () => {
   console.log(`🚤 Aqunex Server running at http://localhost:${port}`);
