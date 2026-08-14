@@ -15,6 +15,10 @@ const serviceAccountPath = path.join(__dirname, 'serviceAccountKey.json');
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   try {
     serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    // Fix for private key newline formatting issues in environment variables
+    if (serviceAccount && serviceAccount.private_key) {
+      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+    }
     console.log('✅ Firebase Admin initialized via environment variable');
   } catch (e) {
     console.error('❌ Error parsing FIREBASE_SERVICE_ACCOUNT environment variable:', e.message);
