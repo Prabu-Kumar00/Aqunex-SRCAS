@@ -35,48 +35,96 @@
     #map { position: absolute; top: 111px; bottom: 0; width: 100%; min-height: calc(100vh - 111px); }
 
     /* CLUSTERS */
-    .marker-cluster-small { background-color: rgba(40,167,69,0.6); }
-    .marker-cluster-small div { background-color: rgba(40,167,69,0.8); color: #fff; }
-    .marker-cluster-medium { background-color: rgba(255,193,7,0.6); }
-    .marker-cluster-medium div { background-color: rgba(255,193,7,0.8); color: #333; }
-    .marker-cluster-large { background-color: rgba(220,53,69,0.6); }
-    .marker-cluster-large div { background-color: rgba(220,53,69,0.8); color: #fff; }
+    .marker-cluster-small { background-color: rgba(14, 165, 233, 0.35); border: 1px solid rgba(14, 165, 233, 0.6); box-shadow: 0 0 15px rgba(14, 165, 233, 0.4); }
+    .marker-cluster-small div { background-color: rgba(14, 165, 233, 0.85); color: #fff; font-weight: 700; }
+    .marker-cluster-medium { background-color: rgba(245, 158, 11, 0.35); border: 1px solid rgba(245, 158, 11, 0.6); box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+    .marker-cluster-medium div { background-color: rgba(245, 158, 11, 0.85); color: #fff; font-weight: 700; }
+    .marker-cluster-large { background-color: rgba(239, 68, 68, 0.35); border: 1px solid rgba(239, 68, 68, 0.6); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+    .marker-cluster-large div { background-color: rgba(239, 68, 68, 0.85); color: #fff; font-weight: 700; }
 
-    /* MARKERS */
-    .custom-marker { width: 32px !important; height: 32px !important; border-radius: 50%; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4); cursor: pointer; }
-    .marker-good { background: #28a745; }
-    .marker-moderate { background: #ffc107; }
-    .marker-alert { background: #dc3545; }
-    .marker-esp32 { background: #17a2b8; border-color: #0056b3 !important; }
+    /* MARKERS (Leaflet-safe GPU-accelerated inner breathing pulse) */
+    @keyframes markerPulseRing {
+      0% { transform: scale(1); opacity: 0.85; }
+      70%, 100% { transform: scale(1.65); opacity: 0; }
+    }
+    .custom-marker { 
+      width: 32px !important; 
+      height: 32px !important; 
+      border-radius: 50%; 
+      cursor: pointer; 
+      background: transparent !important;
+    }
+    .marker-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255,255,255,0.9);
+      transform-origin: center center;
+      transition: transform 0.2s ease;
+    }
+    .custom-marker:hover .marker-inner {
+      transform: scale(1.15);
+    }
+    .marker-inner::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+      opacity: 0;
+      z-index: -1;
+      transform-origin: center center;
+      animation: markerPulseRing 2.4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+      animation-delay: var(--pulse-delay, 0s);
+    }
+    .marker-good .marker-inner { background: #22c55e; }
+    .marker-good .marker-inner::after { background: rgba(34, 197, 94, 0.75); }
+
+    .marker-moderate .marker-inner { background: #f59e0b; }
+    .marker-moderate .marker-inner::after { background: rgba(245, 158, 11, 0.75); }
+
+    .marker-alert .marker-inner { background: #ef4444; }
+    .marker-alert .marker-inner::after { background: rgba(239, 68, 68, 0.85); }
+
+    .marker-esp32 .marker-inner { background: #06b6d4; border-color: #38bdf8 !important; }
+    .marker-esp32 .marker-inner::after { background: rgba(6, 182, 212, 0.85); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .marker-inner::after { animation: none !important; }
+    }
 
     /* POPUP */
-    .leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+    .leaflet-popup-content-wrapper { background: #0f172a !important; color: #f8fafc !important; border-radius: 14px !important; border: 1px solid rgba(14, 165, 233, 0.3) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important; backdrop-filter: blur(16px); }
+    .leaflet-popup-tip { background: #0f172a !important; }
     .leaflet-popup-content { margin: 0; min-width: 340px; max-width: 400px; padding: 0; }
-    .popup-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px 10px 0 0; }
-    .popup-header.esp32-header { background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); }
-    .popup-title { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
-    .popup-subtitle { font-size: 12px; opacity: 0.9; }
+    .popup-header { background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%) !important; color: white; padding: 15px; border-radius: 12px 12px 0 0; }
+    .popup-header.esp32-header { background: linear-gradient(135deg, #0891b2 0%, #0284c7 100%) !important; }
+    .popup-title { font-size: 18px; font-weight: bold; margin-bottom: 4px; color: #fff; }
+    .popup-subtitle { font-size: 12px; opacity: 0.9; color: rgba(255,255,255,0.85); }
     .popup-body { padding: 15px; }
     .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; width: 100%; }
-    .data-item { background: #f8f9fa; padding: 10px; border-radius: 6px; border-left: 3px solid #667eea; min-width: 0; }
-    .data-item.plastic { border-left-color: #f97316; }
-    .data-label { font-size: 11px; color: #666; text-transform: uppercase; margin-bottom: 4px; }
-    .data-value { font-size: 16px; font-weight: bold; color: #333; }
+    .data-item { background: rgba(30, 41, 59, 0.7) !important; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); border-left: 3px solid #38bdf8 !important; min-width: 0; }
+    .data-item.plastic { border-left-color: #f97316 !important; }
+    .data-label { font-size: 11px; color: #94a3b8 !important; text-transform: uppercase; margin-bottom: 4px; }
+    .data-value { font-size: 16px; font-weight: bold; color: #f8fafc !important; }
     .data-section-title { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 12px 0 8px; padding-left: 2px; }
-    .meta-info { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; font-size: 12px; color: #666; }
+    .meta-info { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; font-size: 12px; color: #94a3b8 !important; }
     .meta-item { display: flex; align-items: center; gap: 4px; }
     .severity-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
-    .severity-low { background: #d4edda; color: #155724; }
-    .severity-moderate { background: #fff3cd; color: #856404; }
-    .severity-high { background: #f8d7da; color: #721c24; }
-    .status-active { display: inline-block; padding: 4px 12px; background: #28a745; color: white; border-radius: 12px; font-size: 12px; font-weight: bold; }
+    .severity-low { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+    .severity-moderate { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .severity-high { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .status-active { display: inline-block; padding: 4px 12px; background: #22c55e; color: white; border-radius: 12px; font-size: 12px; font-weight: bold; }
     .source-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-left: 8px; }
-    .source-esp32 { background: #e0f7fa; color: #00838f; }
-    .download-btn { display: block; width: 100%; padding: 12px; background: #5b7dff; color: white; text-align: center; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; margin-top: 15px; }
-    .download-btn:hover { background: #4a6ae8; }
+    .source-esp32 { background: rgba(6, 182, 212, 0.2); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.3); }
+    .download-btn { display: block; width: 100%; padding: 12px; background: linear-gradient(135deg, #0284c7, #4f46e5); color: white; text-align: center; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; margin-top: 15px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .download-btn:hover { background: linear-gradient(135deg, #0369a1, #4338ca); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); }
 
     /* LOADING */
-    .loading { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 9999; background: rgba(255,255,255,0.95); padding: 40px; border-radius: 10px; }
+    .loading { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 9999; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(14, 165, 233, 0.3); color: #f8fafc; padding: 40px; border-radius: 16px; backdrop-filter: blur(12px); box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
 
     /* SEARCH */
     .leaflet-control-geocoder { border: 2px solid #5b7dff !important; border-radius: 8px !important; box-shadow: 0 2px 10px rgba(0,0,0,0.15) !important; }
@@ -349,9 +397,15 @@
     const { lat, lng } = data.gps;
     const sev         = getSeverity(data.chlorophyll || 0);
     const markerClass = source === 'esp32' ? 'marker-esp32' : sev.markerClass;
+
+    let hash = 0;
+    const idStr = String(docId || '');
+    for (let i = 0; i < idStr.length; i++) hash = (hash << 5) - hash + idStr.charCodeAt(i);
+    const pulseDelay = (Math.abs(hash) % 8) * 0.3;
+
     const icon        = L.divIcon({
       className: `custom-marker ${markerClass}`,
-      html: `<div style="text-align:center;line-height:26px;color:white;font-weight:bold;font-size:18px;">💧</div>`,
+      html: `<div class="marker-inner" style="--pulse-delay: ${pulseDelay}s; font-size:16px;">💧</div>`,
       iconSize: [32, 32]
     });
     const fn = `dl${docId.replace(/[^a-zA-Z0-9]/g,'')}`;
@@ -397,7 +451,10 @@
 
   function updateStatsBar(docs) {
     if (!docs || !docs.length) {
-      ['statSensors','statAlerts','statStates','statLocations','statPlastic'].forEach(id => document.getElementById(id).textContent = '0');
+      ['statSensors','statAlerts','statStates','statLocations','statPlastic'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.textContent = '0'; el.setAttribute('data-val', '0'); }
+      });
       document.getElementById('statLastUpdate').textContent = '—';
       return;
     }
@@ -413,12 +470,12 @@
       if (Math.min(Math.floor((d.chlorophyll || 0) / 3), 10) >= 8) alerts++;
       if ((d.microplasticIndex || 0) > 8) plastic++;
     });
-    document.getElementById('statSensors').textContent   = docs.length;
-    document.getElementById('statAlerts').textContent    = alerts;
-    document.getElementById('statAlerts').className      = alerts > 0 ? 'stat-value stat-alert' : 'stat-value stat-good';
-    document.getElementById('statStates').textContent    = states.size;
-    document.getElementById('statLocations').textContent = locations.size;
-    document.getElementById('statPlastic').textContent   = plastic;
+    animateCountUp('statSensors', docs.length);
+    animateCountUp('statAlerts', alerts);
+    document.getElementById('statAlerts').className = alerts > 0 ? 'stat-value stat-alert' : 'stat-value stat-good';
+    animateCountUp('statStates', states.size);
+    animateCountUp('statLocations', locations.size);
+    animateCountUp('statPlastic', plastic);
     document.getElementById('statLastUpdate').textContent = lastTs > 0
       ? new Date(lastTs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
   }

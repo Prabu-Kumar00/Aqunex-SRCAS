@@ -26,18 +26,42 @@
 </nav>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="https://unpkg.com/lenis@1.1.9/dist/lenis.css" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+<script src="/js/smooth-scroll.js"></script>
+<script src="/js/count-up.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
     .main-nav {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0.75rem 2rem;
-        background: #0d1117;
+        padding: 0.85rem 2rem;
+        background: rgba(13, 17, 23, 0.75);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         position: sticky;
         top: 0;
-        z-index: 100;
-        border-bottom: 1px solid rgba(255,255,255,0.07);
+        z-index: 1000;
+        border-bottom: 1px solid rgba(14, 165, 233, 0.15);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        transition: padding 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                    background 0.3s ease, 
+                    backdrop-filter 0.3s ease, 
+                    border-color 0.3s ease,
+                    box-shadow 0.3s ease;
+    }
+    .main-nav.scrolled {
+        padding: 0.5rem 2rem;
+        background: rgba(11, 15, 25, 0.92);
+        backdrop-filter: blur(28px) saturate(1.3);
+        -webkit-backdrop-filter: blur(28px) saturate(1.3);
+        border-bottom-color: rgba(14, 165, 233, 0.35);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
     }
     .main-nav .logo {
         display: flex;

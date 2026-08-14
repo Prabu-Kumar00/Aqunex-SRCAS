@@ -476,15 +476,16 @@ body {
 
 .tech-card li {
   padding: 0.5rem 0;
-  padding-left: 1.5rem;
-  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .tech-card li:before {
-  content: "✓";
-  position: absolute;
-  left: 0;
-  font-weight: bold;
+  content: "▸";
+  color: var(--accent);
+  font-size: 0.7rem;
+  flex-shrink: 0;
 }
 
 /* =============================================
@@ -1131,3 +1132,551 @@ body {
     padding: 0.5rem 1rem;
   }
 }
+
+/* =============================================
+   Custom Dark Scrollbar & Premium UI Helpers
+   ============================================= */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b0f19;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(14, 165, 233, 0.3);
+  border-radius: 4px;
+  border: 1px solid rgba(14, 165, 233, 0.1);
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(14, 165, 233, 0.6);
+}
+
+/* Custom Radar Pulse Animation for Active Markers */
+@keyframes sensorPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(14, 165, 233, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0);
+  }
+}
+
+.radar-pulse {
+  animation: sensorPulse 2s infinite;
+}
+
+/* =============================================
+   Entire Page Animation & Micro-Interactions
+   ============================================= */
+
+/* Card Hover Micro-Interactions (Feature, Problem, Prototype, Team) */
+.feature-card, .problem-card, .prototype-card, .team-card {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.feature-card:hover, .problem-card:hover, .prototype-card:hover, .team-card:hover {
+  transform: translateY(-6px) scale(1.02) !important;
+  border-color: rgba(14, 165, 233, 0.4) !important;
+  box-shadow: 0 12px 30px -5px rgba(14, 165, 233, 0.25), 0 0 15px rgba(14, 165, 233, 0.1) !important;
+}
+
+/* Image Subtle Zoom on Hover */
+.problem-card img, .prototype-card img {
+  transition: transform 0.5s ease;
+}
+.problem-card:hover img, .prototype-card:hover img {
+  transform: scale(1.04);
+}
+
+/* Specs Table Row Hover Highlight */
+.specs-table tbody tr {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.specs-table tbody tr:hover {
+  background-color: rgba(14, 165, 233, 0.08) !important;
+  transform: translateX(4px);
+}
+
+/* Avatar Glowing Ring & LinkedIn Hover */
+.team-avatar img {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.team-card:hover .team-avatar img {
+  transform: scale(1.06);
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.5);
+}
+.linkedin-btn {
+  transition: all 0.25s ease !important;
+}
+.linkedin-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3) !important;
+}
+
+/* CTA Section Ambient Pulse Glow */
+@keyframes ctaPulseGlow {
+  0%, 100% { box-shadow: 0 0 25px rgba(14, 165, 233, 0.15); }
+  50% { box-shadow: 0 0 45px rgba(14, 165, 233, 0.35); }
+}
+.cta-section {
+  animation: ctaPulseGlow 4s ease-in-out infinite;
+  transition: border-color 0.3s ease;
+}
+.cta-section:hover {
+  border-color: rgba(14, 165, 233, 0.4) !important;
+}
+
+/* Directional Scroll Reveal Transitions */
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-30px) translateY(15px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.reveal-right {
+  opacity: 0;
+  transform: translateX(30px) translateY(15px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.reveal-left.visible, .reveal-right.visible {
+  opacity: 1;
+  transform: translateX(0) translateY(0) !important;
+}
+
+/* =============================================
+   Before/After Image Comparison Slider
+   ============================================= */
+.compare-slider {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  border-radius: 18px 18px 0 0;
+  user-select: none;
+  touch-action: pan-y;
+}
+.compare-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.compare-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.compare-after {
+  clip-path: inset(0 0 0 50%);
+}
+.compare-range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: ew-resize;
+  margin: 0;
+  z-index: 10;
+}
+.compare-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 3px;
+  background: var(--ocean-1);
+  pointer-events: none;
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.8);
+  transform: translateX(-50%);
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.compare-handle-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ocean-1);
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.9);
+  border: 2px solid #ffffff;
+}
+.compare-hint {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.85);
+  color: #38bdf8;
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  z-index: 9;
+  transition: opacity 0.4s ease;
+}
+.compare-slider.interacted .compare-hint {
+  opacity: 0;
+}
+
+/* =============================================
+   Build & Development Vertical Timeline
+   ============================================= */
+.timeline-section {
+  padding: 4rem 1rem;
+  position: relative;
+}
+
+.timeline-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+  padding: 2rem 0;
+}
+
+.timeline-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 3px;
+  background: linear-gradient(180deg, var(--ocean-1), var(--ocean-3));
+  transform: translateX(-50%);
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.5);
+  border-radius: 2px;
+}
+
+.timeline-item {
+  position: relative;
+  width: 50%;
+  padding: 1rem 2.5rem;
+  box-sizing: border-box;
+}
+
+.timeline-item.left {
+  left: 0;
+  text-align: right;
+}
+
+.timeline-item.right {
+  left: 50%;
+  text-align: left;
+}
+
+.timeline-dot {
+  position: absolute;
+  top: 1.8rem;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #0f172a;
+  border: 3px solid var(--ocean-1);
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.8);
+  z-index: 5;
+}
+
+.timeline-item.left .timeline-dot {
+  right: -9px;
+}
+
+.timeline-item.right .timeline-dot {
+  left: -9px;
+}
+
+.timeline-content {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+  backdrop-filter: blur(12px);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.timeline-content:hover {
+  transform: translateY(-4px);
+  border-color: rgba(14, 165, 233, 0.4);
+  box-shadow: 0 8px 25px rgba(14, 165, 233, 0.2);
+}
+
+.timeline-date {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ocean-1);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.timeline-content h3 {
+  font-size: 1.1rem;
+  color: #f1f5f9;
+  margin-bottom: 0.6rem;
+}
+
+.timeline-content p {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .timeline-container::before {
+    left: 20px;
+  }
+  .timeline-item {
+    width: 100%;
+    padding-left: 3rem;
+    padding-right: 1rem;
+  }
+  .timeline-item.left,
+  .timeline-item.right {
+    left: 0;
+    text-align: left;
+  }
+  .timeline-item.left .timeline-dot,
+  .timeline-item.right .timeline-dot {
+    left: 11px;
+  }
+}
+
+/* =============================================
+   Awards & Hackathons Row
+   ============================================= */
+.awards-section {
+  padding: 3.5rem 1rem;
+}
+
+.hackathon-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.2rem;
+  max-width: 1100px;
+  margin: 2rem auto 0;
+}
+
+.hackathon-chip {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  border-radius: 14px;
+  padding: 1rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  backdrop-filter: blur(12px);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hackathon-chip:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: var(--ocean-1);
+  box-shadow: 0 8px 25px rgba(14, 165, 233, 0.25);
+}
+
+.hackathon-icon {
+  font-size: 1.5rem;
+}
+
+.hackathon-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.hackathon-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.hackathon-award {
+  font-size: 0.78rem;
+  color: var(--ocean-1);
+  font-weight: 600;
+}
+
+/* =============================================
+   FAQ Accordion (<details>/<summary>)
+   ============================================= */
+.faq-section {
+  padding: 4rem 1rem;
+}
+
+.faq-container {
+  max-width: 900px;
+  margin: 2rem auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.faq-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.2rem 1.6rem;
+  backdrop-filter: blur(12px);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  overflow: hidden;
+}
+
+.faq-item:hover {
+  border-color: rgba(14, 165, 233, 0.25);
+}
+
+.faq-item[open] {
+  border-color: rgba(14, 165, 233, 0.4);
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: 0 4px 25px rgba(14, 165, 233, 0.15);
+}
+
+.faq-question {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.faq-question::-webkit-details-marker {
+  display: none;
+}
+
+.faq-question::after {
+  content: '＋';
+  font-size: 1.2rem;
+  color: var(--ocean-1);
+  transition: transform 0.3s ease;
+}
+
+.faq-item[open] .faq-question::after {
+  content: '－';
+  color: var(--ocean-3);
+}
+
+.faq-answer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.faq-answer p {
+  font-size: 0.92rem;
+  color: #94a3b8;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* =============================================
+   How It Works 4-Step Horizontal Flow
+   ============================================= */
+.how-it-works-section {
+  padding: 4rem 1rem 3rem;
+  position: relative;
+}
+
+.flow-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 2.5rem auto 0;
+  position: relative;
+}
+
+.flow-step-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 1.8rem 1.4rem;
+  position: relative;
+  backdrop-filter: blur(12px);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.flow-step-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--ocean-1);
+  box-shadow: 0 10px 30px rgba(14, 165, 233, 0.25);
+}
+
+.flow-step-number {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--ocean-1), var(--ocean-3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.8rem;
+  line-height: 1;
+}
+
+.flow-step-icon {
+  font-size: 1.8rem;
+  margin-bottom: 0.6rem;
+}
+
+.flow-step-card h3 {
+  font-size: 1.05rem;
+  color: #f1f5f9;
+  margin-bottom: 0.6rem;
+}
+
+.flow-step-card p {
+  font-size: 0.86rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.flow-step-card:not(:last-child)::after {
+  content: '➔';
+  position: absolute;
+  top: 50%;
+  right: -1.1rem;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: var(--ocean-1);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 10;
+}
+
+@media (max-width: 992px) {
+  .flow-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .flow-step-card:not(:last-child)::after {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .flow-grid {
+    grid-template-columns: 1fr;
+  }
+}

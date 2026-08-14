@@ -8,11 +8,11 @@
 
 ## 2. Clone and Install
 
-git clone https://github.com/<YOUR_USER_OR_ORG>/Aqunex_Prototype.git
-cd Aqunex_Prototype
+```bash
+git clone https://github.com/Prabu-Kumar00/Aqunex-SRCAS.git
+cd Aqunex-SRCAS
 npm install
-
-text
+```
 
 ## 3. Firebase Service Account (backend)
 
@@ -28,16 +28,18 @@ Firebase Console → Project Settings → “Your apps” → Web app → Config
 
 ## 5. Run the Server
 
+```bash
 npm start
-
-text
+```
 
 Then open:
 
-- Dashboard: `http://localhost:3000/dashboard`  
-- Reports: `http://localhost:3000/reports`
+- Dashboard: `http://localhost:3001/dashboard`  
+- Reports: `http://localhost:3001/reports`
 
 ## 6. Mock Data (optional)
 
+```bash
 npm run mock:start # start generating mock data
 npm run mock:cleanup # delete all mock data
+```

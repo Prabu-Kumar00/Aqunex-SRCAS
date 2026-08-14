@@ -407,13 +407,16 @@
       font-size: 1rem;
     }
 
-    /* FIX 6 & ISSUE 1: 4-column grid for overview cards */
+    .overview-grid-wrap {
+      perspective: 1000px;
+    }
+    /* 3-column grid for overview cards */
     .overview-grid {
       display: grid !important;
-      grid-template-columns: repeat(4, 1fr) !important;
+      grid-template-columns: repeat(3, 1fr) !important;
       gap: 1.5rem !important;
       padding: 2rem !important;
-      align-items: start !important;
+      align-items: stretch !important;
       flex-wrap: unset !important;
       flex-direction: unset !important;
     }
@@ -435,9 +438,12 @@
       border: 1px solid rgba(255, 255, 255, 0.07) !important;
       border-radius: 18px !important;
       padding: 1.75rem !important;
-      transition: all 0.35s ease !important;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, opacity 0.6s ease !important;
       position: relative !important;
       overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100% !important;
       /* Reset any flex-child properties from home.css */
       flex: unset !important;
       min-width: unset !important;
@@ -455,9 +461,9 @@
     }
 
     .tech-card:hover {
-      transform: translateY(-8px);
-      border-color: rgba(14, 165, 233, 0.3) !important;
-      box-shadow: var(--glow-blue);
+      transform: translateY(-6px) scale(1.02) !important;
+      border-color: var(--ocean-1) !important;
+      box-shadow: 0 0 25px rgba(14, 165, 233, 0.3), inset 0 0 15px rgba(14, 165, 233, 0.05) !important;
     }
 
     .tech-card:hover::before {
@@ -474,10 +480,13 @@
     .tech-card ul {
       list-style: none;
       padding: 0;
+      margin: 0;
+      flex-grow: 1;
     }
 
     .tech-card ul li {
-      padding: 0.4rem 0;
+      padding: 0.4rem 0 !important;
+      padding-left: 0 !important;
       color: #94a3b8;
       font-size: 0.88rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
@@ -491,10 +500,11 @@
     }
 
     .tech-card ul li::before {
-      content: '▸';
-      color: var(--ocean-1);
-      font-size: 0.7rem;
-      flex-shrink: 0;
+      content: '▸' !important;
+      position: static !important;
+      color: var(--ocean-1) !important;
+      font-size: 0.7rem !important;
+      flex-shrink: 0 !important;
     }
 
     /* ── SPECS TABLE ─────────────────────────────── */
@@ -1179,54 +1189,168 @@
       </div>
     </div>
 
+    <!-- ── HOW IT WORKS FLOW ─────────────────────────── -->
+    <section class="how-it-works-section reveal">
+      <div class="project-container">
+        <h2>⚙️ How R-TECH Works</h2>
+        <p class="subtitle">End-to-end autonomous water quality monitoring, edge AI spectral analysis, and real-time cloud intelligence</p>
+        <div class="flow-grid">
+          <div class="flow-step-card reveal" style="transition-delay:0s;">
+            <div class="flow-step-number">01</div>
+            <div class="flow-step-icon">🚢</div>
+            <h3>Autonomous Catamaran Patrol</h3>
+            <p>GPS-guided waypoint navigation across target water bodies with obstacle avoidance and solar top-up panels.</p>
+          </div>
+          <div class="flow-step-card reveal" style="transition-delay:0.12s;">
+            <div class="flow-step-number">02</div>
+            <div class="flow-step-icon">🔬</div>
+            <h3>Multispectral Optical Sensing</h3>
+            <p>AS7265x 18-channel spectral profiling (410nm–940nm) for chlorophyll-a, turbidity, and digital pH measurement.</p>
+          </div>
+          <div class="flow-step-card reveal" style="transition-delay:0.24s;">
+            <div class="flow-step-number">03</div>
+            <div class="flow-step-icon">🧠</div>
+            <h3>Edge AI Microplastic Detection</h3>
+            <p>Onboard NVIDIA Jetson Orin Nano running custom YOLO v8 vision models to detect microplastics and floating debris.</p>
+          </div>
+          <div class="flow-step-card reveal" style="transition-delay:0.36s;">
+            <div class="flow-step-number">04</div>
+            <div class="flow-step-icon">📊</div>
+            <h3>Real-time Cloud Dashboard</h3>
+            <p>Telemetry synced live to Firebase Firestore and rendered on the interactive Leaflet map dashboard with automated alerts.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ── PROJECT OVERVIEW ─────────────────────────── -->
     <section class="project-overview reveal" id="overview">
       <div class="project-container">
-        <h2>💡 Project Overview</h2>
+        <h2 id="overviewTitle" class="blur-text-reveal">💡 Project Overview</h2>
+        <style>
+          .blur-text-reveal .blur-char {
+            display: inline-block;
+            opacity: 0;
+            filter: blur(8px);
+            transform: translateY(12px);
+            color: #f8fafc !important;
+            -webkit-text-fill-color: #f8fafc !important;
+            white-space: pre;
+          }
+          .blur-text-reveal.animated .blur-char {
+            animation: blurTextReveal 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          }
+          @keyframes blurTextReveal {
+            to {
+              opacity: 1;
+              filter: blur(0);
+              transform: translateY(0);
+            }
+          }
+        </style>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            const title = document.getElementById('overviewTitle');
+            if (!title) return;
+            const text = title.innerText;
+            title.innerHTML = Array.from(text).map((char, i) => 
+              `<span class="blur-char" style="animation-delay:${i * 0.04}s;">${char === ' ' ? '&nbsp;' : char}</span>`
+            ).join('');
+
+            const observer = new IntersectionObserver((entries, obs) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  title.classList.add('animated');
+                  obs.unobserve(entry.target);
+                }
+              });
+            }, { threshold: 0.2 });
+
+            observer.observe(title);
+          });
+        </script>
         <p class="subtitle">R-TECH: Robotic Monitoring for Chlorophyll and Plastic Signatures</p>
-        <div class="tech-grid">
-          <div class="tech-card reveal" style="transition-delay:0.0s;">
-            <h3>🤖 Hardware Components</h3>
-            <ul>
-              <li>ESP32 Microcontroller</li>
-              <li>Jetson Orin Nano</li>
-              <li>AS7265x Spectral Sensors</li>
-              <li>pH &amp; Turbidity Sensors</li>
-              <li>GPS + IMU Navigation</li>
-              <li>Camera Module (YOLO)</li>
-            </ul>
-          </div>
-          <div class="tech-card reveal" style="transition-delay:0.1s;">
-            <h3>🛠️ Software Stack</h3>
-            <ul>
-              <li>Node.js + Express Backend</li>
-              <li>EJS Templating</li>
-              <li>Firebase Firestore</li>
-              <li>YOLO v8 ML Model</li>
-              <li>Leaflet.js Maps</li>
-              <li>Spectral Analysis Algorithms</li>
-            </ul>
-          </div>
-          <div class="tech-card reveal" style="transition-delay:0.2s;">
-            <h3>🛰️ Satellite Integration</h3>
-            <ul>
-              <li>OceanSat-3 OCM</li>
-              <li>Sentinel-2 MSI</li>
-              <li>Sentinel-3 OLCI</li>
-              <li>Ground-truth Validation</li>
-            </ul>
-          </div>
-          <div class="tech-card reveal" style="transition-delay:0.3s;">
-            <h3>🎯 Key Features</h3>
-            <ul>
-              <li>Real-time Water Monitoring</li>
-              <li>Chlorophyll-a Detection</li>
-              <li>Plastic Debris Identification</li>
-              <li>Autonomous Navigation</li>
-              <li>Cloud-based Dashboard</li>
-            </ul>
+        <div class="overview-grid-wrap">
+          <div class="overview-grid">
+            <div class="tech-card">
+              <h3>🤖 Hardware Components</h3>
+              <ul>
+                <li>ESP32 Microcontroller</li>
+                <li>Jetson Orin Nano</li>
+                <li>AS7265x Spectral Sensors</li>
+                <li>pH &amp; Turbidity Sensors</li>
+                <li>GPS + IMU Navigation</li>
+                <li>Camera Module (YOLO)</li>
+              </ul>
+            </div>
+            <div class="tech-card">
+              <h3>🛠️ Software Stack</h3>
+              <ul>
+                <li>Node.js + Express Backend</li>
+                <li>EJS Templating</li>
+                <li>Firebase Firestore</li>
+                <li>YOLO v8 ML Model</li>
+                <li>Leaflet.js Maps</li>
+                <li>Spectral Analysis Algorithms</li>
+              </ul>
+            </div>
+            <div class="tech-card">
+              <h3>🎯 Key Features</h3>
+              <ul>
+                <li>Real-time Water Monitoring</li>
+                <li>Chlorophyll-a Detection</li>
+                <li>Plastic Debris Identification</li>
+                <li>Autonomous Navigation</li>
+                <li>Cloud-based Dashboard</li>
+              </ul>
+            </div>
           </div>
         </div>
+
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+              document.querySelectorAll('.overview-grid .tech-card').forEach(c => {
+                c.style.opacity = '1';
+                c.style.transform = 'none';
+              });
+              return;
+            }
+
+            const initOverviewGSAP = () => {
+              if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+                setTimeout(initOverviewGSAP, 100);
+                return;
+              }
+              gsap.registerPlugin(ScrollTrigger);
+              const cards = document.querySelectorAll('.overview-grid .tech-card');
+              if (!cards.length) return;
+
+              gsap.set(cards, {
+                opacity: 0,
+                rotateX: -15,
+                y: 40,
+                transformOrigin: 'top center'
+              });
+
+              gsap.to(cards, {
+                opacity: 1,
+                rotateX: 0,
+                y: 0,
+                duration: 0.9,
+                ease: 'power3.out',
+                stagger: 0.15,
+                scrollTrigger: {
+                  trigger: '.overview-grid',
+                  start: 'top 80%',
+                  toggleActions: 'play none none none'
+                }
+              });
+            };
+
+            initOverviewGSAP();
+          });
+        </script>
       </div>
     </section>
 
@@ -1316,6 +1440,141 @@
       </div>
     </section>
 
+    <!-- ── SENSOR READINGS CHART SECTION ──────────────── -->
+    <section class="readings-section reveal" style="padding:3rem 1rem;">
+      <div class="specifications-container">
+        <h2>📈 Illustrative Sensor Readings (Sample Dataset)</h2>
+        <p class="subtitle">Demonstration chart layout for pH, turbidity, and chlorophyll-a tracking</p>
+        <div class="specs-table-wrapper" style="padding:2rem;">
+          <div style="position:relative; height:320px; width:100%;">
+            <canvas id="readingsChart"></canvas>
+          </div>
+          <p style="text-align:center; font-size:0.85rem; color:#38bdf8; margin-top:1.2rem; font-weight:600;">
+            ⚠️ Sample data for demonstration only — live sensor feeds populate automatically upon field deployment.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const chartSection = document.querySelector('.readings-section');
+        const canvas = document.getElementById('readingsChart');
+        if (!chartSection || !canvas) return;
+
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let chartInstance = null;
+
+        const initChart = () => {
+          if (chartInstance || typeof Chart === 'undefined') return;
+          const ctx = canvas.getContext('2d');
+          const locations = ['Ukkadam Lake', 'Valankulam', 'Kurichi Lake', 'Singanallur', 'Ooty Lake', 'Pulicat Lake'];
+
+          chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: locations,
+              datasets: [
+                {
+                  label: 'pH Level',
+                  data: [7.2, 7.8, 6.9, 8.1, 7.4, 7.6],
+                  borderColor: '#0ea5e9',
+                  backgroundColor: 'rgba(14, 165, 233, 0.15)',
+                  borderWidth: 3,
+                  tension: 0.35,
+                  fill: true,
+                  yAxisID: 'yPh'
+                },
+                {
+                  label: 'Turbidity (NTU)',
+                  data: [18, 34, 25, 42, 12, 29],
+                  borderColor: '#8b5cf6',
+                  backgroundColor: 'rgba(139, 92, 246, 0.12)',
+                  borderWidth: 3,
+                  tension: 0.35,
+                  fill: true,
+                  yAxisID: 'yVal'
+                },
+                {
+                  label: 'Chlorophyll-a (µg/L)',
+                  data: [12.5, 28.4, 19.1, 38.6, 9.8, 22.3],
+                  borderColor: '#06b6d4',
+                  backgroundColor: 'rgba(6, 182, 212, 0.12)',
+                  borderWidth: 3,
+                  tension: 0.35,
+                  fill: true,
+                  yAxisID: 'yVal'
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: prefersReduced ? false : {
+                duration: 1400,
+                easing: 'easeOutQuart'
+              },
+              plugins: {
+                legend: {
+                  position: 'top',
+                  labels: {
+                    color: '#e2e8f0',
+                    font: { family: "'Segoe UI', sans-serif", size: 13, weight: '600' },
+                    usePointStyle: true,
+                    padding: 20
+                  }
+                },
+                tooltip: {
+                  backgroundColor: '#0f172a',
+                  titleColor: '#38bdf8',
+                  bodyColor: '#f8fafc',
+                  borderColor: 'rgba(14, 165, 233, 0.3)',
+                  borderWidth: 1,
+                  padding: 12,
+                  boxPadding: 6
+                }
+              },
+              scales: {
+                x: {
+                  grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                  ticks: { color: '#94a3b8', font: { size: 12 } }
+                },
+                yPh: {
+                  type: 'linear',
+                  position: 'left',
+                  min: 5,
+                  max: 10,
+                  grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                  ticks: { color: '#0ea5e9', font: { size: 11 } },
+                  title: { display: true, text: 'pH Level', color: '#0ea5e9', font: { size: 11, weight: 'bold' } }
+                },
+                yVal: {
+                  type: 'linear',
+                  position: 'right',
+                  min: 0,
+                  max: 50,
+                  grid: { drawOnChartArea: false },
+                  ticks: { color: '#38bdf8', font: { size: 11 } },
+                  title: { display: true, text: 'NTU / µg/L', color: '#38bdf8', font: { size: 11, weight: 'bold' } }
+                }
+              }
+            }
+          });
+        };
+
+        const observer = new IntersectionObserver((entries, obs) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              initChart();
+              obs.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.2 });
+
+        observer.observe(chartSection);
+      });
+    </script>
+
     <!-- ── PROTOTYPE GALLERY ─────────────────────────── -->
     <section class="prototype-section">
       <div class="prototype-container">
@@ -1346,6 +1605,56 @@
             <div class="prototype-info">
               <h3>Earlier Designs — Streamlined Profile</h3>
               <p>Low-profile design for minimal water resistance and stable sensor deployment</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── BUILD / DEVELOPMENT TIMELINE ──────────────── -->
+    <section class="timeline-section reveal">
+      <div class="specifications-container">
+        <h2>🛠️ System Development Roadmap &amp; Milestones</h2>
+        <p class="subtitle">Hardware integration, sensor calibration, and software development workflow</p>
+        <div class="timeline-container">
+          <div class="timeline-item left reveal-left">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">Milestone 1 — Hardware Architecture</div>
+              <h3>📐 Hull Design &amp; Power Setup</h3>
+              <p>Triple-pontoon catamaran structure, dual 775 DC motors, ESP32 microcontroller, and IP67 electronics enclosure setup.</p>
+            </div>
+          </div>
+          <div class="timeline-item right reveal-right">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">Milestone 2 — Sensor Payload Integration</div>
+              <h3>🔬 Multispectral &amp; Probe Integration</h3>
+              <p>Assembly of AS7265x 18-channel spectral radiometer, E201-C BNC pH probe, DS18B20 temperature sensor, and optical turbidity sensor.</p>
+            </div>
+          </div>
+          <div class="timeline-item left reveal-left">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">Milestone 3 — Edge AI &amp; Object Detection</div>
+              <h3>🧠 Edge Computer &amp; YOLO Setup</h3>
+              <p>NVIDIA Jetson Orin Nano edge processing setup running custom YOLO v8 models for real-time plastic debris identification.</p>
+            </div>
+          </div>
+          <div class="timeline-item right reveal-right">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">Milestone 4 — Telemetry &amp; Web Dashboard</div>
+              <h3>📊 Cloud Pipeline &amp; Leaflet Map</h3>
+              <p>Node.js + Express backend, Firebase Firestore real-time telemetry database, and interactive Leaflet.js mapping interface.</p>
+            </div>
+          </div>
+          <div class="timeline-item left reveal-left">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">Milestone 5 — Field Testing &amp; Challenges</div>
+              <h3>🌊 Lake Deployments &amp; Hackathons</h3>
+              <p>Initial field testing in Coimbatore lakes and submissions to Bharatiya Antariksh Hackathon 2024 &amp; AIoT Design Challenge 2025.</p>
             </div>
           </div>
         </div>
@@ -1388,33 +1697,12 @@
                   d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
               </svg>LinkedIn</a>
           </div>
-          <div class="team-card reveal" style="transition-delay:0.24s;">
-            <div class="team-photo"><img src="/images/team/deepiga.jpeg" alt="Deepiga M"></div>
-            <h3>Deepiga M</h3>
-            <p class="role">AI/ML Engineer &amp; Data Analyst</p><a
-              href="https://www.linkedin.com/in/deepiga-m-179986362/" target="_blank" class="linkedin-btn"><svg
-                xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                <path
-                  d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
-              </svg>LinkedIn</a>
-          </div>
           <div class="team-card reveal" style="transition-delay:0.32s;">
-            <div class="team-photo"><img src="/images/team/saranya.jpeg" alt="Saranya D"></div>
-            <h3>Saranya D</h3>
+            <div class="team-photo"><img src="/images/team/nelopher.jpg" alt="Nelopher A"></div>
+            <h3>Nelopher A</h3>
             <p class="role">Data Analyst &amp; Research Lead</p><a
-              href="https://www.linkedin.com/in/saranya-dhulasiraman-4463a0352/" target="_blank"
-              class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
-                viewBox="0 0 16 16">
-                <path
-                  d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
-              </svg>LinkedIn</a>
-          </div>
-          <div class="team-card reveal" style="transition-delay:0.40s;">
-            <div class="team-photo"><img src="/images/team/aakash.jpeg" alt="Aakash R"></div>
-            <h3>Aakash R</h3>
-            <p class="role">CAD Designer</p><a href="https://www.linkedin.com/in/aakash-r-cs07/" target="_blank"
-              class="linkedin-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
-                viewBox="0 0 16 16">
+              href="https://www.linkedin.com/in/nelopher-arulsamy-645b48330/" target="_blank" class="linkedin-btn"><svg
+                xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
                 <path
                   d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
               </svg>LinkedIn</a>
@@ -1441,6 +1729,30 @@
       </div>
     </section>
 
+    <!-- ── AWARDS & HACKATHONS ─────────────────────────── -->
+    <section class="awards-section reveal">
+      <div class="specifications-container">
+        <h2>🏆 Competition Submissions &amp; Hackathons</h2>
+        <p class="subtitle">Projects and prototypes submitted for national innovation challenges</p>
+        <div class="hackathon-row">
+          <div class="hackathon-chip">
+            <span class="hackathon-icon">🚀</span>
+            <div class="hackathon-info">
+              <span class="hackathon-name">Bharatiya Antariksh Hackathon 2024</span>
+              <span class="hackathon-award">Participated Entry — ISRO Space-Tech Track</span>
+            </div>
+          </div>
+          <div class="hackathon-chip">
+            <span class="hackathon-icon">⚡</span>
+            <div class="hackathon-info">
+              <span class="hackathon-name">AIoT Design Challenge 2025</span>
+              <span class="hackathon-award">Submitted Prototype — Edge AI &amp; Sensor Monitoring</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ── PROBLEM SECTION ───────────────────────────── -->
     <section class="problem-section">
       <div class="problem-container">
@@ -1448,7 +1760,19 @@
         <p class="subtitle reveal">Real evidence from Tamil Nadu's water bodies showing urgent environmental threats</p>
         <div class="problem-grid">
           <div class="problem-card reveal-left">
-            <img src="/images/algae-pollution.jpg" alt="Algae pollution in Coimbatore">
+            <div class="compare-slider">
+              <div class="compare-img compare-before">
+                <img src="/images/algae-pollution.jpg" alt="Polluted water — Coimbatore">
+              </div>
+              <div class="compare-img compare-after">
+                <img src="/images/kurichi-lake.jpg" alt="Clean water reference — Kurichi Lake">
+              </div>
+              <input type="range" min="0" max="100" value="50" class="compare-range" aria-label="Drag to compare before and after">
+              <div class="compare-handle">
+                <div class="compare-handle-button">↔</div>
+              </div>
+              <div class="compare-hint">◀ Drag to compare ▶</div>
+            </div>
             <div class="problem-content">
               <span class="location-badge">📍 Coimbatore, Tamil Nadu</span>
               <h3>🦠 Excessive Algal Blooms</h3>
@@ -1465,7 +1789,19 @@
             </div>
           </div>
           <div class="problem-card reveal-right">
-            <img src="/images/plastic-pollution.jpg" alt="Plastic debris in Coimbatore">
+            <div class="compare-slider">
+              <div class="compare-img compare-before">
+                <img src="/images/plastic-pollution.jpg" alt="Plastic debris in Coimbatore">
+              </div>
+              <div class="compare-img compare-after">
+                <img src="/images/valankulam-lake.jpg" alt="Clean water reference — Valankulam Lake">
+              </div>
+              <input type="range" min="0" max="100" value="50" class="compare-range" aria-label="Drag to compare before and after">
+              <div class="compare-handle">
+                <div class="compare-handle-button">↔</div>
+              </div>
+              <div class="compare-hint">◀ Drag to compare ▶</div>
+            </div>
             <div class="problem-content">
               <span class="location-badge">📍 Coimbatore, Tamil Nadu</span>
               <h3>🗑️ Plastic &amp; Solid Waste Pollution</h3>
@@ -1482,16 +1818,41 @@
             </div>
           </div>
         </div>
+
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.compare-slider').forEach(slider => {
+              const range = slider.querySelector('.compare-range');
+              const after = slider.querySelector('.compare-after');
+              const handle = slider.querySelector('.compare-handle');
+              if (!range || !after || !handle) return;
+
+              const update = () => {
+                const val = range.value;
+                after.style.clipPath = `inset(0 0 0 ${val}%)`;
+                handle.style.left = `${val}%`;
+              };
+
+              range.addEventListener('input', () => {
+                update();
+                slider.classList.add('interacted');
+              });
+              range.addEventListener('change', () => {
+                slider.classList.add('interacted');
+              });
+
+              update();
+            });
+          });
+        </script>
         <div
           style="text-align:center;margin-top:3rem;padding:2.5rem;background:rgba(255,255,255,0.02);border:1px solid rgba(14,165,233,0.15);border-radius:18px;backdrop-filter:blur(12px);"
           class="reveal">
           <h3 style="margin-bottom:1rem;font-size:1.6rem;color:#e2e8f0;">🎯 Our Monitoring Solution</h3>
           <p style="font-size:1rem;line-height:1.9;max-width:900px;margin:0 auto;color:#94a3b8;">
             R-TECH's autonomous robotic multispectral radiometer system continuously monitors
-            <strong style="color:var(--ocean-1);">chlorophyll-a levels, turbidity, plastic signatures, and pH</strong>.
-            Our data trains and validates satellite observations from
-            <strong style="color:#e2e8f0;">OceanSat-3 OCM and Sentinel-2/3</strong>, providing real-time alerts to
-            authorities for immediate action.
+            <strong style="color:var(--ocean-1);">chlorophyll-a levels, turbidity, plastic signatures, and pH</strong>,
+            providing real-time location data.
           </p>
         </div>
       </div>
@@ -1513,9 +1874,45 @@
           <h3>Smart Alerts</h3>
           <p>Automated notifications when pollution levels exceed critical thresholds</p>
         </div>
-        <div class="feature-card reveal" style="transition-delay:0.3s;"><span class="icon">🛰️</span>
-          <h3>Satellite Integration</h3>
-          <p>Ground-truth validation for OceanSat-3 &amp; Sentinel-2/3 satellite data</p>
+      </div>
+    </section>
+
+    <!-- ── FAQ ACCORDION ───────────────────────────────── -->
+    <section class="faq-section reveal">
+      <div class="specifications-container">
+        <h2>❓ Frequently Asked Questions</h2>
+        <p class="subtitle">Answers grounded strictly in established R-TECH specifications and hardware testing</p>
+        <div class="faq-container">
+          <details class="faq-item">
+            <summary class="faq-question">How long can R-TECH operate during a single mission?</summary>
+            <div class="faq-answer">
+              <p>R-TECH delivers 3 to 4 hours of continuous operation per charge cycle, powered by dual 775 DC motors with 3D-printed propellers and custom onboard power distribution.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">What sensors are onboard the R-TECH catamaran?</summary>
+            <div class="faq-answer">
+              <p>The payload includes an AS7265x 18-channel multispectral radiometer array (for chlorophyll-a spectral profiling), an E201-C BNC electrode pH sensor, a DS18B20 waterproof temperature sensor, an optical turbidity sensor, camera module, GPS, and IMU.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">How are sensor accuracy and plastic detection validated?</summary>
+            <div class="faq-answer">
+              <p>Sensor calibration and accuracy validation are ongoing as part of field testing. Plastic debris detection is processed locally on an onboard NVIDIA Jetson Orin Nano running custom YOLO v8 computer vision models.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">What are the robot's environmental durability ratings?</summary>
+            <div class="faq-answer">
+              <p>Electronics are housed in an IP67 water-resistant enclosure. The catamaran design operates in water temperatures from 10°C to 45°C, tolerates wave heights up to 0.5 meters, and withstands wind speeds up to 40 km/h.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">How is telemetry data processed and displayed?</summary>
+            <div class="faq-answer">
+              <p>An ESP32 microcontroller and Jetson Orin Nano aggregate sensor telemetry on the robot and stream data to a Node.js + Express backend, rendering live metrics and location alerts on an interactive Leaflet.js map dashboard.</p>
+            </div>
+          </details>
         </div>
       </div>
     </section>
@@ -1560,7 +1957,8 @@
       })();
 
       window.addEventListener('scroll', () => {
-        document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
+        const nav = document.getElementById('mainNav');
+        if (nav) nav.classList.toggle('scrolled', window.scrollY > 60);
       });
 
       const observer = new IntersectionObserver((entries) => {
