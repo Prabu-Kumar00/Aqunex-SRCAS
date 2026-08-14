@@ -410,6 +410,7 @@
     .overview-grid-wrap {
       perspective: 1000px;
     }
+
     /* 3-column grid for overview cards */
     .overview-grid {
       display: grid !important;
@@ -1193,31 +1194,36 @@
     <section class="how-it-works-section reveal">
       <div class="project-container">
         <h2>⚙️ How R-TECH Works</h2>
-        <p class="subtitle">End-to-end autonomous water quality monitoring, edge AI spectral analysis, and real-time cloud intelligence</p>
+        <p class="subtitle">End-to-end autonomous water quality monitoring, edge AI spectral analysis, and real-time
+          cloud intelligence</p>
         <div class="flow-grid">
           <div class="flow-step-card reveal" style="transition-delay:0s;">
             <div class="flow-step-number">01</div>
             <div class="flow-step-icon">🚢</div>
             <h3>Autonomous Catamaran Patrol</h3>
-            <p>GPS-guided waypoint navigation across target water bodies with obstacle avoidance and solar top-up panels.</p>
+            <p>GPS-guided waypoint navigation across target water bodies with obstacle avoidance and solar top-up
+              panels.</p>
           </div>
           <div class="flow-step-card reveal" style="transition-delay:0.12s;">
             <div class="flow-step-number">02</div>
             <div class="flow-step-icon">🔬</div>
             <h3>Multispectral Optical Sensing</h3>
-            <p>AS7265x 18-channel spectral profiling (410nm–940nm) for chlorophyll-a, turbidity, and digital pH measurement.</p>
+            <p>AS7265x 18-channel spectral profiling (410nm–940nm) for chlorophyll-a, turbidity, and digital pH
+              measurement.</p>
           </div>
           <div class="flow-step-card reveal" style="transition-delay:0.24s;">
             <div class="flow-step-number">03</div>
             <div class="flow-step-icon">🧠</div>
             <h3>Edge AI Microplastic Detection</h3>
-            <p>Onboard NVIDIA Jetson Orin Nano running custom YOLO v8 vision models to detect microplastics and floating debris.</p>
+            <p>Onboard NVIDIA Jetson Orin Nano running custom YOLO v8 vision models to detect microplastics and floating
+              debris.</p>
           </div>
           <div class="flow-step-card reveal" style="transition-delay:0.36s;">
             <div class="flow-step-number">04</div>
             <div class="flow-step-icon">📊</div>
             <h3>Real-time Cloud Dashboard</h3>
-            <p>Telemetry synced live to Firebase Firestore and rendered on the interactive Leaflet map dashboard with automated alerts.</p>
+            <p>Telemetry synced live to Firebase Firestore and rendered on the interactive Leaflet map dashboard with
+              automated alerts.</p>
           </div>
         </div>
       </div>
@@ -1237,9 +1243,11 @@
             -webkit-text-fill-color: #f8fafc !important;
             white-space: pre;
           }
+
           .blur-text-reveal.animated .blur-char {
             animation: blurTextReveal 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
           }
+
           @keyframes blurTextReveal {
             to {
               opacity: 1;
@@ -1253,7 +1261,7 @@
             const title = document.getElementById('overviewTitle');
             if (!title) return;
             const text = title.innerText;
-            title.innerHTML = Array.from(text).map((char, i) => 
+            title.innerHTML = Array.from(text).map((char, i) =>
               `<span class="blur-char" style="animation-delay:${i * 0.04}s;">${char === ' ' ? '&nbsp;' : char}</span>`
             ).join('');
 
@@ -1622,7 +1630,8 @@
             <div class="timeline-content">
               <div class="timeline-date">Milestone 1 — Hardware Architecture</div>
               <h3>📐 Hull Design &amp; Power Setup</h3>
-              <p>Triple-pontoon catamaran structure, dual 775 DC motors, ESP32 microcontroller, and IP67 electronics enclosure setup.</p>
+              <p>Triple-pontoon catamaran structure, dual 775 DC motors, ESP32 microcontroller, and IP67 electronics
+                enclosure setup.</p>
             </div>
           </div>
           <div class="timeline-item right reveal-right">
@@ -1630,7 +1639,8 @@
             <div class="timeline-content">
               <div class="timeline-date">Milestone 2 — Sensor Payload Integration</div>
               <h3>🔬 Multispectral &amp; Probe Integration</h3>
-              <p>Assembly of AS7265x 18-channel spectral radiometer, E201-C BNC pH probe, DS18B20 temperature sensor, and optical turbidity sensor.</p>
+              <p>Assembly of AS7265x 18-channel spectral radiometer, E201-C BNC pH probe, DS18B20 temperature sensor,
+                and optical turbidity sensor.</p>
             </div>
           </div>
           <div class="timeline-item left reveal-left">
@@ -1638,7 +1648,8 @@
             <div class="timeline-content">
               <div class="timeline-date">Milestone 3 — Edge AI &amp; Object Detection</div>
               <h3>🧠 Edge Computer &amp; YOLO Setup</h3>
-              <p>NVIDIA Jetson Orin Nano edge processing setup running custom YOLO v8 models for real-time plastic debris identification.</p>
+              <p>NVIDIA Jetson Orin Nano edge processing setup running custom YOLO v8 models for real-time plastic
+                debris identification.</p>
             </div>
           </div>
           <div class="timeline-item right reveal-right">
@@ -1646,7 +1657,8 @@
             <div class="timeline-content">
               <div class="timeline-date">Milestone 4 — Telemetry &amp; Web Dashboard</div>
               <h3>📊 Cloud Pipeline &amp; Leaflet Map</h3>
-              <p>Node.js + Express backend, Firebase Firestore real-time telemetry database, and interactive Leaflet.js mapping interface.</p>
+              <p>Node.js + Express backend, Firebase Firestore real-time telemetry database, and interactive Leaflet.js
+                mapping interface.</p>
             </div>
           </div>
           <div class="timeline-item left reveal-left">
@@ -1654,7 +1666,8 @@
             <div class="timeline-content">
               <div class="timeline-date">Milestone 5 — Field Testing &amp; Challenges</div>
               <h3>🌊 Lake Deployments &amp; Hackathons</h3>
-              <p>Initial field testing in Coimbatore lakes and submissions to Bharatiya Antariksh Hackathon 2024 &amp; AIoT Design Challenge 2025.</p>
+              <p>Initial field testing in Coimbatore lakes and submissions to Bharatiya Antariksh Hackathon 2024 &amp;
+                AIoT Design Challenge 2025.</p>
             </div>
           </div>
         </div>
@@ -1765,9 +1778,10 @@
                 <img src="/images/algae-pollution.jpg" alt="Polluted water — Coimbatore">
               </div>
               <div class="compare-img compare-after">
-                <img src="/images/kurichi-lake.jpg" alt="Clean water reference — Kurichi Lake">
+                <img src="/images/after1.jpeg" alt="Clean water reference — Kurichi Lake">
               </div>
-              <input type="range" min="0" max="100" value="50" class="compare-range" aria-label="Drag to compare before and after">
+              <input type="range" min="0" max="100" value="50" class="compare-range"
+                aria-label="Drag to compare before and after">
               <div class="compare-handle">
                 <div class="compare-handle-button">↔</div>
               </div>
@@ -1794,9 +1808,10 @@
                 <img src="/images/plastic-pollution.jpg" alt="Plastic debris in Coimbatore">
               </div>
               <div class="compare-img compare-after">
-                <img src="/images/valankulam-lake.jpg" alt="Clean water reference — Valankulam Lake">
+                <img src="/images/after2.jpeg" alt="Clean water reference — Valankulam Lake">
               </div>
-              <input type="range" min="0" max="100" value="50" class="compare-range" aria-label="Drag to compare before and after">
+              <input type="range" min="0" max="100" value="50" class="compare-range"
+                aria-label="Drag to compare before and after">
               <div class="compare-handle">
                 <div class="compare-handle-button">↔</div>
               </div>
@@ -1886,31 +1901,40 @@
           <details class="faq-item">
             <summary class="faq-question">How long can R-TECH operate during a single mission?</summary>
             <div class="faq-answer">
-              <p>R-TECH delivers 3 to 4 hours of continuous operation per charge cycle, powered by dual 775 DC motors with 3D-printed propellers and custom onboard power distribution.</p>
+              <p>R-TECH delivers 3 to 4 hours of continuous operation per charge cycle, powered by dual 775 DC motors
+                with 3D-printed propellers and custom onboard power distribution.</p>
             </div>
           </details>
           <details class="faq-item">
             <summary class="faq-question">What sensors are onboard the R-TECH catamaran?</summary>
             <div class="faq-answer">
-              <p>The payload includes an AS7265x 18-channel multispectral radiometer array (for chlorophyll-a spectral profiling), an E201-C BNC electrode pH sensor, a DS18B20 waterproof temperature sensor, an optical turbidity sensor, camera module, GPS, and IMU.</p>
+              <p>The payload includes an AS7265x 18-channel multispectral radiometer array (for chlorophyll-a spectral
+                profiling), an E201-C BNC electrode pH sensor, a DS18B20 waterproof temperature sensor, an optical
+                turbidity sensor, camera module, GPS, and IMU.</p>
             </div>
           </details>
           <details class="faq-item">
             <summary class="faq-question">How are sensor accuracy and plastic detection validated?</summary>
             <div class="faq-answer">
-              <p>Sensor calibration and accuracy validation are ongoing as part of field testing. Plastic debris detection is processed locally on an onboard NVIDIA Jetson Orin Nano running custom YOLO v8 computer vision models.</p>
+              <p>Sensor calibration and accuracy validation are ongoing as part of field testing. Plastic debris
+                detection is processed locally on an onboard NVIDIA Jetson Orin Nano running custom YOLO v8 computer
+                vision models.</p>
             </div>
           </details>
           <details class="faq-item">
             <summary class="faq-question">What are the robot's environmental durability ratings?</summary>
             <div class="faq-answer">
-              <p>Electronics are housed in an IP67 water-resistant enclosure. The catamaran design operates in water temperatures from 10°C to 45°C, tolerates wave heights up to 0.5 meters, and withstands wind speeds up to 40 km/h.</p>
+              <p>Electronics are housed in an IP67 water-resistant enclosure. The catamaran design operates in water
+                temperatures from 10°C to 45°C, tolerates wave heights up to 0.5 meters, and withstands wind speeds up
+                to 40 km/h.</p>
             </div>
           </details>
           <details class="faq-item">
             <summary class="faq-question">How is telemetry data processed and displayed?</summary>
             <div class="faq-answer">
-              <p>An ESP32 microcontroller and Jetson Orin Nano aggregate sensor telemetry on the robot and stream data to a Node.js + Express backend, rendering live metrics and location alerts on an interactive Leaflet.js map dashboard.</p>
+              <p>An ESP32 microcontroller and Jetson Orin Nano aggregate sensor telemetry on the robot and stream data
+                to a Node.js + Express backend, rendering live metrics and location alerts on an interactive Leaflet.js
+                map dashboard.</p>
             </div>
           </details>
         </div>
