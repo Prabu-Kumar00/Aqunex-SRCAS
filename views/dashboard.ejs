@@ -1,1112 +1,463 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>R-TECH - Dashboard</title>
-
+    <title>Aqunex - Dashboard</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; overflow:hidden; background:#f5f5f5; height:100vh; width:100vw; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-            background: #f5f5f5;
-            height: 100vh;
-            width: 100vw;
-        }
-
+        /* ── HEADER ── */
         .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            color: #333;
-            padding: 15px 20px;
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position:fixed; top:0; left:0; right:0;
+            background:#0f172a; color:#f1f5f9;
+            padding:15px 20px; z-index:1000;
+            display:flex; justify-content:space-between; align-items:center;
+            box-shadow:0 2px 15px rgba(0,0,0,0.5);
         }
-
-        .header h1 {
-            font-size: 20px;
-            color: #333;
-        }
-
+        .header h1 { font-size:20px; color:#f1f5f9; }
         .btn {
-            padding: 8px 16px;
-            background: #5b7dff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 14px;
-            margin-left: 10px;
-            cursor: pointer;
+            padding:7px 16px;
+            background:rgba(91,125,255,0.12); color:#a5b4fc;
+            border:1px solid rgba(91,125,255,0.3); border-radius:8px;
+            text-decoration:none; font-size:13px; font-weight:600;
+            margin-left:8px; cursor:pointer; transition:all 0.2s ease;
         }
+        .btn:hover { background:rgba(91,125,255,0.28); border-color:rgba(91,125,255,0.6); color:#fff; transform:translateY(-1px); }
 
-        .btn:hover {
-            background: #4a6ae8;
-        }
-
-        #map {
-            position: absolute;
-            top: 110px;
-            bottom: 0;
-            width: 100%;
-        }
-
-        /* Custom cluster styling */
-        .marker-cluster-small {
-            background-color: rgba(40, 167, 69, 0.6);
-        }
-
-        .marker-cluster-small div {
-            background-color: rgba(40, 167, 69, 0.8);
-            color: #fff;
-        }
-
-        .marker-cluster-medium {
-            background-color: rgba(255, 193, 7, 0.6);
-        }
-
-        .marker-cluster-medium div {
-            background-color: rgba(255, 193, 7, 0.8);
-            color: #333;
-        }
-
-        .marker-cluster-large {
-            background-color: rgba(220, 53, 69, 0.6);
-        }
-
-        .marker-cluster-large div {
-            background-color: rgba(220, 53, 69, 0.8);
-            color: #fff;
-        }
-
-        /* Stats bar */
+        /* ── STATS BAR ── */
         .stats-bar {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            right: 0;
-            z-index: 999;
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 32px;
-            padding: 10px 20px;
-            font-size: 13px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            animation: slideDown 0.4s ease-out;
+            position:fixed; top:60px; left:0; right:0; z-index:999;
+            background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);
+            color:#fff;
+            display:flex; justify-content:center; align-items:center;
+            gap:4px; padding:8px 16px; font-size:13px;
+            border-top:1px solid rgba(14,165,233,0.15);
+            border-bottom:1px solid rgba(14,165,233,0.12);
+            box-shadow:0 2px 12px rgba(0,0,0,0.3);
+            animation:slideDown 0.4s ease-out;
+        }
+        @keyframes slideDown { from{transform:translateY(-100%);opacity:0;} to{transform:translateY(0);opacity:1;} }
+        .stat-item { display:flex; align-items:center; gap:8px; white-space:nowrap; padding:5px 14px; border-radius:8px; transition:background 0.2s; cursor:default; }
+        .stat-item:hover { background:rgba(255,255,255,0.06); }
+        .stat-icon  { font-size:16px; }
+        .stat-value { font-weight:700; font-size:15px; }
+        .stat-label { opacity:0.6; font-size:10px; text-transform:uppercase; letter-spacing:0.8px; }
+        .stat-divider { width:1px; height:28px; background:rgba(255,255,255,0.1); margin:0 4px; }
+        .stat-alert { color:#f87171; }
+        .stat-good  { color:#4ade80; }
+
+        /* ── MAP ── */
+        #map { position:absolute; top:111px; bottom:0; width:100%; }
+
+        /* ── CLUSTERS ── */
+        .marker-cluster-small     { background-color:rgba(40,167,69,0.6); }
+        .marker-cluster-small div { background-color:rgba(40,167,69,0.8); color:#fff; }
+        .marker-cluster-medium     { background-color:rgba(255,193,7,0.6); }
+        .marker-cluster-medium div { background-color:rgba(255,193,7,0.8); color:#333; }
+        .marker-cluster-large     { background-color:rgba(220,53,69,0.6); }
+        .marker-cluster-large div { background-color:rgba(220,53,69,0.8); color:#fff; }
+
+        /* ── MARKERS ── */
+        .custom-marker { width:32px!important; height:32px!important; border-radius:50%; border:3px solid white; box-shadow:0 3px 10px rgba(0,0,0,0.4); cursor:pointer; }
+        .marker-good     { background:#28a745; }
+        .marker-moderate { background:#ffc107; }
+        .marker-alert    { background:#dc3545; }
+        .marker-esp32    { background:#17a2b8; border-color:#0056b3!important; }
+
+        /* ── POPUP ── */
+        .leaflet-popup-content-wrapper { border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,0.2); }
+        .leaflet-popup-content { margin:0; min-width:340px; max-width:400px; padding:0; }
+        .popup-header { background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:white; padding:15px; border-radius:10px 10px 0 0; }
+        .popup-header.esp32-header { background:linear-gradient(135deg,#17a2b8 0%,#138496 100%); }
+        .popup-title    { font-size:18px; font-weight:bold; margin-bottom:4px; }
+        .popup-subtitle { font-size:12px; opacity:0.9; }
+        .popup-body     { padding:15px; }
+        .data-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px; width:100%; }
+        .data-item { background:#f8f9fa; padding:10px; border-radius:6px; border-left:3px solid #667eea; min-width:0; }
+        .data-label { font-size:11px; color:#666; text-transform:uppercase; margin-bottom:4px; }
+        .data-value { font-size:16px; font-weight:bold; color:#333; }
+        .meta-info { display:flex; justify-content:space-between; align-items:center; margin:12px 0; font-size:12px; color:#666; }
+        .meta-item { display:flex; align-items:center; gap:4px; }
+        .severity-badge { display:inline-block; padding:6px 12px; border-radius:20px; font-size:13px; font-weight:bold; }
+        .severity-low      { background:#d4edda; color:#155724; }
+        .severity-moderate { background:#fff3cd; color:#856404; }
+        .severity-high     { background:#f8d7da; color:#721c24; }
+        .status-active { display:inline-block; padding:4px 12px; background:#28a745; color:white; border-radius:12px; font-size:12px; font-weight:bold; }
+        .source-badge { display:inline-block; padding:4px 10px; border-radius:12px; font-size:11px; font-weight:bold; margin-left:8px; }
+        .source-firestore { background:#e3f2fd; color:#1976d2; }
+        .source-esp32     { background:#e0f7fa; color:#00838f; }
+        .download-btn { display:block; width:100%; padding:12px; background:#5b7dff; color:white; text-align:center; border:none; border-radius:6px; cursor:pointer; font-size:14px; font-weight:600; margin-top:15px; }
+        .download-btn:hover { background:#4a6ae8; }
+        .loading { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:9999; background:rgba(255,255,255,0.95); padding:40px; border-radius:10px; }
+
+        /* ── SEARCH ── */
+        .leaflet-control-geocoder { border:2px solid #5b7dff!important; border-radius:8px!important; box-shadow:0 2px 10px rgba(0,0,0,0.15)!important; }
+        .leaflet-control-geocoder-form input { font-size:14px!important; padding:8px!important; }
+
+        /* ── DARK ZOOM ── */
+        .leaflet-control-zoom a { background-color:#0f172a!important; color:#0ea5e9!important; border-color:rgba(14,165,233,0.3)!important; font-weight:700!important; }
+        .leaflet-control-zoom a:hover { background-color:#1e293b!important; color:#38bdf8!important; }
+        .leaflet-bar { border:1px solid rgba(14,165,233,0.3)!important; box-shadow:0 2px 10px rgba(0,0,0,0.5)!important; border-radius:8px!important; overflow:hidden; }
+
+        /* ── FILTER BUTTON ── */
+        .filter-fab {
+            position:fixed; top:118px; right:56px; z-index:998;
+            background:#0f172a; color:#0ea5e9;
+            border:1px solid rgba(14,165,233,0.35); border-radius:8px;
+            padding:7px 13px; font-size:13px; font-weight:600;
+            cursor:pointer; display:flex; align-items:center; gap:6px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.4); transition:all 0.2s;
+        }
+        .filter-fab:hover { background:#1e293b; border-color:rgba(14,165,233,0.6); }
+        .filter-badge {
+            display:none; align-items:center; justify-content:center;
+            background:#0ea5e9; color:#fff;
+            width:17px; height:17px; border-radius:50%;
+            font-size:0.62rem; font-weight:700;
         }
 
-        @keyframes slideDown {
-            from {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        /* ── FILTER PANEL ── */
+        .filter-panel {
+            position:fixed; top:152px; right:10px; z-index:997;
+            background:#0f172a; border:1px solid rgba(14,165,233,0.2);
+            border-radius:14px; width:268px;
+            box-shadow:0 10px 40px rgba(0,0,0,0.55);
+            display:none; overflow:hidden;
         }
+        .filter-panel.open { display:block; animation:panelIn 0.18s ease; }
+        @keyframes panelIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
 
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
+        .fp-head {
+            background:rgba(14,165,233,0.08);
+            border-bottom:1px solid rgba(14,165,233,0.12);
+            padding:11px 14px;
+            display:flex; justify-content:space-between; align-items:center;
         }
+        .fp-head-title { font-size:0.8rem; font-weight:700; color:#f1f5f9; text-transform:uppercase; letter-spacing:0.5px; }
+        .fp-reset { font-size:0.72rem; color:#0ea5e9; cursor:pointer; background:none; border:none; font-weight:600; }
+        .fp-reset:hover { color:#38bdf8; }
 
-        .stat-icon {
-            font-size: 16px;
+        .fp-section { padding:11px 14px; border-bottom:1px solid rgba(255,255,255,0.05); }
+        .fp-section:last-child { border-bottom:none; }
+        .fp-label { font-size:0.68rem; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; font-weight:600; }
+
+        /* toggle */
+        .fp-toggle-row { display:flex; justify-content:space-between; align-items:center; }
+        .fp-toggle-txt { font-size:0.82rem; color:#cbd5e1; }
+        .tog {
+            width:36px; height:20px;
+            background:rgba(14,165,233,0.15); border:1px solid rgba(14,165,233,0.25);
+            border-radius:100px; position:relative; cursor:pointer; transition:all 0.25s;
         }
+        .tog.on { background:rgba(14,165,233,0.45); border-color:#0ea5e9; }
+        .tog::after { content:''; position:absolute; width:14px; height:14px; border-radius:50%; background:#64748b; top:2px; left:2px; transition:all 0.25s; }
+        .tog.on::after { background:#fff; left:18px; }
 
-        .stat-value {
-            font-weight: 700;
-            font-size: 15px;
+        /* chips */
+        .fp-chips { display:flex; flex-wrap:wrap; gap:6px; }
+        .chip { padding:4px 10px; border-radius:100px; font-size:0.72rem; font-weight:600; cursor:pointer; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.04); color:#64748b; transition:all 0.18s; user-select:none; }
+        .chip.sel-good     { background:rgba(34,197,94,0.15);  border-color:rgba(34,197,94,0.45);  color:#4ade80; }
+        .chip.sel-warn     { background:rgba(245,158,11,0.15); border-color:rgba(245,158,11,0.45); color:#fbbf24; }
+        .chip.sel-danger   { background:rgba(239,68,68,0.15);  border-color:rgba(239,68,68,0.45);  color:#f87171; }
+        .chip.sel-blue     { background:rgba(14,165,233,0.15); border-color:rgba(14,165,233,0.45); color:#0ea5e9; }
+
+        /* state select */
+        .fp-select {
+            width:100%; padding:7px 10px;
+            background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+            border-radius:8px; color:#e2e8f0; font-size:0.82rem; outline:none; cursor:pointer;
         }
+        .fp-select:focus { border-color:rgba(14,165,233,0.4); }
+        .fp-select option { background:#1e293b; color:#e2e8f0; }
 
-        .stat-label {
-            opacity: 0.7;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        /* ── RESPONSIVE ── */
+        @media (max-width:1024px) {
+            .header { flex-direction:column; padding:12px 15px; gap:10px; }
+            .header h1 { font-size:17px; text-align:center; }
+            .header>div { display:flex; width:100%; justify-content:center; gap:8px; }
+            .btn { padding:8px 14px; font-size:13px; margin-left:0; flex:1; }
+            #map { top:150px; }
+            .stats-bar { top:100px; gap:8px; flex-wrap:wrap; padding:8px 15px; }
+            .filter-fab { top:158px; }
+            .filter-panel { top:192px; }
         }
-
-        .stat-divider {
-            width: 1px;
-            height: 24px;
-            background: rgba(255, 255, 255, 0.2);
+        @media (max-width:768px) {
+            .header { flex-direction:column; padding:10px; gap:8px; }
+            .header h1 { font-size:15px; }
+            .header>div { display:flex; width:100%; justify-content:center; gap:6px; flex-wrap:wrap; }
+            .btn { padding:7px 12px; font-size:12px; margin-left:0; flex:1; min-width:80px; }
+            #map { top:140px; }
+            .stats-bar { top:90px; gap:4px; font-size:11px; padding:6px 10px; }
+            .stat-value { font-size:13px; } .stat-label { font-size:9px; } .stat-divider { display:none; }
+            .leaflet-popup-content { min-width:280px!important; max-width:320px!important; }
+            .data-grid { grid-template-columns:1fr; gap:8px; }
+            .meta-info { flex-direction:column; align-items:flex-start; gap:6px; font-size:10px; }
+            .filter-fab { top:148px; right:10px; }
+            .filter-panel { top:182px; right:10px; width:calc(100vw - 20px); }
         }
-
-        .stat-alert {
-            color: #f87171;
-        }
-
-        .stat-good {
-            color: #4ade80;
-        }
-
-        .custom-marker {
-            width: 32px !important;
-            height: 32px !important;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-            cursor: pointer;
-        }
-
-        .marker-good {
-            background: #28a745;
-        }
-
-        .marker-moderate {
-            background: #ffc107;
-        }
-
-        .marker-alert {
-            background: #dc3545;
-        }
-
-        /* NEW: ESP32 marker style */
-        .marker-esp32 {
-            background: #17a2b8;
-            border-color: #0056b3 !important;
-        }
-
-        .leaflet-popup-content-wrapper {
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .leaflet-popup-content {
-            margin: 0;
-            min-width: 340px;
-            max-width: 400px;
-            padding: 0;
-        }
-
-        .popup-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px;
-            border-radius: 10px 10px 0 0;
-        }
-
-        /* NEW: ESP32 header style */
-        .popup-header.esp32-header {
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-        }
-
-        .popup-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-
-        .popup-subtitle {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-
-        .popup-body {
-            padding: 15px;
-        }
-
-        .data-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-            width: 100%;
-        }
-
-        .data-item {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 6px;
-            border-left: 3px solid #667eea;
-            min-width: 0;
-        }
-
-        .data-label {
-            font-size: 11px;
-            color: #666;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .data-value {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .meta-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 12px 0;
-            font-size: 12px;
-            color: #666;
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .severity-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .severity-low {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .severity-moderate {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .severity-high {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .status-active {
-            display: inline-block;
-            padding: 4px 12px;
-            background: #28a745;
-            color: white;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        /* NEW: Source badges */
-        .source-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-            margin-left: 8px;
-        }
-
-        .source-firestore {
-            background: #e3f2fd;
-            color: #1976d2;
-        }
-
-        .source-esp32 {
-            background: #e0f7fa;
-            color: #00838f;
-        }
-
-        .download-btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background: #5b7dff;
-            color: white;
-            text-align: center;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            margin-top: 15px;
-        }
-
-        .download-btn:hover {
-            background: #4a6ae8;
-        }
-
-        .loading {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 9999;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 40px;
-            border-radius: 10px;
-        }
-
-        /* Custom styling for search bar */
-        .leaflet-control-geocoder {
-            border: 2px solid #5b7dff !important;
-            border-radius: 8px !important;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15) !important;
-        }
-
-        .leaflet-control-geocoder-form input {
-            font-size: 14px !important;
-            padding: 8px !important;
-        }
-
-        /* ============================================ */
-        /* MOBILE & TABLET RESPONSIVE STYLES */
-        /* ============================================ */
-
-        /* Tablet and smaller */
-        @media (max-width: 1024px) {
-            .header {
-                flex-direction: column;
-                padding: 12px 15px;
-                gap: 10px;
-            }
-
-            .header h1 {
-                font-size: 17px;
-                text-align: center;
-            }
-
-            .header>div {
-                display: flex;
-                width: 100%;
-                justify-content: center;
-                gap: 8px;
-            }
-
-            .btn {
-                padding: 8px 14px;
-                font-size: 13px;
-                margin-left: 0;
-                flex: 1;
-            }
-
-            #map {
-                top: 140px;
-            }
-
-            .stats-bar {
-                top: 90px;
-                gap: 16px;
-                flex-wrap: wrap;
-                padding: 8px 15px;
-            }
-
-            .leaflet-popup-content {
-                min-width: 300px !important;
-                max-width: 340px !important;
-            }
-
-            .popup-header {
-                padding: 12px;
-            }
-
-            .popup-title {
-                font-size: 16px;
-            }
-
-            .popup-subtitle {
-                font-size: 11px;
-            }
-
-            .data-grid {
-                gap: 8px;
-            }
-
-            .data-item {
-                padding: 9px;
-            }
-
-            .data-label {
-                font-size: 10px;
-            }
-
-            .data-value {
-                font-size: 15px;
-            }
-        }
-
-        /* Mobile phones */
-        @media (max-width: 768px) {
-
-            /* Header Mobile */
-            .header {
-                flex-direction: column;
-                padding: 10px;
-                gap: 8px;
-            }
-
-            .header h1 {
-                font-size: 15px;
-                text-align: center;
-                line-height: 1.3;
-            }
-
-            .header>div {
-                display: flex;
-                width: 100%;
-                justify-content: center;
-                gap: 6px;
-                flex-wrap: wrap;
-            }
-
-            .btn {
-                padding: 7px 12px;
-                font-size: 12px;
-                margin-left: 0;
-                flex: 1;
-                min-width: 80px;
-                text-align: center;
-            }
-
-            /* Map adjustments for mobile header height */
-            #map {
-                top: 130px;
-            }
-
-            .stats-bar {
-                top: 85px;
-                gap: 10px;
-                font-size: 11px;
-                padding: 6px 10px;
-            }
-
-            .stat-value {
-                font-size: 13px;
-            }
-
-            .stat-label {
-                font-size: 9px;
-            }
-
-            .stat-divider {
-                display: none;
-            }
-
-            /* Popup adjustments for mobile */
-            .leaflet-popup-content {
-                min-width: 280px !important;
-                max-width: 320px !important;
-            }
-
-            .popup-title {
-                font-size: 15px;
-            }
-
-            .popup-subtitle {
-                font-size: 10px;
-            }
-
-            .popup-header {
-                padding: 10px;
-            }
-
-            .popup-body {
-                padding: 10px;
-            }
-
-            /* Data grid mobile - stack items */
-            .data-grid {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-
-            .data-item {
-                padding: 8px;
-            }
-
-            .data-label {
-                font-size: 9px;
-            }
-
-            .data-value {
-                font-size: 14px;
-            }
-
-            /* Meta info mobile */
-            .meta-info {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 6px;
-                font-size: 10px;
-            }
-
-            .severity-badge {
-                font-size: 11px;
-                padding: 4px 10px;
-            }
-
-            .status-active {
-                font-size: 10px;
-                padding: 3px 10px;
-            }
-
-            /* Download button mobile */
-            .download-btn {
-                padding: 10px;
-                font-size: 13px;
-                margin-top: 10px;
-            }
-
-            /* Marker size mobile */
-            .custom-marker {
-                width: 28px !important;
-                height: 28px !important;
-            }
-
-            .custom-marker>div {
-                line-height: 22px !important;
-                font-size: 16px !important;
-            }
-
-            /* Search bar mobile */
-            .leaflet-control-geocoder {
-                width: calc(100vw - 20px) !important;
-                max-width: 350px !important;
-            }
-
-            .leaflet-control-geocoder-form input {
-                font-size: 12px !important;
-                padding: 6px !important;
-            }
-
-            /* Loading screen mobile */
-            .loading {
-                padding: 25px 15px;
-                width: 90%;
-                max-width: 300px;
-            }
-
-            .loading h2 {
-                font-size: 17px;
-            }
-
-            .loading p {
-                font-size: 13px;
-            }
-
-            /* Adjust popup close button */
-            .leaflet-popup-close-button {
-                font-size: 18px !important;
-                padding: 4px 8px !important;
-            }
-        }
-
-        /* Extra small phones */
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 13px;
-            }
-
-            .btn {
-                font-size: 11px;
-                padding: 6px 10px;
-            }
-
-            #map {
-                top: 120px;
-            }
-
-            .stats-bar {
-                top: 80px;
-            }
-
-            .leaflet-popup-content {
-                min-width: 260px !important;
-                max-width: 280px !important;
-            }
-
-            .popup-title {
-                font-size: 14px;
-            }
-
-            .data-value {
-                font-size: 13px;
-            }
-
-            .download-btn {
-                font-size: 12px;
-                padding: 9px;
-            }
+        @media (max-width:480px) {
+            .header h1 { font-size:13px; } .btn { font-size:11px; padding:6px 10px; }
+            #map { top:130px; } .stats-bar { top:88px; }
+            .filter-fab { top:138px; }
         }
     </style>
 </head>
-
 <body>
-    <div class="loading" id="loadingScreen">
-        <h2>🌊 Loading Dashboard...</h2>
-        <p>Connecting to real-time sensor data</p>
+
+<div class="loading" id="loadingScreen">
+    <h2>🌊 Loading Dashboard...</h2>
+    <p>Connecting to real-time sensor data</p>
+</div>
+
+<div class="header">
+    <h1>🛡️ Aqunex Dashboard</h1>
+    <div>
+        <a href="/" class="btn">🏠 Home</a>
+        <a href="/dashboard" class="btn">📊 Dashboard</a>
+        <a href="/reports" class="btn">📄 Reports</a>
+    </div>
+</div>
+
+<div class="stats-bar" id="statsBar">
+    <div class="stat-item"><span class="stat-icon">📡</span><div><div class="stat-value" id="statSensors">—</div><div class="stat-label">Active Sensors</div></div></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-icon">⚠️</span><div><div class="stat-value stat-alert" id="statAlerts">—</div><div class="stat-label">Alerts</div></div></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-icon">🗺️</span><div><div class="stat-value" id="statStates">—</div><div class="stat-label">States Covered</div></div></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-icon">📍</span><div><div class="stat-value" id="statLocations">—</div><div class="stat-label">Locations Monitored</div></div></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item"><span class="stat-icon">🕐</span><div><div class="stat-value stat-good" id="statLastUpdate">—</div><div class="stat-label">Last Updated</div></div></div>
+</div>
+
+<div id="map"></div>
+
+<!-- Filter FAB -->
+<button class="filter-fab" onclick="togglePanel()">
+    🔍 Filter <span class="filter-badge" id="filterBadge"></span>
+</button>
+
+<!-- Filter Panel -->
+<div class="filter-panel" id="filterPanel">
+    <div class="fp-head">
+        <span class="fp-head-title">🗂 Filter Markers</span>
+        <button class="fp-reset" onclick="resetFilters()">Reset All</button>
     </div>
 
-    <div class="header">
-        <h1>🛡️ R-TECH Dashboard</h1>
-        <div>
-            <a href="/" class="btn">🏠 Home</a>
-            <a href="/dashboard" class="btn">📊 Dashboard</a>
-            <a href="/reports" class="btn">📄 Reports</a>
-        </div>
-    </div>
-
-    <!-- Stats Bar -->
-    <div class="stats-bar" id="statsBar">
-        <div class="stat-item">
-            <span class="stat-icon">📡</span>
-            <div>
-                <div class="stat-value" id="statSensors">—</div>
-                <div class="stat-label">Active Sensors</div>
-            </div>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-            <span class="stat-icon">⚠️</span>
-            <div>
-                <div class="stat-value stat-alert" id="statAlerts">—</div>
-                <div class="stat-label">Alerts</div>
-            </div>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-            <span class="stat-icon">🗺️</span>
-            <div>
-                <div class="stat-value" id="statStates">—</div>
-                <div class="stat-label">States Covered</div>
-            </div>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-            <span class="stat-icon">📍</span>
-            <div>
-                <div class="stat-value" id="statLocations">—</div>
-                <div class="stat-label">Locations Monitored</div>
-            </div>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-            <span class="stat-icon">🕐</span>
-            <div>
-                <div class="stat-value stat-good" id="statLastUpdate">—</div>
-                <div class="stat-label">Last Updated</div>
-            </div>
+    <div class="fp-section">
+        <div class="fp-label">Visibility</div>
+        <div class="fp-toggle-row">
+            <span class="fp-toggle-txt">Show all markers</span>
+            <div class="tog on" id="visTog" onclick="toggleVis(this)"></div>
         </div>
     </div>
 
-    <div id="map"></div>
+    <div class="fp-section">
+        <div class="fp-label">Severity</div>
+        <div class="fp-chips">
+            <div class="chip sel-good"   data-g="sev" data-v="good"     onclick="toggleChip(this)">🟢 Good</div>
+            <div class="chip sel-warn"   data-g="sev" data-v="moderate" onclick="toggleChip(this)">🟡 Moderate</div>
+            <div class="chip sel-danger" data-g="sev" data-v="alert"    onclick="toggleChip(this)">🔴 Alert</div>
+        </div>
+    </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <!-- NEW: Realtime Database library -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <div class="fp-section">
+        <div class="fp-label">State</div>
+        <select class="fp-select" id="stateSelect" onchange="applyFilters()">
+            <option value="all">All States</option>
+        </select>
+    </div>
 
-    <script>
-        const firebaseConfig = <%-JSON.stringify(firebaseConfig) %>;
+    <div class="fp-section">
+        <div class="fp-label">Data Source</div>
+        <div class="fp-chips">
+            <div class="chip sel-blue" data-g="src" data-v="firestore" onclick="toggleChip(this)">☁️ Firestore</div>
+            <div class="chip sel-blue" data-g="src" data-v="esp32"     onclick="toggleChip(this)">🤖 ESP32</div>
+        </div>
+    </div>
+</div>
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const rtdb = firebase.database(); // NEW: Realtime Database reference
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-        // Remove auth check - direct access for authority
-        document.getElementById('loadingScreen').style.display = 'none';
+<script>
+    const firebaseConfig = <%-JSON.stringify(firebaseConfig) %>;
+    firebase.initializeApp(firebaseConfig);
+    const db   = firebase.firestore();
+    const rtdb = firebase.database();
 
-        // Initialize map
-        const map = L.map('map').setView([20.5937, 78.9629], 5);
+    document.getElementById('loadingScreen').style.display = 'none';
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+    const map = L.map('map').setView([20.5937, 78.9629], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(map);
+
+    const mcg = L.markerClusterGroup({ maxClusterRadius:45, spiderfyOnMaxZoom:true, showCoverageOnHover:false, zoomToBoundsOnClick:true, disableClusteringAtZoom:10 });
+    map.addLayer(mcg);
+
+    var searchMarker = null;
+    L.Control.geocoder({ defaultMarkGeocode:false, placeholder:'Search any location...', errorMessage:'Location not found', suggestMinLength:3, suggestTimeout:250, queryMinLength:1 })
+        .on('markgeocode', function(e) {
+            var latlng = e.geocode.center, locationName = e.geocode.name;
+            if (searchMarker) map.removeLayer(searchMarker);
+            map.setView(latlng, 12);
+            searchMarker = L.marker(latlng, { icon: L.divIcon({ className:'custom-marker', html:'<div style="background:#5b7dff;width:32px;height:32px;border-radius:50%;border:3px solid white;text-align:center;line-height:26px;color:white;font-size:18px;">📍</div>', iconSize:[32,32] }) })
+                .addTo(map).bindPopup(`<div style="padding:10px;"><strong>📍 ${locationName}</strong><br><small>Searched location</small></div>`).openPopup();
         }).addTo(map);
 
-        // Create a MarkerClusterGroup for data markers
-        const markerClusterGroup = L.markerClusterGroup({
-            maxClusterRadius: 45,
-            spiderfyOnMaxZoom: true,
-            showCoverageOnHover: false,
-            zoomToBoundsOnClick: true,
-            disableClusteringAtZoom: 10
+    // ── Helpers ──
+    function getSevKey(c) { const r=Math.min(Math.floor(c/3),10); return r<=4?'good':r<=7?'moderate':'alert'; }
+    function getSeverity(c) {
+        const k=getSevKey(c);
+        if(k==='good')     return {rating:Math.min(Math.floor(c/3),10), class:'severity-low',      markerClass:'marker-good'};
+        if(k==='moderate') return {rating:Math.min(Math.floor(c/3),10), class:'severity-moderate', markerClass:'marker-moderate'};
+                           return {rating:Math.min(Math.floor(c/3),10), class:'severity-high',     markerClass:'marker-alert'};
+    }
+    function getPollutionType(c) { return c>15?'Algae Bloom':'Organic Matter'; }
+    function createDownloadFn(location,chlorophyll,turbidity,ph,temperature) {
+        return function() {
+            const csv=`Water Quality Report - ${location}\nDate: ${new Date().toLocaleDateString()}\n\nParameter,Value,Unit\nChlorophyll-a,${chlorophyll},µg/L\nTurbidity,${turbidity},NTU\npH,${ph},-\nTemperature,${temperature},°C`;
+            const blob=new Blob([csv],{type:'text/csv'}), url=window.URL.createObjectURL(blob), a=document.createElement('a');
+            a.href=url; a.download=`${location.replace(/\s+/g,'_')}_Report.csv`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); window.URL.revokeObjectURL(url);
+        };
+    }
+
+    function createMarker(data, source, docId) {
+        if(!data.gps||!data.gps.lat||!data.gps.lng) return;
+        const {lat,lng}=data.gps, sev=getSeverity(data.chlorophyll||0);
+        const markerClass=source==='esp32'?'marker-esp32':sev.markerClass;
+        const icon=L.divIcon({ className:`custom-marker ${markerClass}`, html:'<div style="text-align:center;line-height:26px;color:white;font-weight:bold;font-size:18px;">💧</div>', iconSize:[32,32] });
+        const fn=`dl_${docId.replace(/[^a-zA-Z0-9]/g,'_')}`;
+        window[fn]=createDownloadFn(data.location,data.chlorophyll,data.turbidity,data.ph,data.temperature);
+        const hc=source==='esp32'?'popup-header esp32-header':'popup-header';
+        const bc=source==='esp32'?'source-badge source-esp32':'source-badge source-firestore';
+        const sl=source==='esp32'?'🤖 ESP32':'☁️ Firestore';
+        const popup=`<div class="${hc}"><div class="popup-title">${data.location}<span class="${bc}">${sl}</span></div><div class="popup-subtitle">${data.district||'N/A'}, ${data.state||'N/A'}</div></div><div class="popup-body"><div class="data-grid"><div class="data-item"><div class="data-label">Chlorophyll-a</div><div class="data-value">${data.chlorophyll} µg/L</div></div><div class="data-item"><div class="data-label">Turbidity</div><div class="data-value">${data.turbidity} NTU</div></div><div class="data-item"><div class="data-label">pH</div><div class="data-value">${data.ph}</div></div><div class="data-item"><div class="data-label">Temperature</div><div class="data-value">${data.temperature}°C</div></div></div><div class="meta-info"><div class="meta-item"><strong>Type:</strong> ${getPollutionType(data.chlorophyll)}</div><div class="meta-item"><strong>Severity:</strong><span class="severity-badge ${sev.class}">${sev.rating}/10</span></div></div><div class="meta-info"><div class="meta-item"><span class="status-active">ACTIVE</span></div><div class="meta-item" style="font-size:10px;color:#999;">${data.timestamp||'N/A'}</div></div><button class="download-btn" onclick="${fn}()">📥 Download Data Report</button></div>`;
+        mcg.addLayer(L.marker([lat,lng],{icon}).bindPopup(popup,{maxWidth:380,minWidth:340}));
+    }
+
+    // ── Data Store ──
+    let allData = [];   // {data, source, docId}
+    function clearMarkers() { mcg.clearLayers(); }
+
+    function updateStatsBar(docs) {
+        if(!docs||!docs.length) { ['statSensors','statAlerts','statStates','statLocations'].forEach(id=>document.getElementById(id).textContent='0'); document.getElementById('statLastUpdate').textContent='—'; return; }
+        const states=new Set(), locations=new Set(); let lastTs=0, alerts=0;
+        docs.forEach(d=>{
+            if(d.state) states.add(d.state); if(d.location) locations.add(d.location);
+            let ts=0; if(d.timestamp&&typeof d.timestamp.toDate==='function') ts=d.timestamp.toDate().getTime(); else if(d.timestamp) ts=new Date(d.timestamp).getTime();
+            if(ts>lastTs) lastTs=ts;
+            if(Math.min(Math.floor((d.chlorophyll||0)/3),10)>=8) alerts++;
         });
-        map.addLayer(markerClusterGroup);
+        document.getElementById('statSensors').textContent=docs.length;
+        document.getElementById('statAlerts').textContent=alerts;
+        document.getElementById('statAlerts').className=alerts>0?'stat-value stat-alert':'stat-value stat-good';
+        document.getElementById('statStates').textContent=states.size;
+        document.getElementById('statLocations').textContent=locations.size;
+        document.getElementById('statLastUpdate').textContent=lastTs>0?new Date(lastTs).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'—';
+    }
 
-        // Add Google Maps-style search bar
-        var searchMarker = null; // To store temporary search marker
+    function populateStates(docs) {
+        const sel=document.getElementById('stateSelect'), cur=sel.value;
+        const states=[...new Set(docs.map(d=>d.state).filter(Boolean))].sort();
+        sel.innerHTML='<option value="all">All States</option>';
+        states.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; if(s===cur) o.selected=true; sel.appendChild(o); });
+    }
 
-        L.Control.geocoder({
-            defaultMarkGeocode: false,
-            placeholder: 'Search any location (city, river, lake)...',
-            errorMessage: 'Location not found',
-            suggestMinLength: 3,
-            suggestTimeout: 250,
-            queryMinLength: 1
-        })
-            .on('markgeocode', function (e) {
-                var latlng = e.geocode.center;
-                var locationName = e.geocode.name;
+    // ── Filter Logic ──
+    const F = { sev: new Set(['good','moderate','alert']), src: new Set(['firestore','esp32']), state:'all', visible:true };
 
-                // Remove previous search marker if exists
-                if (searchMarker) {
-                    map.removeLayer(searchMarker);
-                }
-
-                // Move map to searched location with smooth animation
-                map.setView(latlng, 12);
-
-                // Add temporary marker at searched location
-                searchMarker = L.marker(latlng, {
-                    icon: L.divIcon({
-                        className: 'custom-marker',
-                        html: '<div style="background: #5b7dff; width: 32px; height: 32px; border-radius: 50%; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4); text-align:center; line-height:26px; color:white; font-size:18px;">📍</div>',
-                        iconSize: [32, 32]
-                    })
-                })
-                    .addTo(map)
-                    .bindPopup(`<div style="padding: 10px;"><strong>📍 ${locationName}</strong><br><small>Searched location</small></div>`)
-                    .openPopup();
-            })
-            .addTo(map);
-
-        // Helper functions
-        function getSeverity(chlorophyll) {
-            const severity = Math.min(Math.floor(chlorophyll / 3), 10);
-            if (severity <= 4) return { rating: severity, class: 'severity-low', markerClass: 'marker-good' };
-            if (severity <= 7) return { rating: severity, class: 'severity-moderate', markerClass: 'marker-moderate' };
-            return { rating: severity, class: 'severity-high', markerClass: 'marker-alert' };
-        }
-
-        function getPollutionType(chlorophyll) {
-            return chlorophyll > 15 ? 'Algae Bloom' : 'Organic Matter';
-        }
-
-        function createDownloadFunction(location, chlorophyll, turbidity, ph, temperature) {
-            return function () {
-                const csv = `Water Quality Report - ${location}
-Date: ${new Date().toLocaleDateString()}
-
-Parameter,Value,Unit
-Chlorophyll-a,${chlorophyll},µg/L
-Turbidity,${turbidity},NTU
-pH,${ph},-
-Temperature,${temperature},°C`;
-
-                const blob = new Blob([csv], { type: 'text/csv' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${location.replace(/\s+/g, '_')}_Report.csv`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-            };
-        }
-
-        // NEW: Unified function to create markers from both sources
-        function createMarker(data, source, docId) {
-            // Validate GPS data
-            if (!data.gps || !data.gps.lat || !data.gps.lng) {
-                console.warn('Invalid GPS data:', data);
-                return;
-            }
-
-            const lat = data.gps.lat;
-            const lng = data.gps.lng;
-            const severity = getSeverity(data.chlorophyll);
-            const pollutionType = getPollutionType(data.chlorophyll);
-
-            // Different icon for ESP32 vs Firestore
-            const markerClass = source === 'esp32' ? 'marker-esp32' : severity.markerClass;
-            const icon = L.divIcon({
-                className: `custom-marker ${markerClass}`,
-                html: '<div style="text-align:center; line-height:26px; color:white; font-weight:bold; font-size:18px;">💧</div>',
-                iconSize: [32, 32]
-            });
-
-            const funcName = `download_${docId.replace(/[^a-zA-Z0-9]/g, '_')}`;
-            window[funcName] = createDownloadFunction(
-                data.location,
-                data.chlorophyll,
-                data.turbidity,
-                data.ph,
-                data.temperature
-            );
-
-            // Different header style for ESP32
-            const headerClass = source === 'esp32' ? 'popup-header esp32-header' : 'popup-header';
-            const sourceBadgeClass = source === 'esp32' ? 'source-badge source-esp32' : 'source-badge source-firestore';
-            const sourceLabel = source === 'esp32' ? '🤖 ESP32' : '☁️ Firestore';
-
-            const popupContent = `
-                <div class="${headerClass}">
-                    <div class="popup-title">
-                        ${data.location}
-                        <span class="${sourceBadgeClass}">${sourceLabel}</span>
-                    </div>
-                    <div class="popup-subtitle">${data.district || 'N/A'}, ${data.state || 'N/A'}</div>
-                </div>
-                <div class="popup-body">
-                    <div class="data-grid">
-                        <div class="data-item">
-                            <div class="data-label">Chlorophyll-a</div>
-                            <div class="data-value">${data.chlorophyll} µg/L</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">Turbidity</div>
-                            <div class="data-value">${data.turbidity} NTU</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">pH</div>
-                            <div class="data-value">${data.ph}</div>
-                        </div>
-                        <div class="data-item">
-                            <div class="data-label">Temperature</div>
-                            <div class="data-value">${data.temperature}°C</div>
-                        </div>
-                    </div>
-                    <div class="meta-info">
-                        <div class="meta-item"><strong>Type:</strong> ${pollutionType}</div>
-                        <div class="meta-item"><strong>Severity:</strong> <span class="severity-badge ${severity.class}">${severity.rating}/10</span></div>
-                    </div>
-                    <div class="meta-info">
-                        <div class="meta-item"><span class="status-active">ACTIVE</span></div>
-                        <div class="meta-item" style="font-size:10px; color:#999;">${data.timestamp || 'N/A'}</div>
-                    </div>
-                    <button class="download-btn" onclick="${funcName}()">
-                        📥 Download Data Report
-                    </button>
-                </div>
-            `;
-
-            const marker = L.marker([lat, lng], { icon: icon })
-                .bindPopup(popupContent, { maxWidth: 380, minWidth: 340 });
-            markerClusterGroup.addLayer(marker);
-        }
-
-        // Track all active markers
-        let allMarkers = {};
-
-        function clearDataMarkers() {
-            markerClusterGroup.clearLayers();
-            allMarkers = {};
-        }
-
-        // ==========================================
-        // STATS BAR — update from snapshot data
-        // ==========================================
-        function updateStatsBar(docs) {
-            if (!docs || docs.length === 0) {
-                document.getElementById('statSensors').textContent = '0';
-                document.getElementById('statAlerts').textContent = '0';
-                document.getElementById('statStates').textContent = '0';
-                document.getElementById('statLocations').textContent = '0';
-                document.getElementById('statLastUpdate').textContent = '—';
-                return;
-            }
-
-            const states = new Set();
-            const locations = new Set();
-            let lastTimestamp = 0;
-            let alerts = 0;
-
-            docs.forEach(d => {
-                if (d.state) states.add(d.state);
-                if (d.location) locations.add(d.location);
-
-                // Handle various timestamp formats (Firestore Timestamp, Date object, string)
-                let ts = 0;
-                if (d.timestamp && typeof d.timestamp.toDate === 'function') {
-                    ts = d.timestamp.toDate().getTime();
-                } else if (d.timestamp) {
-                    ts = new Date(d.timestamp).getTime();
-                }
-                if (ts > lastTimestamp) lastTimestamp = ts;
-
-                const sev = Math.min(Math.floor((d.chlorophyll || 0) / 3), 10);
-                if (sev >= 8) alerts++;
-            });
-
-            const n = docs.length;
-            document.getElementById('statSensors').textContent = n;
-            document.getElementById('statAlerts').textContent = alerts;
-            document.getElementById('statAlerts').className = alerts > 0 ? 'stat-value stat-alert' : 'stat-value stat-good';
-
-            document.getElementById('statStates').textContent = states.size;
-            document.getElementById('statLocations').textContent = locations.size;
-
-            if (lastTimestamp > 0) {
-                const date = new Date(lastTimestamp);
-                // format: 10:30 AM
-                document.getElementById('statLastUpdate').textContent = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            } else {
-                document.getElementById('statLastUpdate').textContent = '—';
-            }
-        }
-
-        // Load Firestore data (original functionality)
-        db.collection('sensor_data').onSnapshot((snapshot) => {
-            // Only clear and redraw all markers on firestore update
-            clearDataMarkers();
-
-            const allDocs = [];
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                allDocs.push(data);
-                const markerId = `firestore_${doc.id}`;
-                allMarkers[markerId] = true;
-                createMarker(data, 'firestore', doc.id);
-            });
-
-            // Update stats bar with latest data
-            updateStatsBar(allDocs);
-
-            console.log(`Loaded ${Object.keys(allMarkers).filter(k => k.startsWith('firestore')).length} markers from Firestore`);
-
-            // Re-load realtime data to show both
-            loadRealtimeData();
+    function redrawMarkers() {
+        clearMarkers();
+        if(!F.visible) return;
+        allData.forEach(({data,source,docId})=>{
+            if(!F.sev.has(getSevKey(data.chlorophyll||0))) return;
+            if(!F.src.has(source)) return;
+            if(F.state!=='all' && data.state!==F.state) return;
+            createMarker(data,source,docId);
         });
+    }
 
-        // NEW: Load Realtime Database data
-        function loadRealtimeData() {
-            rtdb.ref('sensorData').once('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    Object.keys(data).forEach(key => {
-                        const sensorData = data[key];
-                        const markerId = `realtime_${key}`;
-                        if (!allMarkers[markerId]) {
-                            allMarkers[markerId] = true;
-                            createMarker(sensorData, 'esp32', key);
-                        }
-                    });
-                    console.log(`Loaded ${Object.keys(allMarkers).filter(k => k.startsWith('realtime')).length} markers from Realtime Database`);
-                } else {
-                    console.log('No data in Realtime Database yet');
-                }
-            });
-        }
+    function applyFilters() { F.state=document.getElementById('stateSelect').value; redrawMarkers(); updateBadge(); }
 
-        // Listen to realtime database changes
-        rtdb.ref('sensorData').on('child_added', (snapshot) => {
-            const key = snapshot.key;
-            const data = snapshot.val();
-            const markerId = `realtime_${key}`;
+    function togglePanel() { document.getElementById('filterPanel').classList.toggle('open'); }
 
-            if (!allMarkers[markerId]) {
-                allMarkers[markerId] = true;
-                createMarker(data, 'esp32', key);
-                console.log('New ESP32 data added:', key);
-            }
+    function toggleVis(el) { el.classList.toggle('on'); F.visible=el.classList.contains('on'); F.visible?map.addLayer(mcg):map.removeLayer(mcg); }
+
+    function toggleChip(chip) {
+        const g=chip.dataset.g, v=chip.dataset.v, set=F[g];
+        const selClass=[...chip.classList].find(c=>c.startsWith('sel-'));
+        if(set.has(v)) { if(set.size===1) return; set.delete(v); chip.classList.remove(selClass); chip.style.opacity='0.35'; }
+        else           { set.add(v); if(selClass) chip.classList.add(selClass); chip.style.opacity='1'; }
+        redrawMarkers(); updateBadge();
+    }
+
+    function resetFilters() {
+        F.sev=new Set(['good','moderate','alert']); F.src=new Set(['firestore','esp32']); F.state='all'; F.visible=true;
+        document.getElementById('stateSelect').value='all';
+        document.querySelectorAll('.chip').forEach(c=>{ const sc=[...c.classList].find(x=>x.startsWith('sel-')); if(sc) c.classList.add(sc); c.style.opacity='1'; });
+        const vt=document.getElementById('visTog'); vt.classList.add('on');
+        if(!map.hasLayer(mcg)) map.addLayer(mcg);
+        redrawMarkers(); updateBadge();
+    }
+
+    function updateBadge() {
+        const n=(3-F.sev.size)+(2-F.src.size)+(F.state!=='all'?1:0)+(!F.visible?1:0);
+        const b=document.getElementById('filterBadge');
+        b.style.display=n>0?'inline-flex':'none'; b.textContent=n;
+    }
+
+    // ── Firebase ──
+    db.collection('sensor_data').onSnapshot(snapshot=>{
+        allData=allData.filter(d=>d.source!=='firestore');
+        const docs=[];
+        snapshot.forEach(doc=>{ const data=doc.data(); docs.push(data); allData.push({data,source:'firestore',docId:doc.id}); });
+        updateStatsBar(docs); populateStates(docs); redrawMarkers();
+        loadRtdb();
+    });
+
+    function loadRtdb() {
+        rtdb.ref('sensorData').once('value', snap=>{
+            const data=snap.val();
+            if(data) { Object.keys(data).forEach(key=>{ if(!allData.find(d=>d.docId===key&&d.source==='esp32')) { allData.push({data:data[key],source:'esp32',docId:key}); } }); redrawMarkers(); }
         });
+    }
 
-        rtdb.ref('sensorData').on('child_changed', (snapshot) => {
-            // Reload all markers when data changes
-            clearDataMarkers();
-            db.collection('sensor_data').get().then(querySnapshot => {
-                querySnapshot.forEach(doc => {
-                    const data = doc.data();
-                    const markerId = `firestore_${doc.id}`;
-                    allMarkers[markerId] = true;
-                    createMarker(data, 'firestore', doc.id);
-                });
-                loadRealtimeData();
-            });
-        });
+    rtdb.ref('sensorData').on('child_added', snap=>{ const key=snap.key; if(!allData.find(d=>d.docId===key&&d.source==='esp32')) { allData.push({data:snap.val(),source:'esp32',docId:key}); redrawMarkers(); } });
+    rtdb.ref('sensorData').on('child_changed', ()=>{ allData=allData.filter(d=>d.source!=='esp32'); db.collection('sensor_data').get().then(qs=>{ qs.forEach(doc=>{ allData.push({data:doc.data(),source:'firestore',docId:doc.id}); }); loadRtdb(); }); });
+</script>
 
-        console.log('Dashboard initialized - listening to both Firestore and Realtime Database');
-    </script>
-
-    <!-- Hidden Mock Data Control Panel (Ctrl+M to toggle) -->
-    <div id="mockControlPanel"
-        style="display:none; position:fixed; bottom:20px; right:20px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,0.3); z-index:10000; min-width:260px;">
-        <h3 style="margin:0 0 12px 0; font-size:16px;">🧪 Mock Data Control</h3>
-        <div style="display:flex; flex-direction:column; gap:8px;">
-            <button id="startMockBtn" class="btn" style="margin:0; width:100%;">▶️ Start Mock Data</button>
-            <button id="stopMockBtn" class="btn" style="margin:0; width:100%; background:#dc3545;">⏹️ Stop Mock
-                Data</button>
-            <button id="cleanupMockBtn" class="btn" style="margin:0; width:100%; background:#ffc107; color:#333;">🧹
-                Cleanup Mock Data</button>
-            <button id="closePanelBtn" class="btn" style="margin:0; width:100%; background:#6c757d;">❌ Close
-                Panel</button>
-        </div>
-        <div id="mockStatus"
-            style="margin-top:10px; padding:8px; background:#f8f9fa; border-radius:5px; font-size:12px;"></div>
+<!-- Mock Panel (Ctrl+M) -->
+<div id="mockControlPanel" style="display:none;position:fixed;bottom:20px;right:20px;background:white;padding:20px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.3);z-index:10000;min-width:260px;">
+    <h3 style="margin:0 0 12px 0;font-size:16px;">🧪 Mock Data Control</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+        <button id="startMockBtn"   class="btn" style="margin:0;width:100%;">▶️ Start Mock Data</button>
+        <button id="stopMockBtn"    class="btn" style="margin:0;width:100%;background:#dc3545;border-color:#dc3545;color:white;">⏹️ Stop</button>
+        <button id="cleanupMockBtn" class="btn" style="margin:0;width:100%;background:#ffc107;border-color:#ffc107;color:#333;">🧹 Cleanup</button>
+        <button id="closePanelBtn"  class="btn" style="margin:0;width:100%;background:#6c757d;border-color:#6c757d;color:white;">❌ Close</button>
     </div>
-
-    <script>
-        // Toggle panel with Ctrl+M
-        document.addEventListener('keydown', function (e) {
-            if (e.ctrlKey && e.key === 'm') {
-                const panel = document.getElementById('mockControlPanel');
-                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-            }
-        });
-
-        function showStatus(message, isError = false) {
-            const status = document.getElementById('mockStatus');
-            status.textContent = message;
-            status.style.color = isError ? '#dc3545' : '#28a745';
-        }
-
-        async function callMockApi(path, options = {}) {
-            try {
-                const res = await fetch(path, { method: 'POST', ...options });
-                const data = await res.json();
-                showStatus(data.message || 'OK', !data.success);
-            } catch (err) {
-                showStatus(err.message, true);
-            }
-        }
-
-        document.getElementById('startMockBtn').addEventListener('click', () => {
-            callMockApi('/api/mock/start');
-        });
-
-        document.getElementById('stopMockBtn').addEventListener('click', () => {
-            callMockApi('/api/mock/stop');
-        });
-
-        document.getElementById('cleanupMockBtn').addEventListener('click', () => {
-            if (confirm('Delete all mock data (isMockData = true) from sensor_data?')) {
-                callMockApi('/api/mock/cleanup');
-            }
-        });
-
-        document.getElementById('closePanelBtn').addEventListener('click', () => {
-            document.getElementById('mockControlPanel').style.display = 'none';
-        });
-
-        // Show initial status
-        async function refreshMockStatus() {
-            try {
-                const res = await fetch('/api/mock/status');
-                const data = await res.json();
-                showStatus(data.running ? 'Mock data is RUNNING' : 'Mock data is STOPPED', !data.running);
-            } catch (err) {
-                showStatus('Unable to read mock status', true);
-            }
-        }
-        refreshMockStatus();
-        setInterval(refreshMockStatus, 5000);
-    </script>
+    <div id="mockStatus" style="margin-top:10px;padding:8px;background:#f8f9fa;border-radius:5px;font-size:12px;"></div>
+</div>
+<script>
+    document.addEventListener('keydown',e=>{ if(e.ctrlKey&&e.key==='m'){const p=document.getElementById('mockControlPanel'); p.style.display=p.style.display==='none'?'block':'none';} });
+    function showStatus(msg,err=false){const s=document.getElementById('mockStatus');s.textContent=msg;s.style.color=err?'#dc3545':'#28a745';}
+    async function callMockApi(path){try{const r=await fetch(path,{method:'POST'});const d=await r.json();showStatus(d.message||'OK',!d.success);}catch(e){showStatus(e.message,true);}}
+    document.getElementById('startMockBtn').addEventListener('click',()=>callMockApi('/api/mock/start'));
+    document.getElementById('stopMockBtn').addEventListener('click',()=>callMockApi('/api/mock/stop'));
+    document.getElementById('cleanupMockBtn').addEventListener('click',()=>{if(confirm('Delete all mock data?'))callMockApi('/api/mock/cleanup');});
+    document.getElementById('closePanelBtn').addEventListener('click',()=>{document.getElementById('mockControlPanel').style.display='none';});
+    async function refreshMockStatus(){try{const r=await fetch('/api/mock/status');const d=await r.json();showStatus(d.running?'Mock RUNNING':'Mock STOPPED',!d.running);}catch(e){showStatus('Cannot reach mock API',true);}}
+    refreshMockStatus(); setInterval(refreshMockStatus,5000);
+</script>
 </body>
-
 </html>
