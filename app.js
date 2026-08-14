@@ -287,7 +287,7 @@ app.use((req, res) => {
   res.redirect('/');
 });
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`🚤 Aqunex Server running at http://localhost:${port}`);
   console.log(`🏠 Home:      http://localhost:${port}/`);
   console.log(`🔐 Login:     http://localhost:${port}/login`);
