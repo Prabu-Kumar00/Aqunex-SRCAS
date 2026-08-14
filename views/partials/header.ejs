@@ -1,0 +1,108 @@
+<nav class="main-nav">
+    <a href="/" class="logo" style="text-decoration:none;"><span>🌊</span><span>R-TECH</span></a>
+
+    <div class="main-nav-links">
+        <a href="/"          class="nav-link<%= page === 'home'      ? ' active' : '' %>">Home</a>
+        <a href="/dashboard" class="nav-link<%= page === 'dashboard' ? ' active' : '' %>">Dashboard</a>
+        <a href="/reports"   class="nav-link<%= page === 'reports'   ? ' active' : '' %>">Reports</a>
+        <a href="/mission"   class="nav-link<%= page === 'mission'   ? ' active' : '' %>">Mission</a>
+    </div>
+
+    <div class="nav-auth">
+        <% if (typeof admin !== 'undefined' && admin) { %>
+            <span class="admin-email">
+                <i class="fa fa-circle" style="color:#3fb950;font-size:7px;vertical-align:middle;"></i>
+                <%= admin.email %>
+            </span>
+            <a href="/auth/logout" class="auth-btn logout-btn">
+                <i class="fa fa-right-from-bracket"></i> Logout
+            </a>
+        <% } else if (page !== 'login') { %>
+            <a href="/login" class="auth-btn login-btn">
+                <i class="fa fa-right-to-bracket"></i> Admin Login
+            </a>
+        <% } %>
+    </div>
+</nav>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<style>
+    .main-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 2rem;
+        background: #0d1117;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .main-nav .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1.4rem;
+        font-weight: 800;
+        font-family: 'Outfit', sans-serif;
+        background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.5px;
+    }
+    .main-nav .logo span:first-child {
+        -webkit-text-fill-color: initial;
+    }
+    .main-nav-links {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    .nav-link {
+        color: #aaa;
+        padding: 0.4rem 0.9rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: background 0.2s, color 0.2s;
+    }
+    .nav-link.active {
+        color: #7b5cf0;
+        font-weight: 600;
+    }
+    .nav-link:hover {
+        background: rgba(255,255,255,0.08);
+        color: #fff;
+    }
+
+    /* ── AUTH SECTION ── */
+    .nav-auth {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .admin-email {
+        font-size: 12px;
+        color: #8b949e;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .auth-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: opacity 0.2s, transform 0.1s;
+    }
+    .auth-btn:hover  { opacity: 0.85; transform: translateY(-1px); }
+    .auth-btn:active { transform: translateY(0); }
+    .login-btn  { background: #00897b; color: #fff; }
+    .logout-btn { background: #da3633; color: #fff; }
+</style>

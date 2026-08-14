@@ -1,0 +1,837 @@
+<%- include('partials/header') %>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; background: #0d1117; }
+
+  #mission-app {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 60px);
+    position: relative;
+  }
+
+  /* ── STATS BAR ── */
+  #stats-bar {
+    background: #161b22;
+    border-bottom: 1px solid #ffd700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 22px;
+    border-right: 1px solid #30363d;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-icon { font-size: 15px; }
+  .stat-num  { font-size: 14px; font-weight: 700; color: #fff; }
+  .stat-lbl  { font-size: 9px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.8px; }
+
+  /* ── MISSION HEADER ── */
+  #mission-header {
+    background: linear-gradient(90deg, #00695c, #00897b);
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 17px;
+    font-weight: 600;
+    flex-shrink: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  #debug-badge {
+    background: #c62828;
+    color: #fff;
+    font-size: 10px;
+    padding: 3px 12px;
+    letter-spacing: 2px;
+    border-radius: 4px;
+    font-weight: 700;
+    animation: pulse-badge 2s infinite;
+  }
+  @keyframes pulse-badge {
+    0%,100% { opacity:1; }
+    50%      { opacity:0.6; }
+  }
+
+  /* ── MAP ── */
+  #map-container { position: relative; flex: 1; }
+  #mission-map   { width: 100%; height: 100%; }
+
+  /* ── OVERLAYS ── */
+  .m-overlay { position: absolute; z-index: 500; pointer-events: none; }
+  .m-overlay * { pointer-events: auto; }
+
+  /* ── SHARED PANEL STYLE ── */
+  .dark-panel {
+    background: #161b22ee;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.45);
+    color: #e6edf3;
+  }
+
+  .panel-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #58a6ff;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #30363d;
+  }
+
+  /* ── PLAN PANEL ── */
+  #plan-overlay {
+    top: 12px; left: 12px;
+    padding: 16px 18px;
+    min-width: 270px;
+  }
+  .plan-note { font-size: 11px; color: #8b949e; line-height: 1.6; margin-bottom: 10px; }
+  .pt-count  { font-size: 13px; font-weight: 700; color: #e6edf3; margin-bottom: 12px; }
+  .pt-count span { color: #58a6ff; }
+
+  .plan-btns { display: flex; flex-direction: column; gap: 6px; }
+  .plan-btn {
+    padding: 9px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .plan-btn:hover   { opacity: 0.88; transform: translateY(-1px); }
+  .plan-btn:active  { transform: translateY(0); }
+  .plan-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+  .btn-scan  { background: #00897b; color: #fff; }
+  .btn-clear { background: #da3633; color: #fff; }
+  .btn-start { background: #1f6feb; color: #fff; }
+
+  /* ── LIVE LEFT ── */
+  #live-left {
+    top: 12px; left: 12px;
+    padding: 14px 16px;
+    min-width: 210px;
+  }
+  .sl { display: flex; align-items: center; gap: 6px; padding: 3px 0; }
+  .sl-lbl { color: #8b949e; font-size: 12px; min-width: 72px; }
+  .sl-val { font-weight: 700; color: #e6edf3; font-size: 13px; }
+  .green  { color: #3fb950 !important; }
+  .orange { color: #f0883e !important; }
+  .red    { color: #f85149 !important; }
+
+  .bat-track { width: 100%; height: 6px; background: #21262d; border-radius: 3px; margin: 4px 0 6px; }
+  .bat-fill  { height: 100%; background: linear-gradient(90deg, #1f6feb, #58a6ff); border-radius: 3px; transition: width 0.5s; }
+
+  .mock-chip {
+    background: #1f6feb;
+    color: #fff;
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-weight: 700;
+  }
+  .divider { border-top: 1px solid #30363d; margin: 8px 0; }
+
+  /* ── LIVE RIGHT ── */
+  #live-right {
+    top: 12px; right: 12px;
+    padding: 14px 16px;
+    min-width: 200px;
+  }
+
+  /* ── LOCK CAM ── */
+  #lock-cam-box {
+    bottom: 72px; left: 12px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #e6edf3;
+  }
+  .tog { position: relative; width: 40px; height: 20px; }
+  .tog input { display: none; }
+  .tog-track {
+    position: absolute; inset: 0;
+    border-radius: 10px; background: #30363d;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .tog-track::after {
+    content: ''; position: absolute;
+    top: 3px; left: 3px;
+    width: 14px; height: 14px;
+    border-radius: 50%; background: #fff;
+    transition: transform 0.2s;
+  }
+  .tog input:checked + .tog-track { background: #00897b; }
+  .tog input:checked + .tog-track::after { transform: translateX(20px); }
+
+  /* ── NEXT WP ── */
+  #next-wp-btn {
+    bottom: 72px; right: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    font-size: 10px;
+    color: #8b949e;
+    gap: 2px;
+    background: #161b22ee;
+    border: 1px solid #30363d;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+  #next-wp-btn i { color: #58a6ff; font-size: 18px; }
+  #nw-deg { font-size: 15px; font-weight: 700; color: #e6edf3; }
+
+  /* ── CONNECT OVERLAY ── */
+  #connect-overlay {
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .conn-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 14px;
+    padding: 24px;
+    width: 340px;
+    box-shadow: 0 16px 50px rgba(0,0,0,0.6);
+    color: #e6edf3;
+  }
+  .conn-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .conn-header h3 {
+    color: #00897b;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+  .conn-badge {
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .conn-badge.offline { background: #da3633; color: #fff; }
+  .conn-badge.online  { background: #3fb950; color: #fff; }
+
+  .conn-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid #21262d;
+    font-size: 13px;
+    color: #8b949e;
+  }
+  .conn-row:last-of-type { border-bottom: none; }
+  .conn-row span:first-child { display: flex; align-items: center; gap: 7px; }
+
+  .cs { font-weight: 700; display: flex; align-items: center; gap: 4px; }
+  .cs .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .cs.on  { color: #3fb950; }
+  .cs.on .dot  { background: #3fb950; box-shadow: 0 0 5px #3fb950; }
+  .cs.off { color: #f85149; }
+  .cs.off .dot { background: #f85149; }
+
+  .conn-divider { border-top: 1px solid #30363d; margin: 14px 0; }
+
+  .mode-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .mode-toggle-row span { font-size: 13px; color: #8b949e; }
+
+  .conn-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .conn-btn:hover   { opacity: 0.85; transform: translateY(-1px); }
+  .conn-btn:active  { transform: translateY(0); }
+  .conn-btn:last-child { margin-bottom: 0; }
+  .btn-ping      { background: #1f6feb; color: #fff; }
+  .btn-reconnect { background: #00897b; color: #fff; }
+  .btn-abort     { background: #da3633; color: #fff; }
+
+  /* ── ABORT TOAST ── */
+  #abort-toast {
+    position: fixed;
+    top: 80px; left: 50%;
+    transform: translateX(-50%);
+    background: #da3633;
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    z-index: 9999;
+    display: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    animation: slideDown 0.3s ease;
+  }
+  @keyframes slideDown { from { top: 60px; opacity:0; } to { top: 80px; opacity:1; } }
+
+  /* ── BOTTOM NAV ── */
+  #bottom-nav {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 58px;
+    background: #161b22;
+    border-top: 1px solid #30363d;
+    display: flex;
+    z-index: 600;
+  }
+  .nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 10px;
+    color: #8b949e;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: color 0.2s;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .nav-btn i { font-size: 18px; }
+  .nav-btn.active { color: #00897b; }
+  .nav-btn.active i { filter: drop-shadow(0 0 4px #00897b88); }
+</style>
+
+<!-- ═══════════════════ HTML ═══════════════════ -->
+<div id="abort-toast"><i class="fa fa-triangle-exclamation"></i> Mission Aborted!</div>
+
+<div id="mission-app">
+
+  <!-- STATS BAR -->
+  <div id="stats-bar">
+    <div class="stat-item">
+      <span class="stat-icon">🤖</span>
+      <div><div class="stat-num" id="sb-wps">0</div><div class="stat-lbl">Path Points</div></div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">📏</span>
+      <div><div class="stat-num" id="sb-dist">0.00 km</div><div class="stat-lbl">Mission Dist</div></div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">🔋</span>
+      <div><div class="stat-num" id="sb-bat" style="color:#3fb950">99%</div><div class="stat-lbl">Battery</div></div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">⏱️</span>
+      <div><div class="stat-num" id="sb-eta">--</div><div class="stat-lbl">ETA</div></div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">⚡</span>
+      <div><div class="stat-num" id="sb-status" style="color:#3fb950">Standby</div><div class="stat-lbl">Status</div></div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">🕐</span>
+      <div><div class="stat-num" id="sb-clock" style="color:#58a6ff">--:--</div><div class="stat-lbl">Local Time</div></div>
+    </div>
+  </div>
+
+  <!-- MISSION HEADER -->
+  <div id="mission-header">
+    <span><i class="fa fa-satellite-dish" style="margin-right:8px;"></i><span id="hdr-title">Mission Planner</span></span>
+    <span id="debug-badge">DEBUG</span>
+  </div>
+
+  <div id="map-container">
+    <div id="mission-map"></div>
+
+    <!-- PLAN OVERLAY -->
+    <div class="m-overlay dark-panel" id="plan-overlay">
+      <div class="panel-title"><i class="fa fa-draw-polygon"></i> Polygon Boundary Mode</div>
+      <div class="plan-note">
+        Tap on the map to define the water body boundary.<br>
+        Hit <strong>Scan Path</strong> to auto-generate the coverage route.
+      </div>
+      <div class="pt-count">Points placed: <span id="pt-cnt">0</span></div>
+      <div class="plan-btns">
+        <button class="plan-btn btn-scan"  onclick="generateScanPath()"><i class="fa fa-route"></i> Scan Path (Auto)</button>
+        <button class="plan-btn btn-clear" onclick="clearAll()"><i class="fa fa-trash"></i> Clear</button>
+        <button class="plan-btn btn-start" id="start-btn" disabled onclick="startMission()"><i class="fa fa-play"></i> Start Mission</button>
+      </div>
+    </div>
+
+    <!-- LIVE LEFT -->
+    <div class="m-overlay dark-panel" id="live-left" style="display:none">
+      <div class="panel-title"><i class="fa fa-robot"></i> Robot Status</div>
+      <div class="sl">
+        <span class="sl-lbl">Status</span>
+        <span class="sl-val green" id="l-status">Running</span>
+        <span class="mock-chip" id="mode-chip">MOCK</span>
+      </div>
+      <div class="sl"><span class="sl-lbl">Battery</span><span class="sl-val" id="l-bat">99%</span></div>
+      <div class="bat-track"><div class="bat-fill" id="bat-fill" style="width:99%"></div></div>
+      <div class="sl"><span class="sl-lbl">Warning</span><span class="sl-val green" id="l-warn">OK</span></div>
+      <div class="divider"></div>
+      <div class="sl"><span class="sl-lbl">pH</span><span class="sl-val" id="l-ph">7.00</span></div>
+      <div class="sl"><span class="sl-lbl">Turbidity</span><span class="sl-val" id="l-turb">12.3 NTU</span></div>
+      <div class="sl"><span class="sl-lbl">Temp</span><span class="sl-val" id="l-temp">27.8 °C</span></div>
+    </div>
+
+    <!-- LIVE RIGHT -->
+    <div class="m-overlay dark-panel" id="live-right" style="display:none">
+      <div class="panel-title"><i class="fa fa-chart-line"></i> Mission Stats</div>
+      <div class="sl"><span class="sl-lbl">Path pts</span><span class="sl-val" id="l-pts">0</span></div>
+      <div class="sl"><span class="sl-lbl">Total dist</span><span class="sl-val" id="l-dist">0.00 km</span></div>
+      <div class="sl"><span class="sl-lbl">Remaining</span><span class="sl-val" id="l-rem">0.00 km</span></div>
+      <div class="sl"><span class="sl-lbl">ETA</span><span class="sl-val" id="l-eta">--</span></div>
+      <div class="sl"><span class="sl-lbl">Speed</span><span class="sl-val" id="l-spd">0.00 m/s</span></div>
+    </div>
+
+    <!-- LOCK CAM -->
+    <div class="m-overlay dark-panel" id="lock-cam-box" style="display:none">
+      <label class="tog">
+        <input type="checkbox" id="lock-toggle" checked onchange="lockCam=this.checked">
+        <div class="tog-track"></div>
+      </label>
+      <span style="font-size:12px;">Lock camera on robot</span>
+    </div>
+
+    <!-- NEXT WP -->
+    <button class="m-overlay" id="next-wp-btn" style="display:none" onclick="focusNextWp()">
+      <i class="fa fa-play"></i>
+      <span>Next WP</span>
+      <span id="nw-deg">--°</span>
+    </button>
+
+    <!-- CONNECT OVERLAY -->
+    <div class="m-overlay" id="connect-overlay" style="display:none">
+      <div class="conn-card">
+        <div class="conn-header">
+          <h3><i class="fa fa-satellite-dish"></i> Robot Connection</h3>
+          <span class="conn-badge offline" id="conn-overall-badge">OFFLINE</span>
+        </div>
+        <div class="conn-row">
+          <span><i class="fa fa-database" style="color:#58a6ff;"></i> Firebase RTDB</span>
+          <span class="cs on"><span class="dot"></span>Connected</span>
+        </div>
+        <div class="conn-row">
+          <span><i class="fa fa-robot" style="color:#58a6ff;"></i> Robot Telemetry</span>
+          <span class="cs off" id="robot-cs"><span class="dot"></span>Disconnected</span>
+        </div>
+        <div class="conn-row">
+          <span><i class="fa fa-wifi" style="color:#58a6ff;"></i> Mode</span>
+          <span id="mode-cs" style="color:#f0883e;font-weight:700;font-size:13px;">
+            <i class="fa fa-flask" style="font-size:10px;margin-right:4px;"></i>Mock Mode
+          </span>
+        </div>
+        <div class="conn-row">
+          <span><i class="fa fa-clock" style="color:#58a6ff;"></i> Last Ping</span>
+          <span id="last-ping" style="font-size:12px;color:#8b949e;">--</span>
+        </div>
+        <div class="conn-row">
+          <span><i class="fa fa-microchip" style="color:#58a6ff;"></i> Firmware</span>
+          <span style="font-size:12px;color:#8b949e;">AquNex v1.0.0</span>
+        </div>
+        <div class="conn-divider"></div>
+        <div class="mode-toggle-row">
+          <span><i class="fa fa-flask" style="color:#f0883e;margin-right:6px;"></i>Simulation Mode</span>
+          <label class="tog">
+            <input type="checkbox" id="mock-toggle-check" checked onchange="toggleMock(this.checked)">
+            <div class="tog-track"></div>
+          </label>
+        </div>
+        <button class="conn-btn btn-ping"      onclick="pingRobot()"><i class="fa fa-paper-plane"></i> Ping Robot</button>
+        <button class="conn-btn btn-reconnect" onclick="reconnect()"><i class="fa fa-rotate"></i> Reconnect Firebase</button>
+        <button class="conn-btn btn-abort"     onclick="abortMission()"><i class="fa fa-circle-stop"></i> Abort Mission</button>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div id="bottom-nav">
+      <button class="nav-btn" id="nav-connect" onclick="switchTab('connect')">
+        <i class="fa fa-gear"></i><span>Connect</span>
+      </button>
+      <button class="nav-btn active" id="nav-plan" onclick="switchTab('plan')">
+        <i class="fa fa-map-location-dot"></i><span>Plan Path</span>
+      </button>
+      <button class="nav-btn" id="nav-live" onclick="switchTab('live')">
+        <i class="fa fa-location-crosshairs"></i><span>Live Track</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SCRIPTS ═══════════════════ -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+// ── FIREBASE ──
+const firebaseConfig = <%- JSON.stringify(firebaseConfig) %>;
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ── CLOCK ──
+setInterval(() => {
+  document.getElementById('sb-clock').textContent =
+    new Date().toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true });
+}, 1000);
+
+// ── MAP ──
+const map = L.map('mission-map', { zoomControl: false }).setView([11.0168, 76.9558], 14);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap © CARTO', maxZoom: 19
+}).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
+  attribution: '', maxZoom: 19, pane: 'overlayPane'
+}).addTo(map);
+
+// ── STATE ──
+let currentTab = 'plan';
+let areaPts = [], areaMarkers = [], areaPoly = null;
+let scanLayers = [], scanWaypoints = [], currentWpIdx = 0;
+let robotMarker = null, lockCam = true, mockMode = true;
+let mockTimer = null, totalDist = 0;
+const TRACK_SPACING_M = 40;
+
+// ── TAB SWITCHING ──
+function switchTab(tab) {
+  currentTab = tab;
+  ['connect','plan','live'].forEach(t =>
+    document.getElementById('nav-'+t).classList.toggle('active', t === tab)
+  );
+  ['plan-overlay','live-left','live-right','lock-cam-box','next-wp-btn','connect-overlay'].forEach(id =>
+    document.getElementById(id).style.display = 'none'
+  );
+
+  if (tab === 'plan') {
+    document.getElementById('hdr-title').textContent = 'Mission Planner';
+    document.getElementById('plan-overlay').style.display = 'block';
+    map.on('click', onMapClick);
+  } else {
+    map.off('click', onMapClick);
+  }
+
+  if (tab === 'live') {
+    document.getElementById('hdr-title').textContent = 'Live Robot Tracking';
+    document.getElementById('live-left').style.display   = 'block';
+    document.getElementById('live-right').style.display  = 'block';
+    document.getElementById('lock-cam-box').style.display = 'flex';
+    document.getElementById('next-wp-btn').style.display  = 'flex';
+    document.getElementById('sb-status').textContent = 'Active';
+    document.getElementById('sb-status').style.color = '#3fb950';
+    if (mockMode && scanWaypoints.length > 0) startMockMovement();
+  }
+
+  if (tab === 'connect') {
+    document.getElementById('hdr-title').textContent = 'Connection';
+    document.getElementById('connect-overlay').style.display = 'flex';
+  }
+}
+
+// ── DRAWING (Polygon only) ──
+function onMapClick(e) {
+  const { lat, lng } = e.latlng;
+  areaPts.push({ lat, lng });
+  const m = L.circleMarker([lat, lng], {
+    radius: 6, color: '#f85149', fillColor: '#f85149', fillOpacity: 1, weight: 2
+  }).addTo(map);
+  areaMarkers.push(m);
+  if (areaPoly) map.removeLayer(areaPoly);
+  if (areaPts.length >= 2) {
+    areaPoly = L.polygon(areaPts.map(p => [p.lat, p.lng]), {
+      color: '#f0883e', weight: 2, fillColor: '#f0883e', fillOpacity: 0.06
+    }).addTo(map);
+  }
+  document.getElementById('pt-cnt').textContent = areaPts.length;
+  document.getElementById('start-btn').disabled = areaPts.length < 3;
+}
+map.on('click', onMapClick);
+
+// ── COVERAGE PATH ──
+function toMeters(lat, lng, oLat, oLng) {
+  const R = 6371000, r = Math.PI/180;
+  return { x: (lng-oLng)*r*R*Math.cos(oLat*r), y: (lat-oLat)*r*R };
+}
+function toLatLng(x, y, oLat, oLng) {
+  const R = 6371000, r = Math.PI/180;
+  return { lat: oLat+(y/R)/r, lng: oLng+(x/(R*Math.cos(oLat*r)))/r };
+}
+function intersectY(p1, p2, y) {
+  if ((p1.y<=y && p2.y>y)||(p2.y<=y && p1.y>y))
+    return p1.x + (y-p1.y)/(p2.y-p1.y)*(p2.x-p1.x);
+  return null;
+}
+
+function generateScanPath() {
+  if (areaPts.length < 3) { alert('Place at least 3 boundary points first.'); return; }
+  scanLayers.forEach(l => map.removeLayer(l)); scanLayers = [];
+  scanWaypoints = [];
+  const origin = areaPts[0];
+  const pts = areaPts.map(p => toMeters(p.lat, p.lng, origin.lat, origin.lng));
+  const minY = Math.min(...pts.map(p => p.y));
+  const maxY = Math.max(...pts.map(p => p.y));
+  let lineIdx = 0;
+  const allWps = [];
+
+  for (let y = minY + TRACK_SPACING_M/2; y <= maxY; y += TRACK_SPACING_M) {
+    const xs = [];
+    for (let i = 0; i < pts.length; i++) {
+      const x = intersectY(pts[i], pts[(i+1)%pts.length], y);
+      if (x !== null) xs.push(x);
+    }
+    xs.sort((a,b) => a-b);
+    for (let j = 0; j+1 < xs.length; j += 2) {
+      const ll1 = toLatLng(xs[j],   y, origin.lat, origin.lng);
+      const ll2 = toLatLng(xs[j+1], y, origin.lat, origin.lng);
+      const from = lineIdx%2===0 ? ll1 : ll2;
+      const to   = lineIdx%2===0 ? ll2 : ll1;
+      scanLayers.push(L.polyline([[from.lat,from.lng],[to.lat,to.lng]], {
+        color:'#3fb950', weight:2.5, opacity:0.9
+      }).addTo(map));
+      if (allWps.length > 0) {
+        const prev = allWps[allWps.length-1];
+        scanLayers.push(L.polyline([[prev.lat,prev.lng],[from.lat,from.lng]], {
+          color:'#58a6ff', weight:1.5, opacity:0.5, dashArray:'5,5'
+        }).addTo(map));
+      }
+      allWps.push(from, to);
+      lineIdx++;
+    }
+  }
+
+  scanWaypoints = allWps; currentWpIdx = 0;
+  totalDist = 0;
+  for (let i = 1; i < scanWaypoints.length; i++)
+    totalDist += haversine(scanWaypoints[i-1], scanWaypoints[i]);
+
+  const distKm = (totalDist/1000).toFixed(2);
+  document.getElementById('l-pts').textContent   = scanWaypoints.length;
+  document.getElementById('l-dist').textContent  = distKm+' km';
+  document.getElementById('l-rem').textContent   = distKm+' km';
+  document.getElementById('sb-wps').textContent  = scanWaypoints.length;
+  document.getElementById('sb-dist').textContent = distKm+' km';
+  if (areaPoly) map.fitBounds(areaPoly.getBounds(), { padding:[50,50] });
+  document.getElementById('start-btn').disabled = false;
+}
+
+function clearAll() {
+  areaPts = [];
+  areaMarkers.forEach(m => map.removeLayer(m)); areaMarkers = [];
+  if (areaPoly) { map.removeLayer(areaPoly); areaPoly = null; }
+  scanLayers.forEach(l => map.removeLayer(l)); scanLayers = [];
+  scanWaypoints = [];
+  if (mockTimer) { clearInterval(mockTimer); mockTimer = null; }
+  if (robotMarker) { map.removeLayer(robotMarker); robotMarker = null; }
+  document.getElementById('pt-cnt').textContent    = '0';
+  document.getElementById('sb-wps').textContent    = '0';
+  document.getElementById('sb-dist').textContent   = '0.00 km';
+  document.getElementById('sb-status').textContent = 'Standby';
+  document.getElementById('sb-status').style.color = '#3fb950';
+  document.getElementById('start-btn').disabled    = true;
+}
+
+function startMission() {
+  if (scanWaypoints.length === 0) { alert('Run Scan Path first.'); return; }
+  db.ref('aqunex/mission').set({
+    status: 'active', waypoints: scanWaypoints,
+    totalWaypoints: scanWaypoints.length, deployedAt: Date.now()
+  });
+  currentWpIdx = 0;
+  switchTab('live');
+}
+
+// ── ROBOT MARKER ──
+function placeRobot(lat, lng) {
+  if (!robotMarker) {
+    const icon = L.divIcon({
+      html: `<div style="width:16px;height:16px;background:#f9a825;border:3px solid #fff;border-radius:50%;box-shadow:0 0 10px rgba(249,168,37,0.8);"></div>`,
+      iconSize:[16,16], iconAnchor:[8,8]
+    });
+    robotMarker = L.marker([lat, lng], { icon }).addTo(map);
+  } else {
+    robotMarker.setLatLng([lat, lng]);
+  }
+  if (lockCam) map.panTo([lat, lng], { animate:true, duration:0.3 });
+}
+
+function focusNextWp() {
+  const wp = scanWaypoints[currentWpIdx];
+  if (wp) map.panTo([wp.lat, wp.lng]);
+}
+
+// ── MOCK MOVEMENT ──
+function startMockMovement() {
+  if (mockTimer) clearInterval(mockTimer);
+  let segIdx = 0, t = 0;
+  const SPEED = 8, TICK = 100;
+
+  mockTimer = setInterval(() => {
+    if (segIdx >= scanWaypoints.length - 1) {
+      clearInterval(mockTimer);
+      document.getElementById('l-status').textContent  = 'Complete';
+      document.getElementById('l-status').className    = 'sl-val orange';
+      document.getElementById('sb-status').textContent = 'Complete';
+      document.getElementById('sb-status').style.color = '#f0883e';
+      document.getElementById('l-rem').textContent     = '0.00 km';
+      document.getElementById('l-eta').textContent     = '0m 0s';
+      document.getElementById('sb-eta').textContent    = '0m 0s';
+      return;
+    }
+    const from = scanWaypoints[segIdx], to = scanWaypoints[segIdx+1];
+    const segDist = haversine(from, to);
+    const step = (SPEED * TICK/1000) / Math.max(segDist, 0.001);
+    t += step;
+    if (t >= 1) { t = 0; segIdx++; currentWpIdx = segIdx; return; }
+
+    const lat = from.lat + t*(to.lat-from.lat);
+    const lng = from.lng + t*(to.lng-from.lng);
+    placeRobot(lat, lng);
+
+    const remaining = Math.max(0, totalDist - (segIdx/scanWaypoints.length*totalDist));
+    const etaSec = remaining / SPEED;
+    const etaStr = `${Math.floor(etaSec/60)}m ${Math.floor(etaSec%60)}s`;
+
+    document.getElementById('l-rem').textContent  = (remaining/1000).toFixed(2)+' km';
+    document.getElementById('l-spd').textContent  = (SPEED+(Math.random()-0.5)*0.2).toFixed(2)+' m/s';
+    document.getElementById('l-eta').textContent  = etaStr;
+    document.getElementById('sb-eta').textContent = etaStr;
+    document.getElementById('l-ph').textContent   = (7.0+(Math.random()-0.5)*0.3).toFixed(2);
+    document.getElementById('l-turb').textContent = (12.3+(Math.random()-0.5)*2).toFixed(1)+' NTU';
+    document.getElementById('l-temp').textContent = (27.8+(Math.random()-0.5)*0.4).toFixed(1)+' °C';
+
+    const bat = Math.max(80, 99 - Math.floor(segIdx/4));
+    document.getElementById('l-bat').textContent    = bat+'%';
+    document.getElementById('sb-bat').textContent   = bat+'%';
+    document.getElementById('bat-fill').style.width = bat+'%';
+    document.getElementById('nw-deg').textContent   = Math.round(getBearing({lat,lng},to))+'°';
+  }, TICK);
+}
+
+function haversine(a, b) {
+  const R=6371000, r=Math.PI/180;
+  const dLat=(b.lat-a.lat)*r, dLng=(b.lng-a.lng)*r;
+  const x=Math.sin(dLat/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+
+function getBearing(from, to) {
+  const r=Math.PI/180, dL=(to.lng-from.lng)*r;
+  const y=Math.sin(dL)*Math.cos(to.lat*r);
+  const x=Math.cos(from.lat*r)*Math.sin(to.lat*r)-Math.sin(from.lat*r)*Math.cos(to.lat*r)*Math.cos(dL);
+  return((Math.atan2(y,x)*180/Math.PI)+360)%360;
+}
+
+// ── CONNECT TAB FUNCTIONS ──
+function toggleMock(checked) {
+  mockMode = checked;
+  const modeEl = document.getElementById('mode-cs');
+  const chip   = document.getElementById('mode-chip');
+  if (mockMode) {
+    modeEl.innerHTML = '<i class="fa fa-flask" style="font-size:10px;margin-right:4px;"></i>Mock Mode';
+    modeEl.style.color = '#f0883e';
+    if (chip) { chip.textContent = 'MOCK'; chip.style.background = '#1f6feb'; }
+  } else {
+    modeEl.innerHTML = '<i class="fa fa-satellite-dish" style="font-size:10px;margin-right:4px;"></i>Live Mode';
+    modeEl.style.color = '#3fb950';
+    if (chip) { chip.textContent = 'LIVE'; chip.style.background = '#3fb950'; }
+  }
+}
+
+function pingRobot() {
+  db.ref('aqunex/ping').set({ t: Date.now() });
+  document.getElementById('last-ping').textContent = new Date().toLocaleTimeString('en-IN');
+  const badge = document.getElementById('conn-overall-badge');
+  badge.className = 'conn-badge online';
+  badge.textContent = 'PINGED';
+  setTimeout(() => {
+    badge.className = 'conn-badge offline';
+    badge.textContent = 'OFFLINE';
+  }, 2500);
+}
+
+function reconnect() {
+  const badge = document.getElementById('conn-overall-badge');
+  badge.className = 'conn-badge';
+  badge.style.background = '#f0883e';
+  badge.textContent = 'RECONNECTING...';
+  db.goOffline();
+  setTimeout(() => {
+    db.goOnline();
+    badge.className = 'conn-badge online';
+    badge.textContent = 'ONLINE';
+    document.getElementById('last-ping').textContent = new Date().toLocaleTimeString('en-IN');
+  }, 900);
+}
+
+function abortMission() {
+  if (mockTimer) { clearInterval(mockTimer); mockTimer = null; }
+  db.ref('aqunex/mission/status').set('aborted');
+  document.getElementById('sb-status').textContent = 'Aborted';
+  document.getElementById('sb-status').style.color = '#f85149';
+  const toast = document.getElementById('abort-toast');
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 3000);
+  switchTab('plan');
+}
+
+// ── FIREBASE LIVE TELEMETRY ──
+db.ref('aqunex/telemetry').on('value', snap => {
+  const d = snap.val();
+  if (!d || mockMode) return;
+  if (d.lat && d.lng) placeRobot(d.lat, d.lng);
+  if (d.speed    != null) document.getElementById('l-spd').textContent  = d.speed.toFixed(2)+' m/s';
+  if (d.battery  != null) { document.getElementById('l-bat').textContent=d.battery+'%'; document.getElementById('bat-fill').style.width=d.battery+'%'; }
+  if (d.ph       != null) document.getElementById('l-ph').textContent   = d.ph.toFixed(2);
+  if (d.turbidity!= null) document.getElementById('l-turb').textContent = d.turbidity.toFixed(1)+' NTU';
+  if (d.temp     != null) document.getElementById('l-temp').textContent = d.temp.toFixed(1)+' °C';
+  document.getElementById('last-ping').textContent = new Date().toLocaleTimeString('en-IN');
+  document.getElementById('robot-cs').innerHTML    = '<span class="dot"></span>Connected';
+  document.getElementById('robot-cs').className    = 'cs on';
+  document.getElementById('conn-overall-badge').className  = 'conn-badge online';
+  document.getElementById('conn-overall-badge').textContent = 'ONLINE';
+});
+</script>
+
+</body>
+</html>

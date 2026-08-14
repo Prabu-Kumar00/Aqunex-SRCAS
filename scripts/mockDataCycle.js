@@ -11,9 +11,10 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-const COLLECTION_NAME = 'sensor_data';   // must match dashboard
+const COLLECTION_NAME = 'sensor_data';
+const CONTROL_DOC = 'config/mockControl';   // ← NEW: DB control flag
 const MAX_MOCK_DOCS = 10;
-const ADD_INTERVAL = 10000;             // 10 seconds
+const ADD_INTERVAL = 10000;
 
 function generateMockData() {
   const loc = getRandomLocation();
@@ -21,10 +22,7 @@ function generateMockData() {
   return {
     chlorophyll: getRandomValue(5, 150, 1),
     district: loc.district,
-    gps: {
-      lat: variedGPS.lat,
-      lng: variedGPS.lng
-    },
+    gps: { lat: variedGPS.lat, lng: variedGPS.lng },
     location: loc.name,
     ph: getRandomValue(6.5, 8.5, 1),
     state: loc.state,
@@ -48,8 +46,6 @@ async function trimMockDocsIfNeeded() {
 
   const extra = docs.length - MAX_MOCK_DOCS;
   const batch = db.batch();
-
-  // Delete first N docs (no ordering needed)
   for (let i = 0; i < extra; i++) {
     batch.delete(docs[i].ref);
   }
@@ -57,7 +53,26 @@ async function trimMockDocsIfNeeded() {
   console.log(`🧹 Removed ${extra} oldest mock docs (kept ${MAX_MOCK_DOCS})`);
 }
 
+// ─── NEW: check DB flag before adding ─────────────────────────────────────────
+async function isMockEnabled() {
+  try {
+    const doc = await db.doc(CONTROL_DOC).get();
+    if (!doc.exists) return true;           // default: enabled if doc missing
+    return doc.data().enabled !== false;
+  } catch (e) {
+    console.error('⚠️  Could not read control flag:', e.message);
+    return true;                            // fail-open: keep running
+  }
+}
+// ──────────────────────────────────────────────────────────────────────────────
+
 async function addMockData() {
+  // ← SKIP if dashboard set enabled: false
+  if (!(await isMockEnabled())) {
+    console.log(`⏸  [${new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata' })}] Mock paused by dashboard`);
+    return;
+  }
+
   try {
     await trimMockDocsIfNeeded();
 
@@ -73,6 +88,7 @@ async function addMockData() {
 
 console.log('🚀 Mock Data Cycle Mode');
 console.log(`   Collection : ${COLLECTION_NAME}`);
+console.log(`   Control    : Firestore → ${CONTROL_DOC}`);
 console.log(`   Interval   : ${ADD_INTERVAL / 1000}s`);
 console.log(`   Max mocks  : ${MAX_MOCK_DOCS}`);
 console.log('Press Ctrl+C to stop\n');
