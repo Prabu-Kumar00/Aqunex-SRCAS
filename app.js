@@ -3,6 +3,8 @@ const express = require('express');
 const path = require('path');
 const admin = require('firebase-admin');
 const session = require('express-session');
+const helmet = require('helmet');
+const crypto = require('crypto');
 const { getRandomLocation, addGPSVariation, getRandomValue } = require('./scripts/locations');
 
 const app = express();
@@ -59,17 +61,39 @@ try {
 }
 
 // ── Middleware ──
+const isProd = process.env.NODE_ENV === 'production';
+
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false,
+}));
+app.disable('x-powered-by');
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
 app.use(express.json());
 
 // ── Session ──
+let sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret) {
+  if (isProd) {
+    throw new Error('SESSION_SECRET is required in production for secure sessions.');
+  }
+  sessionSecret = crypto.randomBytes(32).toString('hex');
+}
+
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'aqunex-secret-2025',
+  name: 'aqunex.sid',
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
+  cookie: {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: isProd,
+    maxAge: 1000 * 60 * 60 * 4
+  }
 }));
 
 // ── Auth Middleware ──
@@ -107,9 +131,16 @@ app.post('/auth/login', async (req, res) => {
   if (!token) return res.json({ success: false, message: 'No token provided.' });
   try {
     const decoded = await admin.auth().verifyIdToken(token);
-    req.session.admin = { uid: decoded.uid, email: decoded.email };
-    console.log(`✅ Admin login: ${decoded.email}`);
-    res.json({ success: true });
+    
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error('Session regenerate error:', err);
+        return res.status(500).json({ success: false, message: 'Session error' });
+      }
+      req.session.admin = { uid: decoded.uid, email: decoded.email };
+      console.log(`✅ Admin login: ${decoded.email}`);
+      res.json({ success: true });
+    });
   } catch (err) {
     console.error('❌ Token verification failed:', err.message);
     res.json({ success: false, message: 'Invalid or expired token.' });
@@ -119,9 +150,12 @@ app.post('/auth/login', async (req, res) => {
 // Logout — go back to home, not login
 app.get('/auth/logout', (req, res) => {
   const email = req.session.admin?.email || 'unknown';
-  req.session.destroy();
-  console.log(`🚪 Admin logged out: ${email}`);
-  res.redirect('/');
+  req.session.destroy((err) => {
+    if (err) console.error('Session destroy error:', err);
+    res.clearCookie('aqunex.sid');
+    console.log(`🚪 Admin logged out: ${email}`);
+    res.redirect('/');
+  });
 });
 
 

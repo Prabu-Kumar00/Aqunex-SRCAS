@@ -5,81 +5,151 @@
 
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; background: #0d1117; }
+  body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    background: #060d1a;
+    color: #f8fafc;
+  }
 
   #mission-app {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 60px);
     position: relative;
+    background: #060d1a;
   }
 
-  /* ── STATS BAR ── */
-  #stats-bar {
-    background: #161b22;
-    border-bottom: 1px solid #ffd700;
+  /* ── SIMULATION DISCLAIMER BAR ── */
+  .sim-disclaimer-bar {
+    background: linear-gradient(90deg, rgba(14, 165, 233, 0.15), rgba(99, 102, 241, 0.2));
+    border-bottom: 1px solid rgba(14, 165, 233, 0.25);
+    padding: 6px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #38bdf8;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 52px;
+    gap: 8px;
+    letter-spacing: 0.5px;
+    z-index: 12;
     flex-shrink: 0;
-    z-index: 10;
+  }
+  .sim-disclaimer-bar i { color: #0ea5e9; }
+
+  /* ── STATS BAR ── */
+  #stats-bar {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-bottom: 1px solid rgba(14, 165, 233, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 6px 12px;
+    min-height: 44px;
+    flex-shrink: 0;
+    z-index: 11;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
   }
   .stat-item {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 0 22px;
-    border-right: 1px solid #30363d;
+    padding: 2px 12px;
   }
-  .stat-item:last-child { border-right: none; }
   .stat-icon { font-size: 15px; }
-  .stat-num  { font-size: 14px; font-weight: 700; color: #fff; }
-  .stat-lbl  { font-size: 9px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.8px; }
+  .stat-num  { font-size: 13px; font-weight: 700; color: #f8fafc; font-family: 'Outfit', sans-serif; }
+  .stat-lbl  { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; }
 
-  /* ── MISSION HEADER ── */
+  /* ── MISSION HEADER & COMPACT VIEW SWITCHER ── */
   #mission-header {
-    background: linear-gradient(90deg, #00695c, #00897b);
+    background: rgba(15, 23, 42, 0.95);
+    border-bottom: 1px solid rgba(14, 165, 233, 0.2);
     color: #fff;
-    padding: 10px 20px;
-    font-size: 17px;
-    font-weight: 600;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
     flex-shrink: 0;
     z-index: 10;
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
-  #debug-badge {
-    background: #c62828;
-    color: #fff;
-    font-size: 10px;
-    padding: 3px 12px;
-    letter-spacing: 2px;
-    border-radius: 4px;
-    font-weight: 700;
-    animation: pulse-badge 2s infinite;
-  }
-  @keyframes pulse-badge {
-    0%,100% { opacity:1; }
-    50%      { opacity:0.6; }
+    gap: 12px;
   }
 
-  /* ── MAP ── */
-  #map-container { position: relative; flex: 1; }
-  #mission-map   { width: 100%; height: 100%; }
+  .header-brand-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .view-switcher-pills {
+    display: flex;
+    align-items: center;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(14, 165, 233, 0.3);
+    border-radius: 20px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .view-pill {
+    padding: 4px 14px;
+    border-radius: 16px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+  .view-pill:hover { color: #f8fafc; }
+  .view-pill.active {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.4);
+  }
+
+  .state-badge {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  }
+  .state-PLANNING  { background: rgba(14, 165, 233, 0.2); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); }
+  .state-READY     { background: rgba(139, 92, 246, 0.25); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.4); }
+  .state-RUNNING   { background: rgba(34, 197, 94, 0.25); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
+  .state-PAUSED    { background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+  .state-COMPLETED { background: rgba(16, 185, 129, 0.25); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+  .state-ABORTED   { background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+
+  /* ── MAP CONTAINER ── */
+  #map-container { position: relative; flex: 1; min-height: 0; }
+  #mission-map   { width: 100%; height: 100%; background: #0b0f19; }
 
   /* ── OVERLAYS ── */
   .m-overlay { position: absolute; z-index: 500; pointer-events: none; }
   .m-overlay * { pointer-events: auto; }
 
-  /* ── SHARED PANEL STYLE ── */
+  /* ── GLASSMORPHIC PANELS ── */
   .dark-panel {
-    background: #161b22ee;
-    border: 1px solid #30363d;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.45);
-    color: #e6edf3;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(14, 165, 233, 0.25);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+    color: #f8fafc;
   }
 
   .panel-title {
@@ -87,298 +157,236 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #58a6ff;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #30363d;
+    color: #38bdf8;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(14, 165, 233, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  /* ── PLAN PANEL ── */
+  /* ── PLAN OVERLAY PANEL ── */
   #plan-overlay {
     top: 12px; left: 12px;
-    padding: 16px 18px;
-    min-width: 270px;
+    padding: 16px;
+    width: 310px;
+    max-height: calc(100% - 24px);
+    overflow-y: auto;
   }
-  .plan-note { font-size: 11px; color: #8b949e; line-height: 1.6; margin-bottom: 10px; }
-  .pt-count  { font-size: 13px; font-weight: 700; color: #e6edf3; margin-bottom: 12px; }
-  .pt-count span { color: #58a6ff; }
+
+  .plan-instruction {
+    font-size: 11px;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    background: rgba(30, 41, 59, 0.5);
+    padding: 8px 10px;
+    border-radius: 6px;
+    border-left: 3px solid #0ea5e9;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .metric-card {
+    background: rgba(30, 41, 59, 0.7);
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .metric-card.full-width { grid-column: span 2; }
+  .metric-val { font-size: 14px; font-weight: 700; color: #f8fafc; font-family: 'Outfit', sans-serif; }
+  .metric-lbl { font-size: 9px; color: #94a3b8; text-transform: uppercase; margin-top: 2px; }
+
+  /* Controls */
+  .control-group {
+    margin-bottom: 12px;
+  }
+  .control-label {
+    font-size: 11px;
+    color: #cbd5e1;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .spacing-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .spacing-input-wrap input {
+    width: 100%;
+    padding: 6px 10px;
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid rgba(14, 165, 233, 0.3);
+    border-radius: 6px;
+    color: #38bdf8;
+    font-size: 13px;
+    font-weight: 700;
+    outline: none;
+  }
+  .spacing-input-wrap input:focus { border-color: #38bdf8; box-shadow: 0 0 8px rgba(56,189,248,0.3); }
 
   .plan-btns { display: flex; flex-direction: column; gap: 6px; }
   .plan-btn {
     padding: 9px 12px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
   }
-  .plan-btn:hover   { opacity: 0.88; transform: translateY(-1px); }
-  .plan-btn:active  { transform: translateY(0); }
-  .plan-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
-  .btn-scan  { background: #00897b; color: #fff; }
-  .btn-clear { background: #da3633; color: #fff; }
-  .btn-start { background: #1f6feb; color: #fff; }
+  .plan-btn:hover:not(:disabled)   { opacity: 0.9; transform: translateY(-1px); }
+  .plan-btn:active:not(:disabled)  { transform: translateY(0); }
+  .plan-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; }
 
-  /* ── LIVE LEFT ── */
+  .btn-cyan    { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff; }
+  .btn-indigo  { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; }
+  .btn-green   { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+  .btn-amber   { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
+  .btn-danger  { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+  .btn-secondary { background: rgba(51, 65, 85, 0.8); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); }
+
+  /* Warning box */
+  .alert-box {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+    font-size: 11px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: none;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── LIVE OVERLAYS ── */
   #live-left {
     top: 12px; left: 12px;
     padding: 14px 16px;
-    min-width: 210px;
+    min-width: 220px;
   }
-  .sl { display: flex; align-items: center; gap: 6px; padding: 3px 0; }
-  .sl-lbl { color: #8b949e; font-size: 12px; min-width: 72px; }
-  .sl-val { font-weight: 700; color: #e6edf3; font-size: 13px; }
-  .green  { color: #3fb950 !important; }
-  .orange { color: #f0883e !important; }
-  .red    { color: #f85149 !important; }
-
-  .bat-track { width: 100%; height: 6px; background: #21262d; border-radius: 3px; margin: 4px 0 6px; }
-  .bat-fill  { height: 100%; background: linear-gradient(90deg, #1f6feb, #58a6ff); border-radius: 3px; transition: width 0.5s; }
-
-  .mock-chip {
-    background: #1f6feb;
-    color: #fff;
-    font-size: 9px;
-    padding: 1px 6px;
-    border-radius: 8px;
-    font-weight: 700;
-  }
-  .divider { border-top: 1px solid #30363d; margin: 8px 0; }
-
-  /* ── LIVE RIGHT ── */
   #live-right {
     top: 12px; right: 12px;
     padding: 14px 16px;
-    min-width: 200px;
+    min-width: 210px;
   }
 
-  /* ── LOCK CAM ── */
+  .sl { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 0; }
+  .sl-lbl { color: #94a3b8; font-size: 11px; }
+  .sl-val { font-weight: 700; color: #f8fafc; font-size: 12px; font-family: 'Outfit', sans-serif; }
+  .green  { color: #4ade80 !important; }
+  .amber  { color: #fbbf24 !important; }
+  .red    { color: #f87171 !important; }
+
+  .bat-track { width: 100%; height: 6px; background: rgba(30, 41, 59, 0.8); border-radius: 3px; margin: 4px 0 6px; }
+  .bat-fill  { height: 100%; background: linear-gradient(90deg, #0ea5e9, #38bdf8); border-radius: 3px; transition: width 0.5s; }
+
+  .divider { border-top: 1px solid rgba(14, 165, 233, 0.15); margin: 8px 0; }
+
+  /* ── CAMERA LOCK CONTROL ── */
   #lock-cam-box {
-    bottom: 72px; left: 12px;
+    bottom: 16px; left: 12px;
     padding: 8px 14px;
     border-radius: 20px;
     display: flex;
     align-items: center;
     gap: 10px;
     font-size: 12px;
-    color: #e6edf3;
+    color: #e2e8f0;
   }
-  .tog { position: relative; width: 40px; height: 20px; }
+  .tog { position: relative; width: 36px; height: 18px; }
   .tog input { display: none; }
   .tog-track {
     position: absolute; inset: 0;
-    border-radius: 10px; background: #30363d;
+    border-radius: 10px; background: #334155;
     cursor: pointer; transition: background 0.2s;
   }
   .tog-track::after {
     content: ''; position: absolute;
-    top: 3px; left: 3px;
+    top: 2px; left: 2px;
     width: 14px; height: 14px;
     border-radius: 50%; background: #fff;
     transition: transform 0.2s;
   }
-  .tog input:checked + .tog-track { background: #00897b; }
-  .tog input:checked + .tog-track::after { transform: translateX(20px); }
+  .tog input:checked + .tog-track { background: #0ea5e9; }
+  .tog input:checked + .tog-track::after { transform: translateX(18px); }
 
-  /* ── NEXT WP ── */
-  #next-wp-btn {
-    bottom: 72px; right: 12px;
-    padding: 10px 14px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    font-size: 10px;
-    color: #8b949e;
-    gap: 2px;
-    background: #161b22ee;
-    border: 1px solid #30363d;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  /* Custom marker pulse */
+  .start-vertex-marker {
+    background: #22c55e;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 12px #22c55e;
+    border-radius: 50%;
   }
-  #next-wp-btn i { color: #58a6ff; font-size: 18px; }
-  #nw-deg { font-size: 15px; font-weight: 700; color: #e6edf3; }
-
-  /* ── CONNECT OVERLAY ── */
-  #connect-overlay {
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.65);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .conn-card {
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 14px;
-    padding: 24px;
-    width: 340px;
-    box-shadow: 0 16px 50px rgba(0,0,0,0.6);
-    color: #e6edf3;
-  }
-  .conn-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
-  }
-  .conn-header h3 {
-    color: #00897b;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0;
-  }
-  .conn-badge {
-    font-size: 10px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-weight: 700;
-    letter-spacing: 1px;
-  }
-  .conn-badge.offline { background: #da3633; color: #fff; }
-  .conn-badge.online  { background: #3fb950; color: #fff; }
-
-  .conn-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 9px 0;
-    border-bottom: 1px solid #21262d;
-    font-size: 13px;
-    color: #8b949e;
-  }
-  .conn-row:last-of-type { border-bottom: none; }
-  .conn-row span:first-child { display: flex; align-items: center; gap: 7px; }
-
-  .cs { font-weight: 700; display: flex; align-items: center; gap: 4px; }
-  .cs .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
-  .cs.on  { color: #3fb950; }
-  .cs.on .dot  { background: #3fb950; box-shadow: 0 0 5px #3fb950; }
-  .cs.off { color: #f85149; }
-  .cs.off .dot { background: #f85149; }
-
-  .conn-divider { border-top: 1px solid #30363d; margin: 14px 0; }
-
-  .mode-toggle-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-  }
-  .mode-toggle-row span { font-size: 13px; color: #8b949e; }
-
-  .conn-btn {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-  .conn-btn:hover   { opacity: 0.85; transform: translateY(-1px); }
-  .conn-btn:active  { transform: translateY(0); }
-  .conn-btn:last-child { margin-bottom: 0; }
-  .btn-ping      { background: #1f6feb; color: #fff; }
-  .btn-reconnect { background: #00897b; color: #fff; }
-  .btn-abort     { background: #da3633; color: #fff; }
-
-  /* ── ABORT TOAST ── */
-  #abort-toast {
-    position: fixed;
-    top: 80px; left: 50%;
-    transform: translateX(-50%);
-    background: #da3633;
-    color: #fff;
-    padding: 10px 24px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    z-index: 9999;
-    display: none;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-    animation: slideDown 0.3s ease;
-  }
-  @keyframes slideDown { from { top: 60px; opacity:0; } to { top: 80px; opacity:1; } }
-
-  /* ── BOTTOM NAV ── */
-  #bottom-nav {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 58px;
-    background: #161b22;
-    border-top: 1px solid #30363d;
-    display: flex;
-    z-index: 600;
-  }
-  .nav-btn {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    font-size: 10px;
-    color: #8b949e;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    transition: color 0.2s;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-  }
-  .nav-btn i { font-size: 18px; }
-  .nav-btn.active { color: #00897b; }
-  .nav-btn.active i { filter: drop-shadow(0 0 4px #00897b88); }
 </style>
 
 <!-- ═══════════════════ HTML ═══════════════════ -->
-<div id="abort-toast"><i class="fa fa-triangle-exclamation"></i> Mission Aborted!</div>
-
 <div id="mission-app">
+
+  <!-- DISCLAIMER BANNER -->
+  <div class="sim-disclaimer-bar">
+    <i class="fa-solid fa-flask"></i>
+    <span>SIMULATION MODE — Autonomous coverage route generator & mission playback. No real robot commands are transmitted.</span>
+  </div>
 
   <!-- STATS BAR -->
   <div id="stats-bar">
     <div class="stat-item">
+      <span class="stat-icon">📍</span>
+      <div><div class="stat-num" id="sb-vertices">0</div><div class="stat-lbl">Vertices</div></div>
+    </div>
+    <div class="stat-item">
       <span class="stat-icon">🤖</span>
-      <div><div class="stat-num" id="sb-wps">0</div><div class="stat-lbl">Path Points</div></div>
+      <div><div class="stat-num" id="sb-wps">0</div><div class="stat-lbl">Coverage Pts</div></div>
     </div>
     <div class="stat-item">
       <span class="stat-icon">📏</span>
-      <div><div class="stat-num" id="sb-dist">0.00 km</div><div class="stat-lbl">Mission Dist</div></div>
-    </div>
-    <div class="stat-item">
-      <span class="stat-icon">🔋</span>
-      <div><div class="stat-num" id="sb-bat" style="color:#3fb950">99%</div><div class="stat-lbl">Battery</div></div>
+      <div><div class="stat-num" id="sb-dist">0.00 km</div><div class="stat-lbl">Route Dist</div></div>
     </div>
     <div class="stat-item">
       <span class="stat-icon">⏱️</span>
-      <div><div class="stat-num" id="sb-eta">--</div><div class="stat-lbl">ETA</div></div>
+      <div><div class="stat-num" id="sb-eta">--</div><div class="stat-lbl">Est. Time</div></div>
     </div>
     <div class="stat-item">
-      <span class="stat-icon">⚡</span>
-      <div><div class="stat-num" id="sb-status" style="color:#3fb950">Standby</div><div class="stat-lbl">Status</div></div>
-    </div>
-    <div class="stat-item">
-      <span class="stat-icon">🕐</span>
-      <div><div class="stat-num" id="sb-clock" style="color:#58a6ff">--:--</div><div class="stat-lbl">Local Time</div></div>
+      <span class="stat-icon">🔋</span>
+      <div><div class="stat-num" id="sb-bat" style="color:#4ade80">100%</div><div class="stat-lbl">Battery</div></div>
     </div>
   </div>
 
-  <!-- MISSION HEADER -->
+  <!-- MISSION HEADER WITH COMPACT SWITCHER -->
   <div id="mission-header">
-    <span><i class="fa fa-satellite-dish" style="margin-right:8px;"></i><span id="hdr-title">Mission Planner</span></span>
-    <span id="debug-badge">DEBUG</span>
+    <div class="header-brand-wrap">
+      <span>
+        <i class="fa-solid fa-compass-drafting" style="margin-right:6px;color:#38bdf8;"></i>
+        <span id="hdr-title">Autonomous Coverage Planner</span>
+      </span>
+
+      <!-- COMPACT TWO-TAB SWITCHER -->
+      <div class="view-switcher-pills">
+        <button class="view-pill active" id="view-btn-plan" onclick="switchView('plan')">
+          <i class="fa-solid fa-map-location-dot"></i> Plan Path
+        </button>
+        <button class="view-pill" id="view-btn-live" onclick="switchView('live')">
+          <i class="fa-solid fa-location-crosshairs"></i> Live Track
+        </button>
+      </div>
+    </div>
+
+    <span class="state-badge state-PLANNING" id="state-badge">PLANNING</span>
   </div>
 
   <div id="map-container">
@@ -386,117 +394,111 @@
 
     <!-- PLAN OVERLAY -->
     <div class="m-overlay dark-panel" id="plan-overlay">
-      <div class="panel-title"><i class="fa fa-draw-polygon"></i> Polygon Boundary Mode</div>
-      <div class="plan-note">
-        Tap on the map to define the water body boundary.<br>
-        Hit <strong>Scan Path</strong> to auto-generate the coverage route.
+      <div class="panel-title">
+        <i class="fa-solid fa-draw-polygon"></i> Boundary Planner
       </div>
-      <div class="pt-count">Points placed: <span id="pt-cnt">0</span></div>
+
+      <div class="plan-instruction" id="plan-instruction">
+        Click on the map to place boundary vertices for the coverage area. Click the 1st vertex or "Finish Boundary" when done.
+      </div>
+
+      <div class="alert-box" id="plan-alert">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span id="alert-text">Warning</span>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-val" id="m-vertices">0</div>
+          <div class="metric-lbl">Vertices</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="m-status-text">Open</div>
+          <div class="metric-lbl">Boundary Status</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="m-pts">0</div>
+          <div class="metric-lbl">Coverage Pts</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="m-dist">0.00 km</div>
+          <div class="metric-lbl">Est. Path</div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Scanline Spacing (m)</span>
+          <span id="spacing-val-disp">60m</span>
+        </div>
+        <div class="spacing-input-wrap">
+          <input type="number" id="spacing-input" value="60" min="20" max="250" step="10" onchange="onSpacingChange()" onkeyup="onSpacingChange()">
+        </div>
+      </div>
+
       <div class="plan-btns">
-        <button class="plan-btn btn-scan"  onclick="generateScanPath()"><i class="fa fa-route"></i> Scan Path (Auto)</button>
-        <button class="plan-btn btn-clear" onclick="clearAll()"><i class="fa fa-trash"></i> Clear</button>
-        <button class="plan-btn btn-start" id="start-btn" disabled onclick="startMission()"><i class="fa fa-play"></i> Start Mission</button>
+        <button class="plan-btn btn-secondary" id="btn-finish" disabled onclick="finishBoundary()">
+          <i class="fa-solid fa-check"></i> Finish Boundary
+        </button>
+        <button class="plan-btn btn-secondary" id="btn-undo" disabled onclick="undoLastPoint()">
+          <i class="fa-solid fa-rotate-left"></i> Undo Point
+        </button>
+        <button class="plan-btn btn-cyan" id="btn-generate" disabled onclick="generateCoverageRoute()">
+          <i class="fa-solid fa-route"></i> Generate Route
+        </button>
+        <button class="plan-btn btn-green" id="btn-start" disabled onclick="startMission()">
+          <i class="fa-solid fa-play"></i> Start Mission
+        </button>
+        <button class="plan-btn btn-amber" id="btn-pause" style="display:none;" onclick="pauseMission()">
+          <i class="fa-solid fa-pause"></i> Pause Mission
+        </button>
+        <button class="plan-btn btn-green" id="btn-resume" style="display:none;" onclick="resumeMission()">
+          <i class="fa-solid fa-play"></i> Resume Mission
+        </button>
+        <button class="plan-btn btn-danger" id="btn-abort" style="display:none;" onclick="abortMission()">
+          <i class="fa-solid fa-stop"></i> Abort Mission
+        </button>
+        <button class="plan-btn btn-secondary" id="btn-clear" onclick="resetPlanner()">
+          <i class="fa-solid fa-trash-can"></i> Clear / Reset
+        </button>
       </div>
     </div>
 
-    <!-- LIVE LEFT -->
+    <!-- LIVE LEFT PANEL -->
     <div class="m-overlay dark-panel" id="live-left" style="display:none">
-      <div class="panel-title"><i class="fa fa-robot"></i> Robot Status</div>
+      <div class="panel-title"><i class="fa-solid fa-robot"></i> Telemetry (Simulated)</div>
       <div class="sl">
-        <span class="sl-lbl">Status</span>
-        <span class="sl-val green" id="l-status">Running</span>
-        <span class="mock-chip" id="mode-chip">MOCK</span>
+        <span class="sl-lbl">State</span>
+        <span class="sl-val green" id="l-state-str">Running</span>
       </div>
-      <div class="sl"><span class="sl-lbl">Battery</span><span class="sl-val" id="l-bat">99%</span></div>
-      <div class="bat-track"><div class="bat-fill" id="bat-fill" style="width:99%"></div></div>
-      <div class="sl"><span class="sl-lbl">Warning</span><span class="sl-val green" id="l-warn">OK</span></div>
+      <div class="sl"><span class="sl-lbl">Battery</span><span class="sl-val" id="l-bat">100%</span></div>
+      <div class="bat-track"><div class="bat-fill" id="bat-fill" style="width:100%"></div></div>
       <div class="divider"></div>
-      <div class="sl"><span class="sl-lbl">pH</span><span class="sl-val" id="l-ph">7.00</span></div>
-      <div class="sl"><span class="sl-lbl">Turbidity</span><span class="sl-val" id="l-turb">12.3 NTU</span></div>
-      <div class="sl"><span class="sl-lbl">Temp</span><span class="sl-val" id="l-temp">27.8 °C</span></div>
+      <div class="sl"><span class="sl-lbl">pH Level</span><span class="sl-val" id="l-ph">7.20</span></div>
+      <div class="sl"><span class="sl-lbl">Turbidity</span><span class="sl-val" id="l-turb">11.4 NTU</span></div>
+      <div class="sl"><span class="sl-lbl">Temp</span><span class="sl-val" id="l-temp">26.5 °C</span></div>
     </div>
 
-    <!-- LIVE RIGHT -->
+    <!-- LIVE RIGHT PANEL -->
     <div class="m-overlay dark-panel" id="live-right" style="display:none">
-      <div class="panel-title"><i class="fa fa-chart-line"></i> Mission Stats</div>
-      <div class="sl"><span class="sl-lbl">Path pts</span><span class="sl-val" id="l-pts">0</span></div>
-      <div class="sl"><span class="sl-lbl">Total dist</span><span class="sl-val" id="l-dist">0.00 km</span></div>
-      <div class="sl"><span class="sl-lbl">Remaining</span><span class="sl-val" id="l-rem">0.00 km</span></div>
+      <div class="panel-title"><i class="fa-solid fa-chart-line"></i> Mission Progress</div>
+      <div class="sl"><span class="sl-lbl">Target Waypoint</span><span class="sl-val" id="l-wp">0 / 0</span></div>
+      <div class="sl"><span class="sl-lbl">Total Dist</span><span class="sl-val" id="l-total-dist">0.00 km</span></div>
+      <div class="sl"><span class="sl-lbl">Traveled</span><span class="sl-val" id="l-trav-dist">0.00 km</span></div>
+      <div class="sl"><span class="sl-lbl">Remaining</span><span class="sl-val" id="l-rem-dist">0.00 km</span></div>
+      <div class="sl"><span class="sl-lbl">Est. Speed</span><span class="sl-val" id="l-spd">1.50 m/s</span></div>
       <div class="sl"><span class="sl-lbl">ETA</span><span class="sl-val" id="l-eta">--</span></div>
-      <div class="sl"><span class="sl-lbl">Speed</span><span class="sl-val" id="l-spd">0.00 m/s</span></div>
     </div>
 
-    <!-- LOCK CAM -->
+    <!-- LOCK CAMERA CONTROL -->
     <div class="m-overlay dark-panel" id="lock-cam-box" style="display:none">
       <label class="tog">
         <input type="checkbox" id="lock-toggle" checked onchange="lockCam=this.checked">
         <div class="tog-track"></div>
       </label>
-      <span style="font-size:12px;">Lock camera on robot</span>
+      <span>Follow Robot Position</span>
     </div>
 
-    <!-- NEXT WP -->
-    <button class="m-overlay" id="next-wp-btn" style="display:none" onclick="focusNextWp()">
-      <i class="fa fa-play"></i>
-      <span>Next WP</span>
-      <span id="nw-deg">--°</span>
-    </button>
-
-    <!-- CONNECT OVERLAY -->
-    <div class="m-overlay" id="connect-overlay" style="display:none">
-      <div class="conn-card">
-        <div class="conn-header">
-          <h3><i class="fa fa-satellite-dish"></i> Robot Connection</h3>
-          <span class="conn-badge offline" id="conn-overall-badge">OFFLINE</span>
-        </div>
-        <div class="conn-row">
-          <span><i class="fa fa-database" style="color:#58a6ff;"></i> Firebase RTDB</span>
-          <span class="cs on"><span class="dot"></span>Connected</span>
-        </div>
-        <div class="conn-row">
-          <span><i class="fa fa-robot" style="color:#58a6ff;"></i> Robot Telemetry</span>
-          <span class="cs off" id="robot-cs"><span class="dot"></span>Disconnected</span>
-        </div>
-        <div class="conn-row">
-          <span><i class="fa fa-wifi" style="color:#58a6ff;"></i> Mode</span>
-          <span id="mode-cs" style="color:#f0883e;font-weight:700;font-size:13px;">
-            <i class="fa fa-flask" style="font-size:10px;margin-right:4px;"></i>Mock Mode
-          </span>
-        </div>
-        <div class="conn-row">
-          <span><i class="fa fa-clock" style="color:#58a6ff;"></i> Last Ping</span>
-          <span id="last-ping" style="font-size:12px;color:#8b949e;">--</span>
-        </div>
-        <div class="conn-row">
-          <span><i class="fa fa-microchip" style="color:#58a6ff;"></i> Firmware</span>
-          <span style="font-size:12px;color:#8b949e;">AquNex v1.0.0</span>
-        </div>
-        <div class="conn-divider"></div>
-        <div class="mode-toggle-row">
-          <span><i class="fa fa-flask" style="color:#f0883e;margin-right:6px;"></i>Simulation Mode</span>
-          <label class="tog">
-            <input type="checkbox" id="mock-toggle-check" checked onchange="toggleMock(this.checked)">
-            <div class="tog-track"></div>
-          </label>
-        </div>
-        <button class="conn-btn btn-ping"      onclick="pingRobot()"><i class="fa fa-paper-plane"></i> Ping Robot</button>
-        <button class="conn-btn btn-reconnect" onclick="reconnect()"><i class="fa fa-rotate"></i> Reconnect Firebase</button>
-        <button class="conn-btn btn-abort"     onclick="abortMission()"><i class="fa fa-circle-stop"></i> Abort Mission</button>
-      </div>
-    </div>
-
-    <!-- BOTTOM NAV -->
-    <div id="bottom-nav">
-      <button class="nav-btn" id="nav-connect" onclick="switchTab('connect')">
-        <i class="fa fa-gear"></i><span>Connect</span>
-      </button>
-      <button class="nav-btn active" id="nav-plan" onclick="switchTab('plan')">
-        <i class="fa fa-map-location-dot"></i><span>Plan Path</span>
-      </button>
-      <button class="nav-btn" id="nav-live" onclick="switchTab('live')">
-        <i class="fa fa-location-crosshairs"></i><span>Live Track</span>
-      </button>
-    </div>
   </div>
 </div>
 
@@ -506,19 +508,30 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
 <script>
-// ── FIREBASE ──
+// ── FIREBASE INIT ──
 const firebaseConfig = <%- JSON.stringify(firebaseConfig) %>;
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ── CLOCK ──
-setInterval(() => {
-  document.getElementById('sb-clock').textContent =
-    new Date().toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true });
-}, 1000);
+// ── STATE MACHINE & VARIABLES ──
+let missionState = 'PLANNING';
+let areaPts = [];               // LatLng vertices [{lat, lng}]
+let isClosed = false;            // Polygon boundary closed flag
+let vertexMarkers = [];          // Leaflet circle markers for vertices
+let areaPoly = null;             // Leaflet polygon layer
+let coverageMarkersGroup = null; // Leaflet LayerGroup for points
+let plannedPolyline = null;      // Polyline for serpentine path
+let traveledPolyline = null;     // Polyline for actual robot trajectory
+let scanWaypoints = [];          // Ordered route waypoints [{lat, lng, x, y}]
+let traveledPath = [];           // Array of [lat, lng]
+let robotMarker = null;          // Robot marker layer
+let animTimer = null;            // Animation loop handle
+let currentWpIdx = 0;            // Current target waypoint index
+let lockCam = true;
+let totalRouteDistM = 0;         // Total planned distance in meters
 
-// ── MAP ──
-const map = L.map('mission-map', { zoomControl: false }).setView([11.0168, 76.9558], 14);
+// ── LEAFLET MAP INIT ──
+const map = L.map('mission-map', { zoomControl: false }).setView([11.0168, 76.9558], 15);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
   attribution: '© OpenStreetMap © CARTO', maxZoom: 19
 }).addTo(map);
@@ -526,311 +539,514 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{
   attribution: '', maxZoom: 19, pane: 'overlayPane'
 }).addTo(map);
 
-// ── STATE ──
-let currentTab = 'plan';
-let areaPts = [], areaMarkers = [], areaPoly = null;
-let scanLayers = [], scanWaypoints = [], currentWpIdx = 0;
-let robotMarker = null, lockCam = true, mockMode = true;
-let mockTimer = null, totalDist = 0;
-const TRACK_SPACING_M = 40;
+coverageMarkersGroup = L.layerGroup().addTo(map);
 
-// ── TAB SWITCHING ──
-function switchTab(tab) {
-  currentTab = tab;
-  ['connect','plan','live'].forEach(t =>
-    document.getElementById('nav-'+t).classList.toggle('active', t === tab)
-  );
-  ['plan-overlay','live-left','live-right','lock-cam-box','next-wp-btn','connect-overlay'].forEach(id =>
-    document.getElementById(id).style.display = 'none'
-  );
+// Invalidate size on load
+setTimeout(() => { map.invalidateSize(); }, 300);
+window.addEventListener('resize', () => map.invalidateSize());
 
-  if (tab === 'plan') {
-    document.getElementById('hdr-title').textContent = 'Mission Planner';
-    document.getElementById('plan-overlay').style.display = 'block';
-    map.on('click', onMapClick);
+// ── STATE UI UPDATER ──
+function setMissionState(newState) {
+  missionState = newState;
+  const badge = document.getElementById('state-badge');
+  badge.className = `state-badge state-${newState}`;
+  badge.textContent = newState;
+
+  const isPlanning = newState === 'PLANNING';
+  const isReady    = newState === 'READY';
+  const isRunning  = newState === 'RUNNING';
+  const isPaused   = newState === 'PAUSED';
+  const isFinished = newState === 'COMPLETED' || newState === 'ABORTED';
+
+  // Toggle buttons
+  document.getElementById('spacing-input').disabled = !isPlanning && !isReady;
+  document.getElementById('btn-finish').disabled   = !isPlanning || areaPts.length < 3 || isClosed;
+  document.getElementById('btn-undo').disabled     = !isPlanning || areaPts.length === 0;
+  document.getElementById('btn-generate').disabled = (!isPlanning && !isReady) || areaPts.length < 3;
+  document.getElementById('btn-start').disabled    = !isReady;
+
+  document.getElementById('btn-start').style.display  = (isPlanning || isReady) ? 'flex' : 'none';
+  document.getElementById('btn-pause').style.display  = isRunning ? 'flex' : 'none';
+  document.getElementById('btn-resume').style.display = isPaused ? 'flex' : 'none';
+  document.getElementById('btn-abort').style.display  = (isRunning || isPaused) ? 'flex' : 'none';
+  document.getElementById('btn-clear').style.display  = 'flex';
+
+  if (isRunning) {
+    document.getElementById('plan-instruction').textContent = 'Mission in progress. Telemetry data is updated in real-time.';
+  } else if (isPaused) {
+    document.getElementById('plan-instruction').textContent = 'Mission paused. Resume when ready or abort to re-plan.';
+  } else if (isFinished) {
+    document.getElementById('plan-instruction').textContent = `Mission ${newState.toLowerCase()}. Click Clear / Reset to start a new mission.`;
+  } else if (isClosed) {
+    document.getElementById('plan-instruction').textContent = 'Boundary closed! Click "Generate Route" to compute the coverage path.';
   } else {
-    map.off('click', onMapClick);
-  }
-
-  if (tab === 'live') {
-    document.getElementById('hdr-title').textContent = 'Live Robot Tracking';
-    document.getElementById('live-left').style.display   = 'block';
-    document.getElementById('live-right').style.display  = 'block';
-    document.getElementById('lock-cam-box').style.display = 'flex';
-    document.getElementById('next-wp-btn').style.display  = 'flex';
-    document.getElementById('sb-status').textContent = 'Active';
-    document.getElementById('sb-status').style.color = '#3fb950';
-    if (mockMode && scanWaypoints.length > 0) startMockMovement();
-  }
-
-  if (tab === 'connect') {
-    document.getElementById('hdr-title').textContent = 'Connection';
-    document.getElementById('connect-overlay').style.display = 'flex';
+    document.getElementById('plan-instruction').textContent = 'Click on the map to place boundary vertices for the coverage area. Click the 1st vertex or "Finish Boundary" when done.';
   }
 }
 
-// ── DRAWING (Polygon only) ──
-function onMapClick(e) {
+// ── ALERT DISPLAY ──
+function showAlert(msg) {
+  const box = document.getElementById('plan-alert');
+  const txt = document.getElementById('alert-text');
+  if (msg) {
+    txt.textContent = msg;
+    box.style.display = 'flex';
+  } else {
+    box.style.display = 'none';
+  }
+}
+
+// ── MAP CLICK EVENT HANDLER ──
+map.on('click', (e) => {
+  if (missionState !== 'PLANNING' && missionState !== 'READY') return;
+  if (isClosed) return; // Must reset to draw new boundary
+
   const { lat, lng } = e.latlng;
+
+  // Check if click is close to 1st vertex to close boundary
+  if (areaPts.length >= 3) {
+    const p1 = map.latLngToLayerPoint([areaPts[0].lat, areaPts[0].lng]);
+    const pClick = map.latLngToLayerPoint([lat, lng]);
+    if (p1.distanceTo(pClick) < 22) { // 22px tolerance
+      finishBoundary();
+      return;
+    }
+  }
+
   areaPts.push({ lat, lng });
-  const m = L.circleMarker([lat, lng], {
-    radius: 6, color: '#f85149', fillColor: '#f85149', fillOpacity: 1, weight: 2
-  }).addTo(map);
-  areaMarkers.push(m);
-  if (areaPoly) map.removeLayer(areaPoly);
+  if (missionState === 'READY') setMissionState('PLANNING');
+  renderBoundary();
+});
+
+// ── BOUNDARY GEOMETRY & SELF-INTERSECTION ──
+function checkSelfIntersection(pts) {
+  if (pts.length < 4) return false;
+  const p = pts.map(pt => map.latLngToLayerPoint([pt.lat, pt.lng]));
+  const n = p.length;
+
+  for (let i = 0; i < n; i++) {
+    const a1 = p[i], a2 = p[(i + 1) % n];
+    for (let j = i + 2; j < n; j++) {
+      if (i === 0 && j === n - 1) continue;
+      const b1 = p[j], b2 = p[(j + 1) % n];
+      if (linesIntersect(a1, a2, b1, b2)) return true;
+    }
+  }
+  return false;
+}
+
+function linesIntersect(p1, p2, p3, p4) {
+  function ccw(A, B, C) {
+    return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x);
+  }
+  return (ccw(p1, p3, p4) !== ccw(p2, p3, p4)) && (ccw(p1, p2, p3) !== ccw(p1, p2, p4));
+}
+
+function renderBoundary() {
+  vertexMarkers.forEach(m => map.removeLayer(m)); vertexMarkers = [];
+  if (areaPoly) { map.removeLayer(areaPoly); areaPoly = null; }
+
+  areaPts.forEach((pt, idx) => {
+    const isFirst = idx === 0;
+    const m = L.circleMarker([pt.lat, pt.lng], {
+      radius: isFirst ? 7 : 5,
+      color: isFirst ? '#22c55e' : '#38bdf8',
+      fillColor: isFirst ? '#22c55e' : '#0ea5e9',
+      fillOpacity: 1,
+      weight: isFirst ? 3 : 2
+    }).addTo(map);
+
+    if (isFirst) {
+      m.bindTooltip("Start Vertex (Click to Close)", { permanent: false, direction: 'top' });
+    }
+    vertexMarkers.push(m);
+  });
+
+  const intersects = checkSelfIntersection(areaPts);
+  if (intersects) {
+    showAlert('Boundary self-intersects! Please undo or adjust vertices.');
+  } else {
+    showAlert(null);
+  }
+
   if (areaPts.length >= 2) {
-    areaPoly = L.polygon(areaPts.map(p => [p.lat, p.lng]), {
-      color: '#f0883e', weight: 2, fillColor: '#f0883e', fillOpacity: 0.06
+    const latLngs = areaPts.map(p => [p.lat, p.lng]);
+    areaPoly = L.polygon(latLngs, {
+      color: isClosed ? '#0ea5e9' : '#f59e0b',
+      dashArray: isClosed ? null : '6, 6',
+      weight: 2.5,
+      fillColor: '#0ea5e9',
+      fillOpacity: isClosed ? 0.15 : 0.05
     }).addTo(map);
   }
-  document.getElementById('pt-cnt').textContent = areaPts.length;
-  document.getElementById('start-btn').disabled = areaPts.length < 3;
-}
-map.on('click', onMapClick);
 
-// ── COVERAGE PATH ──
-function toMeters(lat, lng, oLat, oLng) {
-  const R = 6371000, r = Math.PI/180;
-  return { x: (lng-oLng)*r*R*Math.cos(oLat*r), y: (lat-oLat)*r*R };
-}
-function toLatLng(x, y, oLat, oLng) {
-  const R = 6371000, r = Math.PI/180;
-  return { lat: oLat+(y/R)/r, lng: oLng+(x/(R*Math.cos(oLat*r)))/r };
-}
-function intersectY(p1, p2, y) {
-  if ((p1.y<=y && p2.y>y)||(p2.y<=y && p1.y>y))
-    return p1.x + (y-p1.y)/(p2.y-p1.y)*(p2.x-p1.x);
-  return null;
+  document.getElementById('m-vertices').textContent = areaPts.length;
+  document.getElementById('sb-vertices').textContent = areaPts.length;
+  document.getElementById('m-status-text').textContent = isClosed ? 'Closed' : (areaPts.length >= 3 ? 'Open (Ready to Close)' : 'Open');
+  document.getElementById('btn-finish').disabled = areaPts.length < 3 || isClosed || intersects;
+  document.getElementById('btn-undo').disabled = areaPts.length === 0;
+  document.getElementById('btn-generate').disabled = areaPts.length < 3 || intersects;
 }
 
-function generateScanPath() {
-  if (areaPts.length < 3) { alert('Place at least 3 boundary points first.'); return; }
-  scanLayers.forEach(l => map.removeLayer(l)); scanLayers = [];
-  scanWaypoints = [];
+function finishBoundary() {
+  if (areaPts.length < 3) return;
+  if (checkSelfIntersection(areaPts)) {
+    showAlert('Cannot close self-intersecting boundary.');
+    return;
+  }
+  isClosed = true;
+  renderBoundary();
+  setMissionState('PLANNING');
+}
+
+function undoLastPoint() {
+  if (areaPts.length === 0) return;
+  areaPts.pop();
+  isClosed = false;
+  if (missionState === 'READY') setMissionState('PLANNING');
+  clearRouteVisuals();
+  renderBoundary();
+}
+
+function onSpacingChange() {
+  const inp = document.getElementById('spacing-input');
+  let val = parseInt(inp.value, 10);
+  if (isNaN(val) || val < 20) val = 20;
+  if (val > 250) val = 250;
+  document.getElementById('spacing-val-disp').textContent = val + 'm';
+  if (isClosed && scanWaypoints.length > 0 && (missionState === 'PLANNING' || missionState === 'READY')) {
+    generateCoverageRoute();
+  }
+}
+
+// ── LOCAL PROJECTION & ADAPTIVE DENSITY COVERAGE GENERATION ──
+function toLocalMeters(lat, lng, origin) {
+  const R = 6371000, r = Math.PI / 180;
+  return {
+    x: (lng - origin.lng) * r * R * Math.cos(origin.lat * r),
+    y: (lat - origin.lat) * r * R
+  };
+}
+
+function toLatLng(x, y, origin) {
+  const R = 6371000, r = Math.PI / 180;
+  return {
+    lat: origin.lat + (y / R) / r,
+    lng: origin.lng + (x / (R * Math.cos(origin.lat * r))) / r
+  };
+}
+
+function pointInPolygonLocal(pt, polyLocal) {
+  let inside = false;
+  for (let i = 0, j = polyLocal.length - 1; i < polyLocal.length; j = i++) {
+    const xi = polyLocal[i].x, yi = polyLocal[i].y;
+    const xj = polyLocal[j].x, yj = polyLocal[j].y;
+    const intersect = ((yi > pt.y) !== (yj > pt.y)) && (pt.x < (xj - xi) * (pt.y - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+function generateCoverageRoute() {
+  if (areaPts.length < 3) return;
+  if (checkSelfIntersection(areaPts)) {
+    showAlert('Fix self-intersecting boundary before generating route.');
+    return;
+  }
+
+  if (!isClosed) finishBoundary();
+
+  let spacingM = parseInt(document.getElementById('spacing-input').value, 10) || 60;
   const origin = areaPts[0];
-  const pts = areaPts.map(p => toMeters(p.lat, p.lng, origin.lat, origin.lng));
-  const minY = Math.min(...pts.map(p => p.y));
-  const maxY = Math.max(...pts.map(p => p.y));
-  let lineIdx = 0;
-  const allWps = [];
+  const polyLocal = areaPts.map(p => toLocalMeters(p.lat, p.lng, origin));
 
-  for (let y = minY + TRACK_SPACING_M/2; y <= maxY; y += TRACK_SPACING_M) {
-    const xs = [];
-    for (let i = 0; i < pts.length; i++) {
-      const x = intersectY(pts[i], pts[(i+1)%pts.length], y);
-      if (x !== null) xs.push(x);
-    }
-    xs.sort((a,b) => a-b);
-    for (let j = 0; j+1 < xs.length; j += 2) {
-      const ll1 = toLatLng(xs[j],   y, origin.lat, origin.lng);
-      const ll2 = toLatLng(xs[j+1], y, origin.lat, origin.lng);
-      const from = lineIdx%2===0 ? ll1 : ll2;
-      const to   = lineIdx%2===0 ? ll2 : ll1;
-      scanLayers.push(L.polyline([[from.lat,from.lng],[to.lat,to.lng]], {
-        color:'#3fb950', weight:2.5, opacity:0.9
-      }).addTo(map));
-      if (allWps.length > 0) {
-        const prev = allWps[allWps.length-1];
-        scanLayers.push(L.polyline([[prev.lat,prev.lng],[from.lat,from.lng]], {
-          color:'#58a6ff', weight:1.5, opacity:0.5, dashArray:'5,5'
-        }).addTo(map));
-      }
-      allWps.push(from, to);
-      lineIdx++;
+  const minX = Math.min(...polyLocal.map(p => p.x));
+  const maxX = Math.max(...polyLocal.map(p => p.x));
+  const minY = Math.min(...polyLocal.map(p => p.y));
+  const maxY = Math.max(...polyLocal.map(p => p.y));
+
+  // Adaptive Density Control: Ensure points stay in a clean, readable range (~15-35 max)
+  const spanX = maxX - minX;
+  const spanY = maxY - minY;
+  const maxSpan = Math.max(spanX, spanY);
+  if (maxSpan > 0) {
+    const minRecSpacing = Math.ceil(maxSpan / 6); // Max 6 scanline rows
+    if (spacingM < minRecSpacing) {
+      spacingM = minRecSpacing;
+      document.getElementById('spacing-input').value = spacingM;
+      document.getElementById('spacing-val-disp').textContent = spacingM + 'm';
     }
   }
 
-  scanWaypoints = allWps; currentWpIdx = 0;
-  totalDist = 0;
-  for (let i = 1; i < scanWaypoints.length; i++)
-    totalDist += haversine(scanWaypoints[i-1], scanWaypoints[i]);
+  const rows = [];
+  let totalCandidates = 0;
 
-  const distKm = (totalDist/1000).toFixed(2);
-  document.getElementById('l-pts').textContent   = scanWaypoints.length;
-  document.getElementById('l-dist').textContent  = distKm+' km';
-  document.getElementById('l-rem').textContent   = distKm+' km';
-  document.getElementById('sb-wps').textContent  = scanWaypoints.length;
-  document.getElementById('sb-dist').textContent = distKm+' km';
-  if (areaPoly) map.fitBounds(areaPoly.getBounds(), { padding:[50,50] });
-  document.getElementById('start-btn').disabled = false;
-}
+  for (let y = minY + spacingM / 2; y <= maxY; y += spacingM) {
+    const rowPts = [];
+    for (let x = minX + spacingM / 2; x <= maxX; x += spacingM) {
+      if (pointInPolygonLocal({ x, y }, polyLocal)) {
+        rowPts.push({ x, y });
+        totalCandidates++;
+      }
+    }
+    if (rowPts.length > 0) {
+      rows.push(rowPts);
+    }
+  }
 
-function clearAll() {
-  areaPts = [];
-  areaMarkers.forEach(m => map.removeLayer(m)); areaMarkers = [];
-  if (areaPoly) { map.removeLayer(areaPoly); areaPoly = null; }
-  scanLayers.forEach(l => map.removeLayer(l)); scanLayers = [];
+  if (totalCandidates === 0) {
+    showAlert('No coverage points fit inside boundary. Reduce spacing slightly.');
+    return;
+  }
+
+  showAlert(null);
+
+  // Serpentine scanline ordering
   scanWaypoints = [];
-  if (mockTimer) { clearInterval(mockTimer); mockTimer = null; }
-  if (robotMarker) { map.removeLayer(robotMarker); robotMarker = null; }
-  document.getElementById('pt-cnt').textContent    = '0';
-  document.getElementById('sb-wps').textContent    = '0';
-  document.getElementById('sb-dist').textContent   = '0.00 km';
-  document.getElementById('sb-status').textContent = 'Standby';
-  document.getElementById('sb-status').style.color = '#3fb950';
-  document.getElementById('start-btn').disabled    = true;
-}
-
-function startMission() {
-  if (scanWaypoints.length === 0) { alert('Run Scan Path first.'); return; }
-  db.ref('aqunex/mission').set({
-    status: 'active', waypoints: scanWaypoints,
-    totalWaypoints: scanWaypoints.length, deployedAt: Date.now()
+  rows.forEach((row, rIdx) => {
+    row.sort((a, b) => a.x - b.x);
+    if (rIdx % 2 === 1) row.reverse();
+    row.forEach(ptLocal => {
+      const ll = toLatLng(ptLocal.x, ptLocal.y, origin);
+      scanWaypoints.push({ lat: ll.lat, lng: ll.lng, x: ptLocal.x, y: ptLocal.y });
+    });
   });
-  currentWpIdx = 0;
-  switchTab('live');
+
+  totalRouteDistM = 0;
+  for (let i = 1; i < scanWaypoints.length; i++) {
+    totalRouteDistM += haversineM(scanWaypoints[i - 1], scanWaypoints[i]);
+  }
+
+  renderRouteVisuals();
+  setMissionState('READY');
 }
 
-// ── ROBOT MARKER ──
-function placeRobot(lat, lng) {
+function clearRouteVisuals() {
+  coverageMarkersGroup.clearLayers();
+  if (plannedPolyline) { map.removeLayer(plannedPolyline); plannedPolyline = null; }
+  if (traveledPolyline) { map.removeLayer(traveledPolyline); traveledPolyline = null; }
+  scanWaypoints = [];
+  totalRouteDistM = 0;
+  document.getElementById('m-pts').textContent = '0';
+  document.getElementById('m-dist').textContent = '0.00 km';
+  document.getElementById('sb-wps').textContent = '0';
+  document.getElementById('sb-dist').textContent = '0.00 km';
+  document.getElementById('sb-eta').textContent = '--';
+}
+
+function renderRouteVisuals() {
+  coverageMarkersGroup.clearLayers();
+  if (plannedPolyline) map.removeLayer(plannedPolyline);
+
+  // Render clean, distinct coverage point dots
+  scanWaypoints.forEach((wp, i) => {
+    L.circleMarker([wp.lat, wp.lng], {
+      radius: 4,
+      color: '#38bdf8',
+      fillColor: '#0ea5e9',
+      fillOpacity: 0.85,
+      weight: 1.5
+    }).addTo(coverageMarkersGroup);
+  });
+
+  const latLngs = scanWaypoints.map(w => [w.lat, w.lng]);
+  plannedPolyline = L.polyline(latLngs, {
+    color: '#38bdf8',
+    weight: 2.5,
+    opacity: 0.9,
+    dashArray: '4, 4'
+  }).addTo(map);
+
+  const distKm = (totalRouteDistM / 1000).toFixed(2);
+  const estSec = totalRouteDistM / 1.5;
+  const etaStr = formatTime(estSec);
+
+  document.getElementById('m-pts').textContent = scanWaypoints.length;
+  document.getElementById('m-dist').textContent = distKm + ' km';
+  document.getElementById('sb-wps').textContent = scanWaypoints.length;
+  document.getElementById('sb-dist').textContent = distKm + ' km';
+  document.getElementById('sb-eta').textContent = etaStr;
+
+  if (areaPoly) map.fitBounds(areaPoly.getBounds(), { padding: [40, 40] });
+}
+
+// ── SIMULATION PLAYBACK ──
+function startMission() {
+  if (scanWaypoints.length === 0) return;
+  setMissionState('RUNNING');
+
+  db.ref('aqunex/mission').set({
+    status: 'active',
+    mode: 'simulation',
+    hardwareCommandSent: false,
+    totalWaypoints: scanWaypoints.length,
+    deployedAt: Date.now()
+  });
+
+  currentWpIdx = 0;
+  traveledPath = [[scanWaypoints[0].lat, scanWaypoints[0].lng]];
+
+  if (traveledPolyline) map.removeLayer(traveledPolyline);
+  traveledPolyline = L.polyline(traveledPath, {
+    color: '#4ade80',
+    weight: 3.5,
+    opacity: 0.95
+  }).addTo(map);
+
+  switchView('live');
+  runSimulationLoop();
+}
+
+function runSimulationLoop() {
+  if (animTimer) clearInterval(animTimer);
+
+  const SPEED_MS = 1.8;
+  const TICK_MS = 100;
+  let segIdx = currentWpIdx;
+  let segProgress = 0;
+
+  animTimer = setInterval(() => {
+    if (missionState !== 'RUNNING') return;
+
+    if (segIdx >= scanWaypoints.length - 1) {
+      clearInterval(animTimer);
+      setMissionState('COMPLETED');
+      db.ref('aqunex/mission/status').set('completed');
+      document.getElementById('l-state-str').textContent = 'Completed';
+      document.getElementById('l-state-str').className = 'sl-val green';
+      return;
+    }
+
+    const pFrom = scanWaypoints[segIdx];
+    const pTo = scanWaypoints[segIdx + 1];
+    const distM = Math.max(haversineM(pFrom, pTo), 0.1);
+    const stepRatio = (SPEED_MS * (TICK_MS / 1000)) / distM;
+
+    segProgress += stepRatio;
+
+    if (segProgress >= 1) {
+      segProgress = 0;
+      segIdx++;
+      currentWpIdx = segIdx;
+    }
+
+    const currLat = pFrom.lat + segProgress * (pTo.lat - pFrom.lat);
+    const currLng = pFrom.lng + segProgress * (pTo.lng - pFrom.lng);
+
+    placeRobotMarker(currLat, currLng);
+
+    traveledPath.push([currLat, currLng]);
+    if (traveledPolyline) traveledPolyline.setLatLngs(traveledPath);
+
+    const completedRatio = Math.min(1, segIdx / (scanWaypoints.length - 1));
+    const traveledDistM = completedRatio * totalRouteDistM;
+    const remainingM = Math.max(0, totalRouteDistM - traveledDistM);
+    const etaSec = remainingM / SPEED_MS;
+
+    document.getElementById('l-wp').textContent = `${segIdx + 1} / ${scanWaypoints.length}`;
+    document.getElementById('l-total-dist').textContent = (totalRouteDistM / 1000).toFixed(2) + ' km';
+    document.getElementById('l-trav-dist').textContent = (traveledDistM / 1000).toFixed(2) + ' km';
+    document.getElementById('l-rem-dist').textContent = (remainingM / 1000).toFixed(2) + ' km';
+    document.getElementById('l-spd').textContent = (SPEED_MS + (Math.random() - 0.5) * 0.1).toFixed(2) + ' m/s';
+    document.getElementById('l-eta').textContent = formatTime(etaSec);
+
+    document.getElementById('l-ph').textContent = (7.2 + (Math.random() - 0.5) * 0.2).toFixed(2);
+    document.getElementById('l-turb').textContent = (11.4 + (Math.random() - 0.5) * 1.5).toFixed(1) + ' NTU';
+    document.getElementById('l-temp').textContent = (26.5 + (Math.random() - 0.5) * 0.3).toFixed(1) + ' °C';
+
+    const bat = Math.max(70, 100 - Math.floor(completedRatio * 20));
+    document.getElementById('l-bat').textContent = bat + '%';
+    document.getElementById('sb-bat').textContent = bat + '%';
+    document.getElementById('bat-fill').style.width = bat + '%';
+  }, TICK_MS);
+}
+
+function pauseMission() {
+  setMissionState('PAUSED');
+  document.getElementById('l-state-str').textContent = 'Paused';
+  document.getElementById('l-state-str').className = 'sl-val amber';
+}
+
+function resumeMission() {
+  setMissionState('RUNNING');
+  document.getElementById('l-state-str').textContent = 'Running';
+  document.getElementById('l-state-str').className = 'sl-val green';
+}
+
+function abortMission() {
+  if (animTimer) clearInterval(animTimer);
+  setMissionState('ABORTED');
+  db.ref('aqunex/mission/status').set('aborted');
+  document.getElementById('l-state-str').textContent = 'Aborted';
+  document.getElementById('l-state-str').className = 'sl-val red';
+}
+
+function resetPlanner() {
+  if (animTimer) clearInterval(animTimer);
+  areaPts = [];
+  isClosed = false;
+  clearRouteVisuals();
+  renderBoundary();
+  if (robotMarker) { map.removeLayer(robotMarker); robotMarker = null; }
+  setMissionState('PLANNING');
+  switchView('plan');
+}
+
+function placeRobotMarker(lat, lng) {
   if (!robotMarker) {
     const icon = L.divIcon({
-      html: `<div style="width:16px;height:16px;background:#f9a825;border:3px solid #fff;border-radius:50%;box-shadow:0 0 10px rgba(249,168,37,0.8);"></div>`,
-      iconSize:[16,16], iconAnchor:[8,8]
+      html: `<div style="width:20px;height:20px;background:#38bdf8;border:3px solid #ffffff;border-radius:50%;box-shadow:0 0 16px #38bdf8;"></div>`,
+      iconSize: [20, 20],
+      iconAnchor: [10, 10]
     });
     robotMarker = L.marker([lat, lng], { icon }).addTo(map);
   } else {
     robotMarker.setLatLng([lat, lng]);
   }
-  if (lockCam) map.panTo([lat, lng], { animate:true, duration:0.3 });
+  if (lockCam) map.panTo([lat, lng], { animate: true, duration: 0.2 });
 }
 
-function focusNextWp() {
-  const wp = scanWaypoints[currentWpIdx];
-  if (wp) map.panTo([wp.lat, wp.lng]);
+// ── UTILS ──
+function haversineM(a, b) {
+  const R = 6371000, r = Math.PI / 180;
+  const dLat = (b.lat - a.lat) * r, dLng = (b.lng - a.lng) * r;
+  const x = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
 }
 
-// ── MOCK MOVEMENT ──
-function startMockMovement() {
-  if (mockTimer) clearInterval(mockTimer);
-  let segIdx = 0, t = 0;
-  const SPEED = 8, TICK = 100;
-
-  mockTimer = setInterval(() => {
-    if (segIdx >= scanWaypoints.length - 1) {
-      clearInterval(mockTimer);
-      document.getElementById('l-status').textContent  = 'Complete';
-      document.getElementById('l-status').className    = 'sl-val orange';
-      document.getElementById('sb-status').textContent = 'Complete';
-      document.getElementById('sb-status').style.color = '#f0883e';
-      document.getElementById('l-rem').textContent     = '0.00 km';
-      document.getElementById('l-eta').textContent     = '0m 0s';
-      document.getElementById('sb-eta').textContent    = '0m 0s';
-      return;
-    }
-    const from = scanWaypoints[segIdx], to = scanWaypoints[segIdx+1];
-    const segDist = haversine(from, to);
-    const step = (SPEED * TICK/1000) / Math.max(segDist, 0.001);
-    t += step;
-    if (t >= 1) { t = 0; segIdx++; currentWpIdx = segIdx; return; }
-
-    const lat = from.lat + t*(to.lat-from.lat);
-    const lng = from.lng + t*(to.lng-from.lng);
-    placeRobot(lat, lng);
-
-    const remaining = Math.max(0, totalDist - (segIdx/scanWaypoints.length*totalDist));
-    const etaSec = remaining / SPEED;
-    const etaStr = `${Math.floor(etaSec/60)}m ${Math.floor(etaSec%60)}s`;
-
-    document.getElementById('l-rem').textContent  = (remaining/1000).toFixed(2)+' km';
-    document.getElementById('l-spd').textContent  = (SPEED+(Math.random()-0.5)*0.2).toFixed(2)+' m/s';
-    document.getElementById('l-eta').textContent  = etaStr;
-    document.getElementById('sb-eta').textContent = etaStr;
-    document.getElementById('l-ph').textContent   = (7.0+(Math.random()-0.5)*0.3).toFixed(2);
-    document.getElementById('l-turb').textContent = (12.3+(Math.random()-0.5)*2).toFixed(1)+' NTU';
-    document.getElementById('l-temp').textContent = (27.8+(Math.random()-0.5)*0.4).toFixed(1)+' °C';
-
-    const bat = Math.max(80, 99 - Math.floor(segIdx/4));
-    document.getElementById('l-bat').textContent    = bat+'%';
-    document.getElementById('sb-bat').textContent   = bat+'%';
-    document.getElementById('bat-fill').style.width = bat+'%';
-    document.getElementById('nw-deg').textContent   = Math.round(getBearing({lat,lng},to))+'°';
-  }, TICK);
+function formatTime(sec) {
+  if (isNaN(sec) || sec <= 0) return '0m 0s';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}m ${s}s`;
 }
 
-function haversine(a, b) {
-  const R=6371000, r=Math.PI/180;
-  const dLat=(b.lat-a.lat)*r, dLng=(b.lng-a.lng)*r;
-  const x=Math.sin(dLat/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLng/2)**2;
-  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
-}
+// ── COMPACT TWO-VIEW SWITCHER ──
+function switchView(tab) {
+  const isPlan = tab === 'plan';
+  document.getElementById('view-btn-plan').classList.toggle('active', isPlan);
+  document.getElementById('view-btn-live').classList.toggle('active', !isPlan);
 
-function getBearing(from, to) {
-  const r=Math.PI/180, dL=(to.lng-from.lng)*r;
-  const y=Math.sin(dL)*Math.cos(to.lat*r);
-  const x=Math.cos(from.lat*r)*Math.sin(to.lat*r)-Math.sin(from.lat*r)*Math.cos(to.lat*r)*Math.cos(dL);
-  return((Math.atan2(y,x)*180/Math.PI)+360)%360;
-}
+  ['plan-overlay', 'live-left', 'live-right', 'lock-cam-box'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
 
-// ── CONNECT TAB FUNCTIONS ──
-function toggleMock(checked) {
-  mockMode = checked;
-  const modeEl = document.getElementById('mode-cs');
-  const chip   = document.getElementById('mode-chip');
-  if (mockMode) {
-    modeEl.innerHTML = '<i class="fa fa-flask" style="font-size:10px;margin-right:4px;"></i>Mock Mode';
-    modeEl.style.color = '#f0883e';
-    if (chip) { chip.textContent = 'MOCK'; chip.style.background = '#1f6feb'; }
+  if (isPlan) {
+    document.getElementById('hdr-title').textContent = 'Autonomous Coverage Planner';
+    document.getElementById('plan-overlay').style.display = 'block';
   } else {
-    modeEl.innerHTML = '<i class="fa fa-satellite-dish" style="font-size:10px;margin-right:4px;"></i>Live Mode';
-    modeEl.style.color = '#3fb950';
-    if (chip) { chip.textContent = 'LIVE'; chip.style.background = '#3fb950'; }
+    document.getElementById('hdr-title').textContent = 'Live Mission Tracking';
+    document.getElementById('live-left').style.display = 'block';
+    document.getElementById('live-right').style.display = 'block';
+    document.getElementById('lock-cam-box').style.display = 'flex';
   }
+
+  setTimeout(() => map.invalidateSize(), 200);
 }
 
-function pingRobot() {
-  db.ref('aqunex/ping').set({ t: Date.now() });
-  document.getElementById('last-ping').textContent = new Date().toLocaleTimeString('en-IN');
-  const badge = document.getElementById('conn-overall-badge');
-  badge.className = 'conn-badge online';
-  badge.textContent = 'PINGED';
-  setTimeout(() => {
-    badge.className = 'conn-badge offline';
-    badge.textContent = 'OFFLINE';
-  }, 2500);
-}
-
-function reconnect() {
-  const badge = document.getElementById('conn-overall-badge');
-  badge.className = 'conn-badge';
-  badge.style.background = '#f0883e';
-  badge.textContent = 'RECONNECTING...';
-  db.goOffline();
-  setTimeout(() => {
-    db.goOnline();
-    badge.className = 'conn-badge online';
-    badge.textContent = 'ONLINE';
-    document.getElementById('last-ping').textContent = new Date().toLocaleTimeString('en-IN');
-  }, 900);
-}
-
-function abortMission() {
-  if (mockTimer) { clearInterval(mockTimer); mockTimer = null; }
-  db.ref('aqunex/mission/status').set('aborted');
-  document.getElementById('sb-status').textContent = 'Aborted';
-  document.getElementById('sb-status').style.color = '#f85149';
-  const toast = document.getElementById('abort-toast');
-  toast.style.display = 'block';
-  setTimeout(() => { toast.style.display = 'none'; }, 3000);
-  switchTab('plan');
-}
-
-// ── FIREBASE LIVE TELEMETRY ──
-db.ref('aqunex/telemetry').on('value', snap => {
-  const d = snap.val();
-  if (!d || mockMode) return;
-  if (d.lat && d.lng) placeRobot(d.lat, d.lng);
-  if (d.speed    != null) document.getElementById('l-spd').textContent  = d.speed.toFixed(2)+' m/s';
-  if (d.battery  != null) { document.getElementById('l-bat').textContent=d.battery+'%'; document.getElementById('bat-fill').style.width=d.battery+'%'; }
-  if (d.ph       != null) document.getElementById('l-ph').textContent   = d.ph.toFixed(2);
-  if (d.turbidity!= null) document.getElementById('l-turb').textContent = d.turbidity.toFixed(1)+' NTU';
-  if (d.temp     != null) document.getElementById('l-temp').textContent = d.temp.toFixed(1)+' °C';
-  document.getElementById('last-ping').textContent = new Date().toLocaleTimeString('en-IN');
-  document.getElementById('robot-cs').innerHTML    = '<span class="dot"></span>Connected';
-  document.getElementById('robot-cs').className    = 'cs on';
-  document.getElementById('conn-overall-badge').className  = 'conn-badge online';
-  document.getElementById('conn-overall-badge').textContent = 'ONLINE';
-});
+// Initialize default state
+setMissionState('PLANNING');
 </script>
 
 </body>
