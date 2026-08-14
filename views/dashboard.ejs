@@ -10,16 +10,15 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; background: #0f172a; height: 100vh; width: 100vw; }
+    html, body { height: 100% !important; height: 100dvh !important; width: 100vw; overflow: hidden !important; }
+    body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #0f172a; display: flex; flex-direction: column; }
 
-    /* HEADER */
-    .header { position: fixed; top: 0; left: 0; right: 0; background: #0f172a; color: #f1f5f9; padding: 15px 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 15px rgba(0,0,0,0.5); }
-    .header h1 { font-size: 20px; color: #f1f5f9; }
-    .btn { padding: 7px 16px; background: rgba(91,125,255,0.12); color: #a5b4fc; border: 1px solid rgba(91,125,255,0.3); border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; margin-left: 8px; cursor: pointer; transition: all 0.2s ease; }
-    .btn:hover { background: rgba(91,125,255,0.28); border-color: rgba(91,125,255,0.6); color: #fff; transform: translateY(-1px); }
+    /* HEADER & NAV */
+    .main-nav { flex-shrink: 0; z-index: 1000; }
+    .header { display: none; }
 
     /* STATS BAR */
-    .stats-bar { position: fixed; top: 60px; left: 0; right: 0; z-index: 999; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fff; display: flex; justify-content: center; align-items: center; gap: 4px; padding: 8px 16px; font-size: 13px; border-top: 1px solid rgba(14,165,233,0.15); border-bottom: 1px solid rgba(14,165,233,0.12); box-shadow: 0 2px 12px rgba(0,0,0,0.3); animation: slideDown 0.4s ease-out; }
+    .stats-bar { flex-shrink: 0; z-index: 999; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fff; display: flex; justify-content: center; align-items: center; gap: 4px; padding: 8px 16px; font-size: 13px; border-top: 1px solid rgba(14,165,233,0.15); border-bottom: 1px solid rgba(14,165,233,0.12); box-shadow: 0 2px 12px rgba(0,0,0,0.3); animation: slideDown 0.4s ease-out; }
     @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .stat-item { display: flex; align-items: center; gap: 8px; white-space: nowrap; padding: 5px 14px; border-radius: 8px; transition: background 0.2s; cursor: default; }
     .stat-item:hover { background: rgba(255,255,255,0.06); }
@@ -31,18 +30,19 @@
     .stat-good { color: #4ade80; }
     .stat-orange { color: #fb923c; }
 
-    /* MAP */
-    #map { position: absolute; top: 111px; bottom: 0; width: 100%; min-height: calc(100vh - 111px); }
+    /* MAP WRAPPER & CONTAINER */
+    #map-wrapper { flex: 1; width: 100%; min-height: 0; position: relative; overflow: hidden; }
+    #map { width: 100%; height: 100%; min-height: 0; background: #0b0f19; touch-action: pan-x pan-y; overscroll-behavior: contain; }
 
     /* CLUSTERS */
-    .marker-cluster-small { background-color: rgba(14, 165, 233, 0.35); border: 1px solid rgba(14, 165, 233, 0.6); box-shadow: 0 0 15px rgba(14, 165, 233, 0.4); }
-    .marker-cluster-small div { background-color: rgba(14, 165, 233, 0.85); color: #fff; font-weight: 700; }
-    .marker-cluster-medium { background-color: rgba(245, 158, 11, 0.35); border: 1px solid rgba(245, 158, 11, 0.6); box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
-    .marker-cluster-medium div { background-color: rgba(245, 158, 11, 0.85); color: #fff; font-weight: 700; }
-    .marker-cluster-large { background-color: rgba(239, 68, 68, 0.35); border: 1px solid rgba(239, 68, 68, 0.6); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
-    .marker-cluster-large div { background-color: rgba(239, 68, 68, 0.85); color: #fff; font-weight: 700; }
+    .marker-cluster-small { background-color: rgba(14, 165, 233, 0.35) !important; border: 1px solid rgba(14, 165, 233, 0.6) !important; box-shadow: 0 0 15px rgba(14, 165, 233, 0.4) !important; }
+    .marker-cluster-small div { background-color: rgba(14, 165, 233, 0.85) !important; color: #fff !important; font-weight: 700 !important; }
+    .marker-cluster-medium { background-color: rgba(245, 158, 11, 0.35) !important; border: 1px solid rgba(245, 158, 11, 0.6) !important; box-shadow: 0 0 15px rgba(245, 158, 11, 0.4) !important; }
+    .marker-cluster-medium div { background-color: rgba(245, 158, 11, 0.85) !important; color: #fff !important; font-weight: 700 !important; }
+    .marker-cluster-large { background-color: rgba(239, 68, 68, 0.35) !important; border: 1px solid rgba(239, 68, 68, 0.6) !important; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4) !important; }
+    .marker-cluster-large div { background-color: rgba(239, 68, 68, 0.85) !important; color: #fff !important; font-weight: 700 !important; }
 
-    /* MARKERS (Leaflet-safe GPU-accelerated inner breathing pulse) */
+    /* MARKERS & HOVER FEEDBACK */
     @keyframes markerPulseRing {
       0% { transform: scale(1); opacity: 0.85; }
       70%, 100% { transform: scale(1.65); opacity: 0; }
@@ -53,6 +53,7 @@
       border-radius: 50%; 
       cursor: pointer; 
       background: transparent !important;
+      will-change: transform;
     }
     .marker-inner {
       width: 100%;
@@ -64,10 +65,13 @@
       justify-content: center;
       border: 2px solid rgba(255,255,255,0.9);
       transform-origin: center center;
-      transition: transform 0.2s ease;
+      transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.22s ease;
+      will-change: transform;
     }
     .custom-marker:hover .marker-inner {
-      transform: scale(1.15);
+      transform: scale(1.28);
+      box-shadow: 0 0 18px rgba(14, 165, 233, 0.9);
+      z-index: 99;
     }
     .marker-inner::after {
       content: '';
@@ -79,6 +83,7 @@
       transform-origin: center center;
       animation: markerPulseRing 2.4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
       animation-delay: var(--pulse-delay, 0s);
+      will-change: transform, opacity;
     }
     .marker-good .marker-inner { background: #22c55e; }
     .marker-good .marker-inner::after { background: rgba(34, 197, 94, 0.75); }
@@ -96,52 +101,123 @@
       .marker-inner::after { animation: none !important; }
     }
 
-    /* POPUP */
-    .leaflet-popup-content-wrapper { background: #0f172a !important; color: #f8fafc !important; border-radius: 14px !important; border: 1px solid rgba(14, 165, 233, 0.3) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important; backdrop-filter: blur(16px); }
+    /* POPUP STYLING & RESPONSIVENESS */
+    .leaflet-popup { touch-action: pan-x pan-y; }
+    .leaflet-popup-content-wrapper { background: rgba(15, 23, 42, 0.95) !important; color: #f8fafc !important; border-radius: 14px !important; border: 1px solid rgba(14, 165, 233, 0.35) !important; box-shadow: 0 12px 36px rgba(0,0,0,0.75) !important; backdrop-filter: blur(16px); }
     .leaflet-popup-tip { background: #0f172a !important; }
-    .leaflet-popup-content { margin: 0; min-width: 340px; max-width: 400px; padding: 0; }
-    .popup-header { background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%) !important; color: white; padding: 15px; border-radius: 12px 12px 0 0; }
+    .leaflet-popup-content { margin: 0; width: calc(100vw - 40px) !important; max-width: 380px !important; min-width: 260px !important; padding: 0; }
+    .popup-header { background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%) !important; color: white; padding: 14px 16px; border-radius: 12px 12px 0 0; }
     .popup-header.esp32-header { background: linear-gradient(135deg, #0891b2 0%, #0284c7 100%) !important; }
-    .popup-title { font-size: 18px; font-weight: bold; margin-bottom: 4px; color: #fff; }
-    .popup-subtitle { font-size: 12px; opacity: 0.9; color: rgba(255,255,255,0.85); }
-    .popup-body { padding: 15px; }
-    .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; width: 100%; }
-    .data-item { background: rgba(30, 41, 59, 0.7) !important; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); border-left: 3px solid #38bdf8 !important; min-width: 0; }
+    .popup-title { font-size: 16px; font-weight: bold; margin-bottom: 3px; color: #fff; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .popup-subtitle { font-size: 11px; opacity: 0.9; color: rgba(255,255,255,0.85); }
+    .popup-body { padding: 14px 16px; }
+    .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; width: 100%; }
+    .data-item { background: rgba(30, 41, 59, 0.75) !important; padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); border-left: 3px solid #38bdf8 !important; min-width: 0; }
     .data-item.plastic { border-left-color: #f97316 !important; }
-    .data-label { font-size: 11px; color: #94a3b8 !important; text-transform: uppercase; margin-bottom: 4px; }
-    .data-value { font-size: 16px; font-weight: bold; color: #f8fafc !important; }
-    .data-section-title { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 12px 0 8px; padding-left: 2px; }
-    .meta-info { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; font-size: 12px; color: #94a3b8 !important; }
+    .data-label { font-size: 10px; color: #94a3b8 !important; text-transform: uppercase; margin-bottom: 3px; }
+    .data-value { font-size: 14px; font-weight: bold; color: #f8fafc !important; }
+    .data-section-title { font-size: 10px; color: #0ea5e9; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; margin: 10px 0 6px; padding-left: 2px; }
+    .meta-info { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; font-size: 11px; color: #94a3b8 !important; }
     .meta-item { display: flex; align-items: center; gap: 4px; }
-    .severity-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+    .severity-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
     .severity-low { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
     .severity-moderate { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
     .severity-high { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-    .status-active { display: inline-block; padding: 4px 12px; background: #22c55e; color: white; border-radius: 12px; font-size: 12px; font-weight: bold; }
-    .source-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-left: 8px; }
+    .status-active { display: inline-block; padding: 3px 10px; background: #22c55e; color: white; border-radius: 12px; font-size: 11px; font-weight: bold; }
+    .source-badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; margin-left: 6px; }
     .source-esp32 { background: rgba(6, 182, 212, 0.2); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.3); }
-    .download-btn { display: block; width: 100%; padding: 12px; background: linear-gradient(135deg, #0284c7, #4f46e5); color: white; text-align: center; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; margin-top: 15px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-    .download-btn:hover { background: linear-gradient(135deg, #0369a1, #4338ca); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); }
+    .download-btn { display: block; width: 100%; padding: 10px; background: linear-gradient(135deg, #0284c7, #4f46e5); color: white; text-align: center; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; margin-top: 12px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .download-btn:hover { background: linear-gradient(135deg, #0369a1, #4338ca); transform: translateY(-1px); box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); }
 
-    /* LOADING */
-    .loading { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 9999; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(14, 165, 233, 0.3); color: #f8fafc; padding: 40px; border-radius: 16px; backdrop-filter: blur(12px); box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+    /* LOADING SCREEN */
+    .loading { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 9999; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(14, 165, 233, 0.3); color: #f8fafc; padding: 36px 44px; border-radius: 16px; backdrop-filter: blur(12px); box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
 
-    /* SEARCH */
-    .leaflet-control-geocoder { border: 2px solid #5b7dff !important; border-radius: 8px !important; box-shadow: 0 2px 10px rgba(0,0,0,0.15) !important; }
-    .leaflet-control-geocoder-form input { font-size: 14px !important; padding: 8px !important; }
+    /* LEAFLET CONTROLS DARK GLASSMORPHIC THEME */
+    .leaflet-control-zoom { border: 1px solid rgba(14, 165, 233, 0.3) !important; border-radius: 10px !important; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.5) !important; backdrop-filter: blur(12px); margin-left: 14px !important; margin-top: 14px !important; }
+    .leaflet-control-zoom a { background-color: rgba(15, 23, 42, 0.9) !important; color: #0ea5e9 !important; border-bottom-color: rgba(14, 165, 233, 0.2) !important; font-weight: 700 !important; transition: all 0.2s ease !important; }
+    .leaflet-control-zoom a:hover { background-color: rgba(30, 41, 59, 0.95) !important; color: #38bdf8 !important; }
+    .leaflet-bar { border: none !important; }
 
-    /* DARK ZOOM */
-    .leaflet-control-zoom a { background-color: #0f172a !important; color: #0ea5e9 !important; border-color: rgba(14,165,233,0.3) !important; font-weight: 700 !important; }
-    .leaflet-control-zoom a:hover { background-color: #1e293b !important; color: #38bdf8 !important; }
-    .leaflet-bar { border: 1px solid rgba(14,165,233,0.3) !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; border-radius: 8px !important; overflow: hidden; }
+    .leaflet-control-geocoder { background: rgba(15, 23, 42, 0.9) !important; border: 1px solid rgba(14, 165, 233, 0.35) !important; border-radius: 10px !important; box-shadow: 0 4px 16px rgba(0,0,0,0.5) !important; backdrop-filter: blur(12px); margin-top: 14px !important; margin-right: 14px !important; }
+    .leaflet-control-geocoder-icon { background-color: transparent !important; filter: invert(60%) sepia(80%) saturate(1000%) hue-rotate(170deg); }
+    .leaflet-control-geocoder-form input { background: transparent !important; color: #e2e8f0 !important; font-size: 13px !important; padding: 6px 10px !important; }
+    .leaflet-control-geocoder-throbber .leaflet-control-geocoder-icon { filter: none !important; }
 
-    /* FILTER BUTTON */
-    .filter-fab { position: fixed; top: 118px; right: 56px; z-index: 998; background: #0f172a; color: #0ea5e9; border: 1px solid rgba(14,165,233,0.35); border-radius: 8px; padding: 7px 13px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 10px rgba(0,0,0,0.4); transition: all 0.2s; }
-    .filter-fab:hover { background: #1e293b; border-color: rgba(14,165,233,0.6); }
+    /* LEAFLET GEOCODER DROPDOWN & ERROR MATCHING THEME */
+    .leaflet-control-geocoder-alternatives,
+    .leaflet-control-geocoder-error {
+      background: rgba(15, 23, 42, 0.95) !important;
+      color: #e2e8f0 !important;
+      border-top: 1px solid rgba(14, 165, 233, 0.2) !important;
+      backdrop-filter: blur(12px);
+    }
+    .leaflet-control-geocoder-alternatives li {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
+    .leaflet-control-geocoder-alternatives a, 
+    .leaflet-control-geocoder-alternatives a:hover {
+      color: #e2e8f0 !important;
+      text-decoration: none !important;
+      padding: 8px 12px !important;
+      display: block !important;
+    }
+    .leaflet-control-geocoder-alternatives li:hover,
+    .leaflet-control-geocoder-alternatives li.leaflet-control-geocoder-selected {
+      background: rgba(14, 165, 233, 0.15) !important;
+    }
+
+    .leaflet-control-attribution { background: rgba(15, 23, 42, 0.75) !important; color: #64748b !important; font-size: 10px !important; backdrop-filter: blur(8px); border-radius: 6px 0 0 0 !important; }
+    .leaflet-control-attribution a { color: #0ea5e9 !important; text-decoration: none; }
+
+    /* MAP FLOATING CONTROLS GROUP */
+    .map-controls-group {
+      position: absolute;
+      top: 76px;
+      right: 14px;
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      pointer-events: auto;
+    }
+    .map-fab {
+      background: rgba(15, 23, 42, 0.9);
+      color: #0ea5e9;
+      border: 1px solid rgba(14, 165, 233, 0.35);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      backdrop-filter: blur(12px);
+      transition: all 0.2s ease;
+      min-width: 132px;
+      justify-content: center;
+      white-space: nowrap;
+    }
+    .map-fab:hover { background: rgba(30, 41, 59, 0.95); border-color: rgba(14, 165, 233, 0.6); color: #38bdf8; transform: translateY(-1px); }
     .filter-badge { display: none; align-items: center; justify-content: center; background: #0ea5e9; color: #fff; width: 17px; height: 17px; border-radius: 50%; font-size: 0.62rem; font-weight: 700; }
 
     /* FILTER PANEL */
-    .filter-panel { position: fixed; top: 152px; right: 10px; z-index: 997; background: #0f172a; border: 1px solid rgba(14,165,233,0.2); border-radius: 14px; width: 268px; box-shadow: 0 10px 40px rgba(0,0,0,0.55); display: none; overflow: hidden; }
+    .filter-panel {
+      position: absolute;
+      top: 146px;
+      right: 14px;
+      z-index: 1002;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(14,165,233,0.3);
+      border-radius: 14px;
+      width: 275px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.65);
+      display: none;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+    }
     .filter-panel.open { display: block; animation: panelIn 0.18s ease; }
     @keyframes panelIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
     .fp-head { background: rgba(14,165,233,0.08); border-bottom: 1px solid rgba(14,165,233,0.12); padding: 11px 14px; display: flex; justify-content: space-between; align-items: center; }
@@ -167,39 +243,17 @@
     .fp-select:focus { border-color: rgba(14,165,233,0.4); }
     .fp-select option { background: #1e293b; color: #e2e8f0; }
 
-    /* RESPONSIVE */
-    @media (max-width: 1024px) {
-      .header { flex-direction: column; padding: 12px 15px; gap: 10px; }
-      .header h1 { font-size: 17px; text-align: center; }
-      .header div { display: flex; width: 100%; justify-content: center; gap: 8px; }
-      .btn { padding: 8px 14px; font-size: 13px; margin-left: 0; flex: 1; }
-      #map { top: 150px; }
-      .stats-bar { top: 100px; gap: 8px; flex-wrap: wrap; padding: 8px 15px; }
-      .filter-fab { top: 158px; }
-      .filter-panel { top: 192px; }
-    }
+    /* RESPONSIVE BREAKPOINTS */
     @media (max-width: 768px) {
-      .header { flex-direction: column; padding: 10px; gap: 8px; }
-      .header h1 { font-size: 15px; }
-      .header div { display: flex; width: 100%; justify-content: center; gap: 6px; flex-wrap: wrap; }
-      .btn { padding: 7px 12px; font-size: 12px; margin-left: 0; flex: 1; min-width: 80px; }
-      #map { top: 140px; }
-      .stats-bar { top: 90px; gap: 4px; font-size: 11px; padding: 6px 10px; }
+      .stats-bar { gap: 4px; font-size: 11px; padding: 6px 10px; flex-wrap: wrap; }
       .stat-value { font-size: 13px; }
       .stat-label { font-size: 9px; }
       .stat-divider { display: none; }
-      .leaflet-popup-content { min-width: 280px !important; max-width: 320px !important; }
-      .data-grid { grid-template-columns: 1fr; gap: 8px; }
-      .meta-info { flex-direction: column; align-items: flex-start; gap: 6px; font-size: 10px; }
-      .filter-fab { top: 148px; right: 10px; }
-      .filter-panel { top: 182px; right: 10px; width: calc(100vw - 20px); }
-    }
-    @media (max-width: 480px) {
-      .header h1 { font-size: 13px; }
-      .btn { font-size: 11px; padding: 6px 10px; }
-      #map { top: 130px; }
-      .stats-bar { top: 88px; }
-      .filter-fab { top: 138px; }
+      .data-grid { grid-template-columns: 1fr; gap: 6px; }
+      .meta-info { flex-direction: column; align-items: flex-start; gap: 4px; font-size: 10px; }
+      .map-controls-group { right: 10px; gap: 6px; }
+      .map-fab { min-width: 110px; padding: 6px 10px; font-size: 11px; }
+      .filter-panel { right: 10px; width: calc(100vw - 20px); }
     }
   </style>
 </head>
@@ -263,45 +317,52 @@
   </div>
 </div>
 
-<div id="map"></div>
+<div id="map-wrapper">
+  <div id="map"></div>
 
-<!-- Filter FAB -->
-<button class="filter-fab" onclick="togglePanel()">
-  🔍 Filter <span class="filter-badge" id="filterBadge"></span>
-</button>
+  <!-- Map Floating Controls Group -->
+  <div class="map-controls-group">
+    <button class="map-fab" onclick="focusMissionCluster()" title="Zoom to active mission cluster">
+      🎯 Focus Mission
+    </button>
+    <button class="map-fab" onclick="togglePanel()">
+      🔍 Filter <span class="filter-badge" id="filterBadge"></span>
+    </button>
+  </div>
 
-<!-- Filter Panel -->
-<div class="filter-panel" id="filterPanel">
-  <div class="fp-head">
-    <span class="fp-head-title">Filter Markers</span>
-    <button class="fp-reset" onclick="resetFilters()">Reset All</button>
-  </div>
-  <div class="fp-section">
-    <div class="fp-label">Visibility</div>
-    <div class="fp-toggle-row">
-      <span class="fp-toggle-txt">Show all markers</span>
-      <div class="tog on" id="visTog" onclick="toggleVis(this)"></div>
+  <!-- Filter Panel -->
+  <div class="filter-panel" id="filterPanel">
+    <div class="fp-head">
+      <span class="fp-head-title">Filter Markers</span>
+      <button class="fp-reset" onclick="resetFilters()">Reset All</button>
     </div>
-  </div>
-  <div class="fp-section">
-    <div class="fp-label">Severity</div>
-    <div class="fp-chips">
-      <div class="chip sel-good"   data-g="sev" data-v="good"     onclick="toggleChip(this)">Good</div>
-      <div class="chip sel-warn"   data-g="sev" data-v="moderate" onclick="toggleChip(this)">Moderate</div>
-      <div class="chip sel-danger" data-g="sev" data-v="alert"    onclick="toggleChip(this)">Alert</div>
+    <div class="fp-section">
+      <div class="fp-label">Visibility</div>
+      <div class="fp-toggle-row">
+        <span class="fp-toggle-txt">Show all markers</span>
+        <div class="tog on" id="visTog" onclick="toggleVis(this)"></div>
+      </div>
     </div>
-  </div>
-  <div class="fp-section">
-    <div class="fp-label">State</div>
-    <select class="fp-select" id="stateSelect" onchange="applyFilters()">
-      <option value="all">All States</option>
-    </select>
-  </div>
-  <div class="fp-section">
-    <div class="fp-label">Data Source</div>
-    <div class="fp-chips">
-      <div class="chip sel-blue" data-g="src" data-v="firestore" onclick="toggleChip(this)">Firestore</div>
-      <div class="chip sel-blue" data-g="src" data-v="esp32"     onclick="toggleChip(this)">ESP32</div>
+    <div class="fp-section">
+      <div class="fp-label">Severity</div>
+      <div class="fp-chips">
+        <div class="chip sel-good"   data-g="sev" data-v="good"     onclick="toggleChip(this)">Good</div>
+        <div class="chip sel-warn"   data-g="sev" data-v="moderate" onclick="toggleChip(this)">Moderate</div>
+        <div class="chip sel-danger" data-g="sev" data-v="alert"    onclick="toggleChip(this)">Alert</div>
+      </div>
+    </div>
+    <div class="fp-section">
+      <div class="fp-label">State</div>
+      <select class="fp-select" id="stateSelect" onchange="applyFilters()">
+        <option value="all">All States</option>
+      </select>
+    </div>
+    <div class="fp-section">
+      <div class="fp-label">Data Source</div>
+      <div class="fp-chips">
+        <div class="chip sel-blue" data-g="src" data-v="firestore" onclick="toggleChip(this)">Firestore</div>
+        <div class="chip sel-blue" data-g="src" data-v="esp32"     onclick="toggleChip(this)">ESP32</div>
+      </div>
     </div>
   </div>
 </div>
@@ -309,21 +370,39 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
 <script>
   // FIX 1: firebaseConfig passed from app.js via res.render
   const firebaseConfig = <%- JSON.stringify(firebaseConfig) %>;
-  firebase.initializeApp(firebaseConfig);
-  const db   = firebase.firestore();
-  const rtdb = firebase.database();
+  let db, rtdb;
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db   = firebase.firestore();
+    rtdb = firebase.database();
+  } catch(err) {
+    console.error('⚠️ Firebase Initialization Error:', err);
+  }
 
-  // Map init — loading screen hidden AFTER data arrives (not here)
-  const map = L.map('map').setView([20.5937, 78.9629], 5);
+  // Smooth Leaflet Map Initialization
+  const map = L.map('map', {
+    zoomAnimation: true,
+    fadeAnimation: true,
+    markerZoomAnimation: true,
+    zoomDelta: 0.5,
+    zoomSnap: 0.5,
+    wheelPxPerZoomLevel: 120,
+    minZoom: 3,
+    maxZoom: 18,
+    tap: true,
+    touchZoom: true,
+    bounceAtZoomLimits: false
+  }).setView([20.5937, 78.9629], 5);
+
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+    attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
   }).addTo(map);
 
   const mcg = L.markerClusterGroup({
@@ -331,14 +410,42 @@
     spiderfyOnMaxZoom: true,
     showCoverageOnHover: false,
     zoomToBoundsOnClick: true,
-    disableClusteringAtZoom: 10
+    disableClusteringAtZoom: 14,
+    animate: true,
+    animateAddingMarkers: false
   });
   map.addLayer(mcg);
+
+  // Focus Mission Cluster helper function
+  function focusMissionCluster() {
+    if (mcg && mcg.getLayers().length > 0) {
+      map.flyToBounds(mcg.getBounds(), { padding: [50, 50], duration: 1.2 });
+    } else {
+      map.flyTo([11.0168, 76.9558], 10, { duration: 1.2 });
+    }
+  }
+
+  // Handle map resizing and orientation changes cleanly
+  function invalidateMapSize() {
+    if (map) map.invalidateSize();
+  }
+  window.addEventListener('resize', invalidateMapSize);
+  window.addEventListener('orientationchange', () => setTimeout(invalidateMapSize, 200));
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) invalidateMapSize();
+  });
+
+  // Isolate map scrolling and dragging from parent smooth scroll interference
+  const mapContainerEl = document.getElementById('map');
+  if (mapContainerEl) {
+    mapContainerEl.addEventListener('wheel', e => e.stopPropagation(), { passive: true });
+    mapContainerEl.addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
+  }
 
   var searchMarker = null;
   L.Control.geocoder({
     defaultMarkGeocode: false,
-    placeholder: 'Search any location...',
+    placeholder: 'Search location...',
     errorMessage: 'Location not found',
     suggestMinLength: 3,
     suggestTimeout: 250,
@@ -350,11 +457,52 @@
     searchMarker = L.marker(latlng, {
       icon: L.divIcon({
         className: 'custom-marker',
-        html: `<div style="background:#5b7dff;width:32px;height:32px;border-radius:50%;border:3px solid white;text-align:center;line-height:26px;color:white;font-size:18px;">📍</div>`,
+        html: `<div style="background:#0ea5e9;width:32px;height:32px;border-radius:50%;border:2px solid white;text-align:center;line-height:28px;color:white;font-size:16px;">📍</div>`,
         iconSize: [32, 32]
       })
-    }).addTo(map).bindPopup(`<div style="padding:10px"><strong>${locationName}</strong><br><small>Searched location</small></div>`).openPopup();
+    }).addTo(map).bindPopup(`<div style="padding:12px"><strong>${locationName}</strong><br><small style="color:#94a3b8">Searched Location</small></div>`).openPopup();
   }).addTo(map);
+
+  // ── Positioning & Click Propagation for Custom Controls ──
+  const mapControlsGroup = document.querySelector('.map-controls-group');
+  const filterPanel = document.querySelector('.filter-panel');
+  if (mapControlsGroup) {
+    L.DomEvent.disableClickPropagation(mapControlsGroup);
+  }
+  if (filterPanel) {
+    L.DomEvent.disableClickPropagation(filterPanel);
+  }
+
+  // Use ResizeObserver to position custom controls dynamically under the Leaflet geocoder (which can expand)
+  const geocoderEl = document.querySelector('.leaflet-control-geocoder');
+  if (geocoderEl && mapControlsGroup && filterPanel) {
+    const updateControlPositions = () => {
+      const isMobile = window.innerWidth <= 768;
+      const baseTop = isMobile ? 10 : 14;
+      const gap = isMobile ? 6 : 8;
+      const geocoderHeight = geocoderEl.getBoundingClientRect().height;
+      const controlsTop = baseTop + geocoderHeight + gap;
+      
+      mapControlsGroup.style.top = `${controlsTop}px`;
+      
+      const groupHeight = mapControlsGroup.getBoundingClientRect().height;
+      filterPanel.style.top = `${controlsTop + groupHeight + gap}px`;
+    };
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateControlPositions();
+    });
+    resizeObserver.observe(geocoderEl);
+    resizeObserver.observe(mapControlsGroup);
+    
+    // Add event listeners on transition/focus/blur to account for instant height shifts in the geocoder input
+    const geocoderInput = geocoderEl.querySelector('input');
+    if (geocoderInput) {
+      geocoderInput.addEventListener('focus', () => setTimeout(updateControlPositions, 100));
+      geocoderInput.addEventListener('blur', () => setTimeout(updateControlPositions, 100));
+      geocoderInput.addEventListener('input', () => setTimeout(updateControlPositions, 50));
+    }
+  }
 
   // ── Helpers ──
   function getSevKey(c) {
@@ -379,12 +527,13 @@
 
   function createDownloadFn(location, chlorophyll, turbidity, ph, temperature, microplasticIndex, plasticDensity) {
     return function() {
-      const csv = `Water Quality Report - ${location}\n${new Date().toLocaleDateString()}\nParameter,Value,Unit\nChlorophyll-a,${chlorophyll},µg/L\nTurbidity,${turbidity},NTU\npH,${ph},-\nTemperature,${temperature},°C\nMicroplastic Index,${microplasticIndex ?? 'N/A'},µg/L\nPlastic Density,${plasticDensity ?? 'N/A'},/m³`;
+      const safeLoc = location || 'Unknown';
+      const csv = `Water Quality Report - ${safeLoc}\n${new Date().toLocaleDateString()}\nParameter,Value,Unit\nChlorophyll-a,${chlorophyll},µg/L\nTurbidity,${turbidity},NTU\npH,${ph},-\nTemperature,${temperature},°C\nMicroplastic Index,${microplasticIndex ?? 'N/A'},µg/L\nPlastic Density,${plasticDensity ?? 'N/A'},/m³`;
       const blob = new Blob([csv], { type: 'text/csv' });
       const url  = window.URL.createObjectURL(blob);
       const a    = document.createElement('a');
       a.href     = url;
-      a.download = `${location.replace(/[^a-zA-Z0-9]/g,'_')}_Report.csv`;
+      a.download = `${safeLoc.replace(/[^a-zA-Z0-9]/g,'_')}_Report.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -393,56 +542,68 @@
   }
 
   function createMarker(data, source, docId) {
-    if (!data.gps || !data.gps.lat || !data.gps.lng) return;
-    const { lat, lng } = data.gps;
-    const sev         = getSeverity(data.chlorophyll || 0);
-    const markerClass = source === 'esp32' ? 'marker-esp32' : sev.markerClass;
+    try {
+      if (!data || !data.gps) return;
+      const lat = parseFloat(data.gps.lat);
+      const lng = parseFloat(data.gps.lng);
+      if (isNaN(lat) || isNaN(lng)) {
+        console.warn('⚠️ Invalid or missing GPS coordinates for marker:', docId);
+        return;
+      }
+      
+      const sev         = getSeverity(data.chlorophyll || 0);
+      const markerClass = source === 'esp32' ? 'marker-esp32' : sev.markerClass;
 
-    let hash = 0;
-    const idStr = String(docId || '');
-    for (let i = 0; i < idStr.length; i++) hash = (hash << 5) - hash + idStr.charCodeAt(i);
-    const pulseDelay = (Math.abs(hash) % 8) * 0.3;
+      let hash = 0;
+      const idStr = String(docId || 'unknown_id');
+      for (let i = 0; i < idStr.length; i++) hash = (hash << 5) - hash + idStr.charCodeAt(i);
+      const pulseDelay = (Math.abs(hash) % 8) * 0.3;
 
-    const icon        = L.divIcon({
-      className: `custom-marker ${markerClass}`,
-      html: `<div class="marker-inner" style="--pulse-delay: ${pulseDelay}s; font-size:16px;">💧</div>`,
-      iconSize: [32, 32]
-    });
-    const fn = `dl${docId.replace(/[^a-zA-Z0-9]/g,'')}`;
-    window[fn] = createDownloadFn(data.location, data.chlorophyll, data.turbidity, data.ph, data.temperature, data.microplasticIndex, data.plasticDensity);
+      const icon        = L.divIcon({
+        className: `custom-marker ${markerClass}`,
+        html: `<div class="marker-inner" style="--pulse-delay: ${pulseDelay}s; font-size:16px;">💧</div>`,
+        iconSize: [32, 32]
+      });
+      
+      const fn = `dl${idStr.replace(/[^a-zA-Z0-9]/g,'')}`;
+      const safeLoc = data.location || 'Unknown';
+      window[fn] = createDownloadFn(safeLoc, data.chlorophyll, data.turbidity, data.ph, data.temperature, data.microplasticIndex, data.plasticDensity);
 
-    const sourceBadge = source === 'esp32' ? `<span class="source-badge source-esp32">ESP32</span>` : '';
-    const hc          = source === 'esp32' ? 'popup-header esp32-header' : 'popup-header';
+      const sourceBadge = source === 'esp32' ? `<span class="source-badge source-esp32">ESP32</span>` : '';
+      const hc          = source === 'esp32' ? 'popup-header esp32-header' : 'popup-header';
 
-    const popup = `
-      <div class="${hc}">
-        <div class="popup-title">${data.location || 'Unknown'} ${sourceBadge}</div>
-        <div class="popup-subtitle">${data.district || 'N/A'}, ${data.state || 'N/A'}</div>
-      </div>
-      <div class="popup-body">
-        <div class="data-section-title">💧 Water Quality</div>
-        <div class="data-grid">
-          <div class="data-item"><div class="data-label">Chlorophyll-a</div><div class="data-value">${data.chlorophyll} µg/L</div></div>
-          <div class="data-item"><div class="data-label">Turbidity</div><div class="data-value">${data.turbidity} NTU</div></div>
-          <div class="data-item"><div class="data-label">pH</div><div class="data-value">${data.ph}</div></div>
-          <div class="data-item"><div class="data-label">Temperature</div><div class="data-value">${data.temperature}°C</div></div>
+      const popup = `
+        <div class="${hc}">
+          <div class="popup-title">${safeLoc} ${sourceBadge}</div>
+          <div class="popup-subtitle">${data.district || 'N/A'}, ${data.state || 'N/A'}</div>
         </div>
-        <div class="data-section-title">🧴 Microplastics & Spectral</div>
-        <div class="data-grid">
-          <div class="data-item plastic"><div class="data-label">Microplastic Index</div><div class="data-value">${data.microplasticIndex != null ? data.microplasticIndex + ' µg/L' : 'N/A'}</div></div>
-          <div class="data-item plastic"><div class="data-label">Plastic Density</div><div class="data-value">${data.plasticDensity != null ? data.plasticDensity + '/m³' : 'N/A'}</div></div>
-        </div>
-        <div class="meta-info">
-          <div class="meta-item"><strong>Type</strong> ${getPollutionType(data.chlorophyll)}</div>
-          <div class="meta-item"><strong>Severity</strong> <span class="severity-badge ${sev.class}">${sev.rating}/10</span></div>
-        </div>
-        <div class="meta-info">
-          <div class="meta-item"><span class="status-active">ACTIVE</span></div>
-          <div class="meta-item" style="font-size:10px;color:#999">${formatTimestamp(data.timestamp)}</div>
-        </div>
-        <button class="download-btn" onclick="${fn}()">⬇ Download Data Report</button>
-      </div>`;
-    mcg.addLayer(L.marker([lat, lng], { icon }).bindPopup(popup, { maxWidth: 400, minWidth: 360 }));
+        <div class="popup-body">
+          <div class="data-section-title">💧 Water Quality</div>
+          <div class="data-grid">
+            <div class="data-item"><div class="data-label">Chlorophyll-a</div><div class="data-value">${data.chlorophyll !== undefined ? data.chlorophyll : 'N/A'} µg/L</div></div>
+            <div class="data-item"><div class="data-label">Turbidity</div><div class="data-value">${data.turbidity !== undefined ? data.turbidity : 'N/A'} NTU</div></div>
+            <div class="data-item"><div class="data-label">pH</div><div class="data-value">${data.ph !== undefined ? data.ph : 'N/A'}</div></div>
+            <div class="data-item"><div class="data-label">Temperature</div><div class="data-value">${data.temperature !== undefined ? data.temperature : 'N/A'}°C</div></div>
+          </div>
+          <div class="data-section-title">🧴 Microplastics & Spectral</div>
+          <div class="data-grid">
+            <div class="data-item plastic"><div class="data-label">Microplastic Index</div><div class="data-value">${data.microplasticIndex != null ? data.microplasticIndex + ' µg/L' : 'N/A'}</div></div>
+            <div class="data-item plastic"><div class="data-label">Plastic Density</div><div class="data-value">${data.plasticDensity != null ? data.plasticDensity + '/m³' : 'N/A'}</div></div>
+          </div>
+          <div class="meta-info">
+            <div class="meta-item"><strong>Type</strong> ${getPollutionType(data.chlorophyll || 0)}</div>
+            <div class="meta-item"><strong>Severity</strong> <span class="severity-badge ${sev.class}">${sev.rating}/10</span></div>
+          </div>
+          <div class="meta-info">
+            <div class="meta-item"><span class="status-active">ACTIVE</span></div>
+            <div class="meta-item" style="font-size:10px;color:#999">${formatTimestamp(data.timestamp)}</div>
+          </div>
+          <button class="download-btn" onclick="${fn}()">⬇ Download Data Report</button>
+        </div>`;
+      mcg.addLayer(L.marker([lat, lng], { icon }).bindPopup(popup, { maxWidth: 400, minWidth: 360 }));
+    } catch(err) {
+      console.error('⚠️ Error creating marker for docId:', docId, err);
+    }
   }
 
   // ── Data Store ──
@@ -547,58 +708,93 @@
 
   // ── Firebase ──
 
-  // FIX 2: Correct collection name 'sensor_data'
-  // FIX 3: loadingScreen hidden INSIDE onSnapshot, not before map init
-  // FIX 4: loadRtdb() called ONCE outside onSnapshot
-  db.collection('sensor_data').onSnapshot(snapshot => {
-    // Hide loading screen when first data arrives
-    document.getElementById('loadingScreen').style.display = 'none';
+  if (db) {
+    db.collection('sensor_data').onSnapshot(snapshot => {
+      // Hide loading screen when first data arrives
+      const loadingScreen = document.getElementById('loadingScreen');
+      if (loadingScreen) loadingScreen.style.display = 'none';
+      invalidateMapSize();
 
-    allData = allData.filter(d => d.source !== 'firestore');
-    const docs = [];
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      docs.push(data);
-      allData.push({ data, source: 'firestore', docId: doc.id });
-    });
-    updateStatsBar(docs);
-    populateStates(docs);
-    redrawMarkers();
-  }, err => {
-    console.error('Firestore error:', err.message);
-    document.getElementById('loadingScreen').innerHTML =
-      `<h2>❌ Connection Error</h2><p>${err.message}</p><p>Check console for details.</p>`;
-  });
-
-  // FIX 4: Called ONCE here — NOT inside onSnapshot
-  function loadRtdb() {
-    rtdb.ref('sensorData').once('value', snap => {
-      const data = snap.val();
-      if (data) {
-        Object.keys(data).forEach(key => {
-          if (!allData.find(d => d.docId === key && d.source === 'esp32')) {
-            allData.push({ data: data[key], source: 'esp32', docId: key });
+      allData = allData.filter(d => d.source !== 'firestore');
+      const docs = [];
+      snapshot.forEach(doc => {
+        try {
+          const data = doc.data();
+          if (data) {
+            docs.push(data);
+            allData.push({ data, source: 'firestore', docId: doc.id });
           }
-        });
-        redrawMarkers();
+        } catch (err) {
+          console.warn('⚠️ Error processing firestore doc:', doc.id, err);
+        }
+      });
+      
+      try {
+        updateStatsBar(docs);
+      } catch (err) {
+        console.error('⚠️ Error updating stats bar:', err);
+      }
+      
+      try {
+        populateStates(docs);
+      } catch (err) {
+        console.warn('⚠️ Error populating states:', err);
+      }
+      
+      redrawMarkers();
+    }, err => {
+      console.error('Firestore error:', err.message);
+      const loadingScreen = document.getElementById('loadingScreen');
+      if (loadingScreen) {
+        loadingScreen.innerHTML = `<h2>❌ Connection Error</h2><p>${err.message}</p><p>Check console for details.</p>`;
       }
     });
+  } else {
+    // Hide loading screen if db is not initialized
+    const loadingScreen = document.getElementById('loadingScreen');
+    if (loadingScreen) loadingScreen.style.display = 'none';
+    setTimeout(invalidateMapSize, 500);
+  }
 
-    rtdb.ref('sensorData').on('child_added', snap => {
-      const key = snap.key;
-      if (!allData.find(d => d.docId === key && d.source === 'esp32')) {
+  // Called ONCE here — NOT inside onSnapshot
+  function loadRtdb() {
+    try {
+      rtdb.ref('sensorData').once('value', snap => {
+        const data = snap.val();
+        if (data) {
+          Object.keys(data).forEach(key => {
+            if (!allData.find(d => d.docId === key && d.source === 'esp32')) {
+              allData.push({ data: data[key], source: 'esp32', docId: key });
+            }
+          });
+          redrawMarkers();
+        }
+      }, err => {
+        console.warn('⚠️ RTDB read permission warning:', err.message);
+      });
+
+      rtdb.ref('sensorData').on('child_added', snap => {
+        const key = snap.key;
+        if (!allData.find(d => d.docId === key && d.source === 'esp32')) {
+          allData.push({ data: snap.val(), source: 'esp32', docId: key });
+          redrawMarkers();
+        }
+      }, err => {
+        console.warn('⚠️ RTDB child_added permission warning:', err.message);
+      });
+
+      // No recursive loadRtdb() — just update the changed entry in-place
+      rtdb.ref('sensorData').on('child_changed', snap => {
+        const key = snap.key;
+        allData = allData.filter(d => !(d.docId === key && d.source === 'esp32'));
         allData.push({ data: snap.val(), source: 'esp32', docId: key });
         redrawMarkers();
-      }
-    });
-
-    // FIX 5: No recursive loadRtdb() — just update the changed entry in-place
-    rtdb.ref('sensorData').on('child_changed', snap => {
-      const key = snap.key;
-      allData = allData.filter(d => !(d.docId === key && d.source === 'esp32'));
-      allData.push({ data: snap.val(), source: 'esp32', docId: key });
-      redrawMarkers();
-    });
+      }, err => {
+        console.warn('⚠️ RTDB child_changed permission warning:', err.message);
+      });
+    } catch(err) {
+      console.error('⚠️ Error initializing RTDB listeners:', err);
+    }
   }
 
   loadRtdb();
