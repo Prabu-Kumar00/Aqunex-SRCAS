@@ -288,7 +288,7 @@ app.use((req, res) => {
 });
 
 app.listen(port, '0.0.0.0', () => {
-  console.log(`🚤 Aqunex Server running at http://localhost:${port}`);
+  console.log(`🚤 Aqunex Server running at http://0.0.0.0:${port}`);
   console.log(`🏠 Home:      http://localhost:${port}/`);
   console.log(`🔐 Login:     http://localhost:${port}/login`);
   console.log(`📊 Dashboard: http://localhost:${port}/dashboard  (public)`);
