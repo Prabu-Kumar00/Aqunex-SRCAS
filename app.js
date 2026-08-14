@@ -8,6 +8,7 @@ const crypto = require('crypto');
 const { getRandomLocation, addGPSVariation, getRandomValue } = require('./scripts/locations');
 
 const app = express();
+app.set('trust proxy', 1);
 const port = process.env.PORT || 3001;
 
 // ── Firebase Admin Init ──
