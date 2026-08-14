@@ -1214,8 +1214,8 @@
           <div class="flow-step-card reveal" style="transition-delay:0.24s;">
             <div class="flow-step-number">03</div>
             <div class="flow-step-icon">🧠</div>
-            <h3>Edge AI Microplastic Detection</h3>
-            <p>Onboard NVIDIA Jetson Orin Nano running custom YOLO v8 vision models to detect microplastics and floating
+            <h3>Edge AI Debris Detection</h3>
+            <p>Onboard Raspberry Pi 5 running custom YOLO v8 vision models to detect solid waste and floating
               debris.</p>
           </div>
           <div class="flow-step-card reveal" style="transition-delay:0.36s;">
@@ -1277,14 +1277,14 @@
             observer.observe(title);
           });
         </script>
-        <p class="subtitle">R-TECH: Robotic Monitoring for Chlorophyll and Plastic Signatures</p>
+        <p class="subtitle">R-TECH: Robotic Monitoring for Chlorophyll and Debris Signatures</p>
         <div class="overview-grid-wrap">
           <div class="overview-grid">
             <div class="tech-card">
               <h3>🤖 Hardware Components</h3>
               <ul>
                 <li>ESP32 Microcontroller</li>
-                <li>Jetson Orin Nano</li>
+                <li>Raspberry Pi 5</li>
                 <li>AS7265x Spectral Sensors</li>
                 <li>pH &amp; Turbidity Sensors</li>
                 <li>GPS + IMU Navigation</li>
@@ -1307,7 +1307,7 @@
               <ul>
                 <li>Real-time Water Monitoring</li>
                 <li>Chlorophyll-a Detection</li>
-                <li>Plastic Debris Identification</li>
+                <li>Debris &amp; Solid Waste Identification</li>
                 <li>Autonomous Navigation</li>
                 <li>Cloud-based Dashboard</li>
               </ul>
@@ -1400,7 +1400,7 @@
                   </ol>
                   <strong>Environmental Monitoring:</strong>
                   <ol start="5">
-                    <li>Camera Module for plastic detection (YOLO ML model)</li>
+                    <li>Camera Module for debris detection (YOLO ML model)</li>
                     <li>GPS Module for location tracking</li>
                     <li>IMU (Inertial Measurement Unit) for navigation</li>
                   </ol>
@@ -1414,7 +1414,7 @@
                     <li><strong>Catamaran Hull:</strong> Triple pontoon design for stability</li>
                     <li><strong>Propulsion:</strong> Dual DC motors (775) with 3D-printed propellers</li>
                     <li><strong>Control Unit:</strong> ESP32 for data processing</li>
-                    <li><strong>ML Processing:</strong> Jetson Orin Nano for real-time AI inference</li>
+                    <li><strong>ML Processing:</strong> Raspberry Pi 5 for real-time AI inference</li>
                   </ol>
                 </td>
               </tr>
@@ -1423,8 +1423,8 @@
                 <td>Data Processing</td>
                 <td>
                   <ol>
-                    <li><strong>Edge Computing:</strong> Jetson Orin Nano for sensor data aggregation</li>
-                    <li><strong>Machine Learning:</strong> YOLO v8 for plastic detection</li>
+                    <li><strong>Edge Computing:</strong> Raspberry Pi 5 for sensor data aggregation</li>
+                    <li><strong>Machine Learning:</strong> YOLO v8 for debris detection</li>
                     <li><strong>Spectral Analysis:</strong> Algorithms for chlorophyll-a concentration calculation</li>
                     <li><strong>Dashboard:</strong> EJS + Leaflet.js for map visualization</li>
                   </ol>
@@ -1648,7 +1648,7 @@
             <div class="timeline-content">
               <div class="timeline-date">Milestone 3 — Edge AI &amp; Object Detection</div>
               <h3>🧠 Edge Computer &amp; YOLO Setup</h3>
-              <p>NVIDIA Jetson Orin Nano edge processing setup running custom YOLO v8 models for real-time plastic
+              <p>Raspberry Pi 5 edge processing setup running custom YOLO v8 models for real-time solid waste and
                 debris identification.</p>
             </div>
           </div>
@@ -1800,7 +1800,6 @@
               <p><strong style="color:#e2e8f0;">Environmental Impact:</strong></p>
               <ul class="impact-list">
                 <li>🐢 Wildlife harm — animals ingest or entangle in plastic</li>
-                <li>🔬 Microplastics — enter the food chain</li>
                 <li>💀 Toxic leaching — contaminates water and soil</li>
                 <li>🌊 Waterway blockage — increases flood risk</li>
                 <li>🏞️ Habitat destruction — smothers aquatic vegetation</li>
@@ -1841,7 +1840,7 @@
           <h3 style="margin-bottom:1rem;font-size:1.6rem;color:#e2e8f0;">🎯 Our Monitoring Solution</h3>
           <p style="font-size:1rem;line-height:1.9;max-width:900px;margin:0 auto;color:#94a3b8;">
             R-TECH's autonomous robotic multispectral radiometer system continuously monitors
-            <strong style="color:var(--ocean-1);">chlorophyll-a levels, turbidity, plastic signatures, and pH</strong>,
+            <strong style="color:var(--ocean-1);">chlorophyll-a levels, turbidity, solid waste signatures, and pH</strong>,
             providing real-time location data.
           </p>
         </div>
@@ -1889,10 +1888,10 @@
             </div>
           </details>
           <details class="faq-item">
-            <summary class="faq-question">How are sensor accuracy and plastic detection validated?</summary>
+            <summary class="faq-question">How are sensor accuracy and debris detection validated?</summary>
             <div class="faq-answer">
-              <p>Sensor calibration and accuracy validation are ongoing as part of field testing. Plastic debris
-                detection is processed locally on an onboard NVIDIA Jetson Orin Nano running custom YOLO v8 computer
+              <p>Sensor calibration and accuracy validation are ongoing as part of field testing. Debris
+                detection is processed locally on an onboard Raspberry Pi 5 running custom YOLO v8 computer
                 vision models.</p>
             </div>
           </details>
@@ -1907,7 +1906,7 @@
           <details class="faq-item">
             <summary class="faq-question">How is telemetry data processed and displayed?</summary>
             <div class="faq-answer">
-              <p>An ESP32 microcontroller and Jetson Orin Nano aggregate sensor telemetry on the robot and stream data
+              <p>An ESP32 microcontroller and Raspberry Pi 5 aggregate sensor telemetry on the robot and stream data
                 to a Node.js + Express backend, rendering live metrics and location alerts on an interactive Leaflet.js
                 map dashboard.</p>
             </div>

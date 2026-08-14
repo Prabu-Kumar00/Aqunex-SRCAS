@@ -361,11 +361,6 @@
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
-        .plastic-val {
-            color: #fb923c;
-            font-weight: 600;
-        }
-
         .pagination {
             display: flex;
             align-items: center;
@@ -484,13 +479,6 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background:rgba(251,146,60,0.1);">🧴</div>
-                    <div class="stat-info">
-                        <h3>Avg Microplastic</h3>
-                        <p id="avgMicroplastic" style="color:#fb923c;">—</p>
-                    </div>
-                </div>
-                <div class="stat-card">
                     <div class="stat-icon" style="background:rgba(16,185,129,0.1);">🛰️</div>
                     <div class="stat-info">
                         <h3>System Health</h3>
@@ -580,8 +568,6 @@
                             <th>Temp (°C)</th>
                             <th>Turbidity (NTU)</th>
                             <th>Chlorophyll (µg/L)</th>
-                            <th>Microplastic (µg/L)</th>
-                            <th>Plastic Density (/m²)</th>
                             <th>Risk</th>
                         </tr>
                     </thead>
@@ -666,13 +652,9 @@
                 const highs = docs.filter(d => getRisk(d).label === "High").length;
                 const chlorArr = docs.map(d => parseFloat(d.chlorophyll)).filter(n => !isNaN(n));
                 const avgChlor = chlorArr.length ? (chlorArr.reduce((s, n) => s + n, 0) / chlorArr.length).toFixed(1) : "—";
-                const mpArr = docs.map(d => parseFloat(d.microplasticIndex)).filter(n => !isNaN(n));
-                const avgMp = mpArr.length ? (mpArr.reduce((s, n) => s + n, 0) / mpArr.length).toFixed(2) : "—";
-
                 document.getElementById("totalReportsCount").textContent = total;
                 document.getElementById("criticalAlertsCount").textContent = highs;
                 document.getElementById("avgChlorophyll").textContent = avgChlor !== "—" ? avgChlor + " µg/L" : "—";
-                document.getElementById("avgMicroplastic").textContent = avgMp !== "—" ? avgMp + " µg/L" : "—";
                 document.getElementById("healthStatus").textContent = total > 0 ? "Active" : "Idle";
             }
 
@@ -716,8 +698,6 @@
                     const turb = parseFloat(doc.turbidity) || 0;
                     const temp = parseFloat(doc.temperature) || 0;
                     const chlor = doc.chlorophyll != null ? parseFloat(doc.chlorophyll).toFixed(1) : "—";
-                    const mpIdx = doc.microplasticIndex != null ? parseFloat(doc.microplasticIndex).toFixed(2) : "—";
-                    const mpDens = doc.plasticDensity != null ? parseFloat(doc.plasticDensity).toFixed(2) : "—";
                     const risk = getRisk(doc);
                     const phColor = (ph < 6.5 || ph > 8.5) ? "#f87171" : "inherit";
 
@@ -730,8 +710,6 @@
                     <td>${temp.toFixed(1)}</td>
                     <td>${turb.toFixed(1)}</td>
                     <td style="color:#fbbf24;">${chlor}</td>
-                    <td class="plastic-val">${mpIdx}</td>
-                    <td class="plastic-val">${mpDens}</td>
                     <td><span class="severity-badge ${risk.cls}">${risk.label}</span></td>
                 </tr>`;
                 }).join("");
@@ -789,8 +767,6 @@
                         Temperature_C: parseFloat(doc.temperature || 0).toFixed(1),
                         Turbidity_NTU: parseFloat(doc.turbidity || 0).toFixed(1),
                         Chlorophyll_ugL: doc.chlorophyll != null ? parseFloat(doc.chlorophyll).toFixed(1) : "N/A",
-                        Microplastic_ugL: doc.microplasticIndex != null ? parseFloat(doc.microplasticIndex).toFixed(2) : "N/A",
-                        Plastic_Density_m2: doc.plasticDensity != null ? parseFloat(doc.plasticDensity).toFixed(2) : "N/A",
                         Risk: getRisk(doc).label
                     };
                 });

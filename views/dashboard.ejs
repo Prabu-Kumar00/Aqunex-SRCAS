@@ -113,7 +113,6 @@
     .popup-body { padding: 14px 16px; }
     .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; width: 100%; }
     .data-item { background: rgba(30, 41, 59, 0.75) !important; padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); border-left: 3px solid #38bdf8 !important; min-width: 0; }
-    .data-item.plastic { border-left-color: #f97316 !important; }
     .data-label { font-size: 10px; color: #94a3b8 !important; text-transform: uppercase; margin-bottom: 3px; }
     .data-value { font-size: 14px; font-weight: bold; color: #f8fafc !important; }
     .data-section-title { font-size: 10px; color: #0ea5e9; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; margin: 10px 0 6px; padding-left: 2px; }
@@ -383,14 +382,6 @@
   </div>
   <div class="stat-divider"></div>
   <div class="stat-item">
-    <span class="stat-icon">🧴</span>
-    <div>
-      <div class="stat-value stat-orange" id="statPlastic">—</div>
-      <div class="stat-label">Plastic Hotspots</div>
-    </div>
-  </div>
-  <div class="stat-divider"></div>
-  <div class="stat-item">
     <span class="stat-icon">🕐</span>
     <div>
       <div class="stat-value stat-good" id="statLastUpdate">—</div>
@@ -607,10 +598,10 @@
     } catch(e) { return 'N/A'; }
   }
 
-  function createDownloadFn(location, chlorophyll, turbidity, ph, temperature, microplasticIndex, plasticDensity) {
+  function createDownloadFn(location, chlorophyll, turbidity, ph, temperature) {
     return function() {
       const safeLoc = location || 'Unknown';
-      const csv = `Water Quality Report - ${safeLoc}\n${new Date().toLocaleDateString()}\nParameter,Value,Unit\nChlorophyll-a,${chlorophyll},µg/L\nTurbidity,${turbidity},NTU\npH,${ph},-\nTemperature,${temperature},°C\nMicroplastic Index,${microplasticIndex ?? 'N/A'},µg/L\nPlastic Density,${plasticDensity ?? 'N/A'},/m³`;
+      const csv = `Water Quality Report - ${safeLoc}\n${new Date().toLocaleDateString()}\nParameter,Value,Unit\nChlorophyll-a,${chlorophyll},µg/L\nTurbidity,${turbidity},NTU\npH,${ph},-\nTemperature,${temperature},°C`;
       const blob = new Blob([csv], { type: 'text/csv' });
       const url  = window.URL.createObjectURL(blob);
       const a    = document.createElement('a');
@@ -649,7 +640,7 @@
       
       const fn = `dl${idStr.replace(/[^a-zA-Z0-9]/g,'')}`;
       const safeLoc = data.location || 'Unknown';
-      window[fn] = createDownloadFn(safeLoc, data.chlorophyll, data.turbidity, data.ph, data.temperature, data.microplasticIndex, data.plasticDensity);
+      window[fn] = createDownloadFn(safeLoc, data.chlorophyll, data.turbidity, data.ph, data.temperature);
 
       const sourceBadge = source === 'esp32' ? `<span class="source-badge source-esp32">ESP32</span>` : '';
       const hc          = source === 'esp32' ? 'popup-header esp32-header' : 'popup-header';
@@ -666,11 +657,6 @@
             <div class="data-item"><div class="data-label">Turbidity</div><div class="data-value">${data.turbidity !== undefined ? data.turbidity : 'N/A'} NTU</div></div>
             <div class="data-item"><div class="data-label">pH</div><div class="data-value">${data.ph !== undefined ? data.ph : 'N/A'}</div></div>
             <div class="data-item"><div class="data-label">Temperature</div><div class="data-value">${data.temperature !== undefined ? data.temperature : 'N/A'}°C</div></div>
-          </div>
-          <div class="data-section-title">🧴 Microplastics & Spectral</div>
-          <div class="data-grid">
-            <div class="data-item plastic"><div class="data-label">Microplastic Index</div><div class="data-value">${data.microplasticIndex != null ? data.microplasticIndex + ' µg/L' : 'N/A'}</div></div>
-            <div class="data-item plastic"><div class="data-label">Plastic Density</div><div class="data-value">${data.plasticDensity != null ? data.plasticDensity + '/m³' : 'N/A'}</div></div>
           </div>
           <div class="meta-info">
             <div class="meta-item"><strong>Type</strong> ${getPollutionType(data.chlorophyll || 0)}</div>
@@ -694,7 +680,7 @@
 
   function updateStatsBar(docs) {
     if (!docs || !docs.length) {
-      ['statSensors','statAlerts','statStates','statLocations','statPlastic'].forEach(id => {
+      ['statSensors','statAlerts','statStates','statLocations'].forEach(id => {
         const el = document.getElementById(id);
         if (el) { el.textContent = '0'; el.setAttribute('data-val', '0'); }
       });
@@ -702,7 +688,7 @@
       return;
     }
     const states = new Set(), locations = new Set();
-    let lastTs = 0, alerts = 0, plastic = 0;
+    let lastTs = 0, alerts = 0;
     docs.forEach(d => {
       if (d.state)    states.add(d.state);
       if (d.location) locations.add(d.location);
@@ -711,14 +697,12 @@
       else if (d.timestamp) ts = new Date(d.timestamp).getTime();
       if (ts > lastTs) lastTs = ts;
       if (Math.min(Math.floor((d.chlorophyll || 0) / 3), 10) >= 8) alerts++;
-      if ((d.microplasticIndex || 0) > 8) plastic++;
     });
     animateCountUp('statSensors', docs.length);
     animateCountUp('statAlerts', alerts);
     document.getElementById('statAlerts').className = alerts > 0 ? 'stat-value stat-alert' : 'stat-value stat-good';
     animateCountUp('statStates', states.size);
     animateCountUp('statLocations', locations.size);
-    animateCountUp('statPlastic', plastic);
     document.getElementById('statLastUpdate').textContent = lastTs > 0
       ? new Date(lastTs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—';
   }

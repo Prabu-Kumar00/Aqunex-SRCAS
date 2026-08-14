@@ -127,12 +127,8 @@ app.get('/reports', async (req, res) => {
     const avgChlorophyll   = logs.length
       ? (logs.reduce((s, l) => s + (l.chlorophyll || 0), 0) / logs.length).toFixed(1)
       : '0.0';
-    const avgMicroplastic  = logs.length
-      ? (logs.reduce((s, l) => s + (l.microplasticIndex || 0), 0) / logs.length).toFixed(2)
-      : '0.00';
-
     res.render('reports', {
-      logs, highRiskCount, avgChlorophyll, avgMicroplastic,
+      logs, highRiskCount, avgChlorophyll,
       firebaseConfig, page: 'reports', admin: req.session.admin || null
     });
   } catch (err) {
@@ -185,8 +181,6 @@ async function addMockDataEntry() {
       temperature:       getRandomValue(18, 32, 1),
       timestamp:         admin.firestore.Timestamp.now(),
       turbidity:         Math.floor(getRandomValue(5, 50, 0)),
-      microplasticIndex: parseFloat((Math.random() * 15).toFixed(2)),
-      plasticDensity:    parseFloat((Math.random() * 8).toFixed(2)),
       riskLevel:         calcRiskLevel(chlorophyll),
       isMockData:        true
     });

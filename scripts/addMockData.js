@@ -29,8 +29,6 @@ function generateMockData() {
     temperature: getRandomValue(18, 32, 1),
     timestamp: admin.firestore.Timestamp.now(),
     turbidity: Math.floor(getRandomValue(5, 50, 0)),
-    microplasticIndex: parseFloat((Math.random() * 15).toFixed(2)),
-    plasticDensity: parseFloat((Math.random() * 8).toFixed(2)),
     isMockData: true
   };
 }
@@ -46,8 +44,7 @@ async function addMockData() {
     console.log(`  Location: ${mockData.location} (${mockData.district})`);
     console.log(`  GPS: ${mockData.gps.lat}, ${mockData.gps.lng}`);
     console.log(`  pH: ${mockData.ph} | Temp: ${mockData.temperature}°C | Turbidity: ${mockData.turbidity}`);
-    console.log(`  Chlorophyll: ${mockData.chlorophyll} µg/L`);
-    console.log(`  Microplastic Index: ${mockData.microplasticIndex} µg/L | Plastic Density: ${mockData.plasticDensity} /m²\n`);
+    console.log(`  Chlorophyll: ${mockData.chlorophyll} µg/L\n`);
   } catch (error) {
     console.error('❌ Error adding mock data:', error.message);
   }
