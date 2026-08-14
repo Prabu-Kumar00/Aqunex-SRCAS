@@ -278,6 +278,7 @@
       font-weight: bold;
     }
 
+
     /* Technical Specifications Section */
     .specifications-section {
       background: #f8f9fa;
@@ -365,6 +366,7 @@
       background: #fafbfc;
     }
 
+
     /* Prototype Design Section */
     .prototype-section {
       background: white;
@@ -424,6 +426,7 @@
       line-height: 1.6;
       font-size: 0.95rem;
     }
+
 
     /* Team Section */
     .team-section {
@@ -650,41 +653,162 @@
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
     
-    @media (max-width: 768px) {
-      .problem-grid { grid-template-columns: 1fr; }
-      .prototype-gallery { grid-template-columns: 1fr; }
+    /* ============================================ */
+    /* MOBILE RESPONSIVE STYLES - ADDED FOR YOU */
+    /* ============================================ */
+    @media (max-width: 900px) {
+      /* General Mobile Adjustments */
+      body {
+        font-size: 14px;
+      }
+      
+      .sih-title-section h1 {
+        font-size: 1rem !important;
+        white-space: normal !important;
+      }
+
+      /* SIH Banner Mobile */
+      .sih-banner { 
+        padding: 0.75rem 1rem; 
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem;
+      }
+      .logo-section { 
+        justify-content: center !important;
+        gap: 1rem;
+      }
+      .logo-section img { 
+        height: 50px !important;
+      }
+      .sih-title-section h1 { 
+        font-size: 1.2rem !important;
+        white-space: normal;
+        line-height: 1.3;
+      }
+      .sih-title-section p {
+        font-size: 0.75rem;
+      }
+      
+      /* Navbar Mobile */
+      .navbar {
+        flex-direction: column;
+        padding: 1rem;
+        gap: 1rem;
+      }
+      .nav-links {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.75rem;
+      }
+      .nav-links a {
+        width: 100%;
+        text-align: center;
+      }
+      .btn, .btn-outline {
+        width: 100%;
+        padding: 0.75rem 1rem;
+      }
+      
+      /* Hero Section Mobile */
+      .hero {
+        padding: 2rem 1rem;
+      }
+      .hero h1 { 
+        font-size: 2.2rem !important;
+      }
+      .hero .subtitle { 
+        font-size: 1.4rem !important;
+      }
+      .hero p {
+        font-size: 1rem;
+      }
+      .sih-badge {
+        font-size: 0.9rem;
+        padding: 0.4rem 1rem;
+      }
+      
+      /* Section Titles Mobile */
+      h2 {
+        font-size: 1.8rem !important;
+      }
+      .subtitle {
+        font-size: 1rem !important;
+      }
+      
+      /* Tables Mobile */
+      .specs-table {
+        font-size: 0.8rem !important;
+        display: block;
+        overflow-x: auto;
+      }
+      .specs-table th,
+      .specs-table td {
+        padding: 0.75rem !important;
+      }
+      .specs-table th:first-child {
+        width: 40px !important;
+      }
+      .specs-table th:nth-child(2) {
+        width: 120px !important;
+      }
+      
+      /* Grids Mobile */
+      .problem-grid { 
+        grid-template-columns: 1fr !important;
+        gap: 2rem;
+      }
+      .prototype-gallery { 
+        grid-template-columns: 1fr !important;
+      }
+      .tech-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .tech-grid > div:last-child:nth-child(4) {
+        grid-column: auto !important;
+        max-width: 100%;
+      }
+      .features {
+        grid-template-columns: 1fr !important;
+        padding: 0 1rem 2rem 1rem;
+      }
+      
+      /* Team Grid Mobile */
       .team-grid { 
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important; 
+        grid-template-columns: 1fr !important;
       }
       .team-grid > div:nth-child(5),
       .team-grid > div:nth-child(6) {
         grid-column: auto !important;
       }
-      .hero h1 { font-size: 2rem; }
-      .hero .subtitle { font-size: 1.3rem; }
-      .sih-banner { 
-        padding: 0.75rem 1rem; 
-        grid-template-columns: 1fr;
-        gap: 1rem;
+      
+      /* Cards Mobile */
+      .prototype-card img {
+        height: 220px;
       }
-      .logo-section { 
-        justify-content: center !important;
+      .problem-card img {
+        height: 220px;
       }
-      .logo-section img { height: 45px; }
-      .sih-title-section h1 { 
-        font-size: 1.2rem; 
-        white-space: normal;
+      
+      /* Sections Padding Mobile */
+      .hero,
+      .problem-section,
+      .specifications-section,
+      .prototype-section,
+      .team-section,
+      .cta-section {
+        padding: 2rem 1rem !important;
       }
-      .specs-table {
-        font-size: 0.85rem;
+      
+      /* Images Responsive */
+      img {
+        max-width: 100%;
+        height: auto;
       }
-      .specs-table th,
-      .specs-table td {
-        padding: 0.8rem;
-      }
-      .specs-table th:first-child,
-      .specs-table td:first-child {
-        width: 50px;
+      
+      /* Button Adjustments */
+      .linkedin-btn {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
       }
     }
   </style>
@@ -705,6 +829,7 @@
     </div>
   </div>
 
+
   <nav class="navbar">
     <div class="logo">
       <span>🌊</span>
@@ -716,6 +841,7 @@
     </div>
   </nav>
 
+
   <div class="hero">
     <div class="hero-content">
       <div class="sih-badge">🏆 Smart India Hackathon 2025 - Hardware Edition</div>
@@ -725,6 +851,7 @@
       <a href="/dashboard" class="btn" style="font-size: 1.2rem; padding: 1rem 2rem;">View Live Dashboard</a>
     </div>
   </div>
+
 
  
   <!-- Technical Specifications Section -->
@@ -819,6 +946,7 @@
     </div>
   </section>
 
+
   <!-- Prototype Design Section -->
   <section class="prototype-section">
     <div class="prototype-container">
@@ -857,11 +985,12 @@
     </div>
   </section>
 
+
   <!-- Team Section -->
   <section class="team-section">
     <div class="team-container">
       <h2>👥 Our Team</h2>
-      <p class="subtitle">Meet the innovators behind </p>
+      <p class="subtitle">Meet the innovators behind R-TECH</p>
       
       <!-- Team Members -->
       <div class="team-grid">
@@ -879,6 +1008,7 @@
           </a>
         </div>
 
+
         <div class="team-card">
           <div class="team-photo">
             <img src="/images/team/sudhar.jpeg" alt="Team Member 2">
@@ -892,6 +1022,7 @@
             LinkedIn
           </a>
         </div>
+
 
         <div class="team-card">
           <div class="team-photo">
@@ -907,6 +1038,7 @@
           </a>
         </div>
 
+
         <div class="team-card">
           <div class="team-photo">
             <img src="/images/team/deepiga.jpeg" alt="Team Member 4">
@@ -920,6 +1052,7 @@
             LinkedIn
           </a>
         </div>
+
 
         <div class="team-card">
           <div class="team-photo">
@@ -935,6 +1068,7 @@
           </a>
         </div>
 
+
         <div class="team-card">
           <div class="team-photo">
             <img src="/images/team/aakash.jpeg" alt="Team Member 6">
@@ -949,6 +1083,7 @@
           </a>
         </div>
       </div>
+
 
       <!-- Mentor Section -->
       <h3 style="text-align: center; margin-top: 3rem; margin-bottom: 2rem; color: #333; font-size: 2rem;">🎓 Our Mentor</h3>
@@ -970,6 +1105,7 @@
       </div>
     </div>
   </section>
+
 
   <!-- Problem Statement Section -->
   <section class="problem-section">
@@ -1026,6 +1162,7 @@
     </div>
   </section>
 
+
   <!-- Features Section -->
   <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding-top: 3rem;">
     <h2 style="text-align: center; color: white; font-size: 2.5rem; margin-bottom: 1rem;">⚡ Platform Features</h2>
@@ -1052,6 +1189,7 @@
       </div>
     </div>
   </div>
+
 
   <div class="cta-section">
     <h2 style="margin-bottom: 1rem; font-size: 2.5rem;">🌍 Join the Fight for Clean Water</h2>
