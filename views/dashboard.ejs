@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>R-TECH - Authority Dashboard</title>
+    <title>R-TECH - Dashboard</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Leaflet Geocoder CSS for Search -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22,9 +20,17 @@
         .marker-good { background: #28a745; }
         .marker-moderate { background: #ffc107; }
         .marker-alert { background: #dc3545; }
+        
+        /* NEW: ESP32 marker style */
+        .marker-esp32 { background: #17a2b8; border-color: #0056b3 !important; }
+        
         .leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
         .leaflet-popup-content { margin: 0; min-width: 340px; max-width: 400px; padding: 0; }
         .popup-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px 10px 0 0; }
+        
+        /* NEW: ESP32 header style */
+        .popup-header.esp32-header { background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); }
+        
         .popup-title { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
         .popup-subtitle { font-size: 12px; opacity: 0.9; }
         .popup-body { padding: 15px; }
@@ -39,6 +45,12 @@
         .severity-moderate { background: #fff3cd; color: #856404; }
         .severity-high { background: #f8d7da; color: #721c24; }
         .status-active { display: inline-block; padding: 4px 12px; background: #28a745; color: white; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        
+        /* NEW: Source badges */
+        .source-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-left: 8px; }
+        .source-firestore { background: #e3f2fd; color: #1976d2; }
+        .source-esp32 { background: #e0f7fa; color: #00838f; }
+        
         .download-btn { display: block; width: 100%; padding: 12px; background: #5b7dff; color: white; text-align: center; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; margin-top: 15px; }
         .download-btn:hover { background: #4a6ae8; }
         .loading { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 9999; background: rgba(255,255,255,0.95); padding: 40px; border-radius: 10px; }
@@ -273,13 +285,12 @@
 </head>
 <body>
     <div class="loading" id="loadingScreen">
-        <h2>🌊 Loading Authority Dashboard...</h2>
+        <h2>🌊 Loading Dashboard...</h2>
         <p>Connecting to real-time sensor data</p>
     </div>
 
-
     <div class="header">
-        <h1>🛡️ R-TECH Authority Dashboard</h1>
+        <h1>🛡️ R-TECH Dashboard</h1>
         <div>
             <a href="/" class="btn">🏠 Home</a>
             <a href="/dashboard" class="btn">📊 Dashboard</a>
@@ -289,39 +300,37 @@
     
     <div id="map"></div>
 
-
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Leaflet Geocoder JS for Search -->
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- NEW: Realtime Database library -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyARC-G4soX4WRO26ncZE19l9BeFUsTyHlw",
             authDomain: "aquex-871b9.firebaseapp.com",
+            databaseURL: "https://aquex-871b9-default-rtdb.asia-southeast1.firebasedatabase.app", // NEW
             projectId: "aquex-871b9",
             storageBucket: "aquex-871b9.firebasestorage.app",
             messagingSenderId: "501715709742",
             appId: "1:501715709742:web:8204e44f3219e6584954bf"
         };
 
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-
+        const rtdb = firebase.database(); // NEW: Realtime Database reference
 
         // Remove auth check - direct access for authority
         document.getElementById('loadingScreen').style.display = 'none';
 
-
         // Initialize map
         const map = L.map('map').setView([20.5937, 78.9629], 5);
-
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
-
 
         // Add Google Maps-style search bar
         var searchMarker = null; // To store temporary search marker
@@ -360,7 +369,6 @@
         })
         .addTo(map);
 
-
         // Helper functions
         function getSeverity(chlorophyll) {
             const severity = Math.min(Math.floor(chlorophyll / 3), 10);
@@ -368,21 +376,21 @@
             if (severity <= 7) return { rating: severity, class: 'severity-moderate', markerClass: 'marker-moderate' };
             return { rating: severity, class: 'severity-high', markerClass: 'marker-alert' };
         }
+        
         function getPollutionType(chlorophyll) {
             return chlorophyll > 15 ? 'Algae Bloom' : 'Organic Matter';
         }
+        
         function createDownloadFunction(location, chlorophyll, turbidity, ph, temperature) {
             return function() {
                 const csv = `Water Quality Report - ${location}
 Date: ${new Date().toLocaleDateString()}
-
 
 Parameter,Value,Unit
 Chlorophyll-a,${chlorophyll},µg/L
 Turbidity,${turbidity},NTU
 pH,${ph},-
 Temperature,${temperature},°C`;
-
 
                 const blob = new Blob([csv], { type: 'text/csv' });
                 const url = window.URL.createObjectURL(blob);
@@ -396,83 +404,234 @@ Temperature,${temperature},°C`;
             };
         }
 
+        // NEW: Unified function to create markers from both sources
+        function createMarker(data, source, docId) {
+            // Validate GPS data
+            if (!data.gps || !data.gps.lat || !data.gps.lng) {
+                console.warn('Invalid GPS data:', data);
+                return;
+            }
 
-        // Load ALL water quality data for authority (real-time)
-        db.collection('sensor_data').onSnapshot((snapshot) => {
-            // Clear existing markers (but keep search marker)
+            const lat = data.gps.lat;
+            const lng = data.gps.lng;
+            const severity = getSeverity(data.chlorophyll);
+            const pollutionType = getPollutionType(data.chlorophyll);
+
+            // Different icon for ESP32 vs Firestore
+            const markerClass = source === 'esp32' ? 'marker-esp32' : severity.markerClass;
+            const icon = L.divIcon({
+                className: `custom-marker ${markerClass}`,
+                html: '<div style="text-align:center; line-height:26px; color:white; font-weight:bold; font-size:18px;">💧</div>',
+                iconSize: [32, 32]
+            });
+
+            const funcName = `download_${docId.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            window[funcName] = createDownloadFunction(
+                data.location,
+                data.chlorophyll,
+                data.turbidity,
+                data.ph,
+                data.temperature
+            );
+
+            // Different header style for ESP32
+            const headerClass = source === 'esp32' ? 'popup-header esp32-header' : 'popup-header';
+            const sourceBadgeClass = source === 'esp32' ? 'source-badge source-esp32' : 'source-badge source-firestore';
+            const sourceLabel = source === 'esp32' ? '🤖 ESP32' : '☁️ Firestore';
+
+            const popupContent = `
+                <div class="${headerClass}">
+                    <div class="popup-title">
+                        ${data.location}
+                        <span class="${sourceBadgeClass}">${sourceLabel}</span>
+                    </div>
+                    <div class="popup-subtitle">${data.district || 'N/A'}, ${data.state || 'N/A'}</div>
+                </div>
+                <div class="popup-body">
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <div class="data-label">Chlorophyll-a</div>
+                            <div class="data-value">${data.chlorophyll} µg/L</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Turbidity</div>
+                            <div class="data-value">${data.turbidity} NTU</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">pH</div>
+                            <div class="data-value">${data.ph}</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">Temperature</div>
+                            <div class="data-value">${data.temperature}°C</div>
+                        </div>
+                    </div>
+                    <div class="meta-info">
+                        <div class="meta-item"><strong>Type:</strong> ${pollutionType}</div>
+                        <div class="meta-item"><strong>Severity:</strong> <span class="severity-badge ${severity.class}">${severity.rating}/10</span></div>
+                    </div>
+                    <div class="meta-info">
+                        <div class="meta-item"><span class="status-active">ACTIVE</span></div>
+                        <div class="meta-item" style="font-size:10px; color:#999;">${data.timestamp || 'N/A'}</div>
+                    </div>
+                    <button class="download-btn" onclick="${funcName}()">
+                        📥 Download Data Report
+                    </button>
+                </div>
+            `;
+            
+            L.marker([lat, lng], { icon: icon })
+                .bindPopup(popupContent, { maxWidth: 380, minWidth: 340 })
+                .addTo(map);
+        }
+
+        // Track all active markers
+        let allMarkers = {};
+
+        function clearDataMarkers() {
             map.eachLayer(function (layer) {
                 if (layer instanceof L.Marker && layer !== searchMarker) {
                     map.removeLayer(layer);
                 }
             });
+            allMarkers = {};
+        }
 
+        // Load Firestore data (original functionality)
+        db.collection('sensor_data').onSnapshot((snapshot) => {
+            // Only clear and redraw all markers on firestore update
+            clearDataMarkers();
 
             snapshot.forEach((doc) => {
                 const data = doc.data();
-                const lat = data.gps.lat;
-                const lng = data.gps.lng;
-                const severity = getSeverity(data.chlorophyll);
-                const pollutionType = getPollutionType(data.chlorophyll);
+                const markerId = `firestore_${doc.id}`;
+                allMarkers[markerId] = true;
+                createMarker(data, 'firestore', doc.id);
+            });
 
+            console.log(`Loaded ${Object.keys(allMarkers).filter(k => k.startsWith('firestore')).length} markers from Firestore`);
+            
+            // Re-load realtime data to show both
+            loadRealtimeData();
+        });
 
-                const icon = L.divIcon({
-                    className: `custom-marker ${severity.markerClass}`,
-                    html: '<div style="text-align:center; line-height:26px; color:white; font-weight:bold; font-size:18px;">💧</div>',
-                    iconSize: [32, 32]
+        // NEW: Load Realtime Database data
+        function loadRealtimeData() {
+            rtdb.ref('sensorData').once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const sensorData = data[key];
+                        const markerId = `realtime_${key}`;
+                        if (!allMarkers[markerId]) {
+                            allMarkers[markerId] = true;
+                            createMarker(sensorData, 'esp32', key);
+                        }
+                    });
+                    console.log(`Loaded ${Object.keys(allMarkers).filter(k => k.startsWith('realtime')).length} markers from Realtime Database`);
+                } else {
+                    console.log('No data in Realtime Database yet');
+                }
+            });
+        }
+
+        // Listen to realtime database changes
+        rtdb.ref('sensorData').on('child_added', (snapshot) => {
+            const key = snapshot.key;
+            const data = snapshot.val();
+            const markerId = `realtime_${key}`;
+            
+            if (!allMarkers[markerId]) {
+                allMarkers[markerId] = true;
+                createMarker(data, 'esp32', key);
+                console.log('New ESP32 data added:', key);
+            }
+        });
+
+        rtdb.ref('sensorData').on('child_changed', (snapshot) => {
+            // Reload all markers when data changes
+            clearDataMarkers();
+            db.collection('sensor_data').get().then(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const markerId = `firestore_${doc.id}`;
+                    allMarkers[markerId] = true;
+                    createMarker(data, 'firestore', doc.id);
                 });
-
-
-                const funcName = `download_${doc.id}`;
-                window[funcName] = createDownloadFunction(
-                    data.location,
-                    data.chlorophyll,
-                    data.turbidity,
-                    data.ph,
-                    data.temperature
-                );
-
-
-                const popupContent = `
-                    <div class="popup-header">
-                        <div class="popup-title">${data.location}</div>
-                        <div class="popup-subtitle">Location: ${data.location.split(' ')[0]}</div>
-                    </div>
-                    <div class="popup-body">
-                        <div class="data-grid">
-                            <div class="data-item">
-                                <div class="data-label">Chlorophyll-a</div>
-                                <div class="data-value">${data.chlorophyll} µg/L</div>
-                            </div>
-                            <div class="data-item">
-                                <div class="data-label">Turbidity</div>
-                                <div class="data-value">${data.turbidity} NTU</div>
-                            </div>
-                            <div class="data-item">
-                                <div class="data-label">pH</div>
-                                <div class="data-value">${data.ph}</div>
-                            </div>
-                            <div class="data-item">
-                                <div class="data-label">Temperature</div>
-                                <div class="data-value">${data.temperature}°C</div>
-                            </div>
-                        </div>
-                        <div class="meta-info">
-                            <div class="meta-item"><strong>Type:</strong> ${pollutionType}</div>
-                            <div class="meta-item"><strong>Severity:</strong> <span class="severity-badge ${severity.class}">${severity.rating}/10</span></div>
-                        </div>
-                        <div class="meta-info">
-                            <div class="meta-item"><span class="status-active">ACTIVE</span></div>
-                        </div>
-                        <button class="download-btn" onclick="${funcName}()">
-                            📥 Download Data Report
-                        </button>
-                    </div>
-                `;
-                L.marker([lat, lng], { icon: icon })
-                    .bindPopup(popupContent, { maxWidth: 380, minWidth: 340 })
-                    .addTo(map);
+                loadRealtimeData();
             });
         });
+
+        console.log('Dashboard initialized - listening to both Firestore and Realtime Database');
+    </script>
+
+    <!-- Hidden Mock Data Control Panel (Ctrl+M to toggle) -->
+    <div id="mockControlPanel" style="display:none; position:fixed; bottom:20px; right:20px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,0.3); z-index:10000; min-width:260px;">
+        <h3 style="margin:0 0 12px 0; font-size:16px;">🧪 Mock Data Control</h3>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            <button id="startMockBtn" class="btn" style="margin:0; width:100%;">▶️ Start Mock Data</button>
+            <button id="stopMockBtn" class="btn" style="margin:0; width:100%; background:#dc3545;">⏹️ Stop Mock Data</button>
+            <button id="cleanupMockBtn" class="btn" style="margin:0; width:100%; background:#ffc107; color:#333;">🧹 Cleanup Mock Data</button>
+            <button id="closePanelBtn" class="btn" style="margin:0; width:100%; background:#6c757d;">❌ Close Panel</button>
+        </div>
+        <div id="mockStatus" style="margin-top:10px; padding:8px; background:#f8f9fa; border-radius:5px; font-size:12px;"></div>
+    </div>
+
+    <script>
+        // Toggle panel with Ctrl+M
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'm') {
+                const panel = document.getElementById('mockControlPanel');
+                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+
+        function showStatus(message, isError = false) {
+            const status = document.getElementById('mockStatus');
+            status.textContent = message;
+            status.style.color = isError ? '#dc3545' : '#28a745';
+        }
+
+        async function callMockApi(path, options = {}) {
+            try {
+                const res = await fetch(path, { method: 'POST', ...options });
+                const data = await res.json();
+                showStatus(data.message || 'OK', !data.success);
+            } catch (err) {
+                showStatus(err.message, true);
+            }
+        }
+
+        document.getElementById('startMockBtn').addEventListener('click', () => {
+            callMockApi('/api/mock/start');
+        });
+
+        document.getElementById('stopMockBtn').addEventListener('click', () => {
+            callMockApi('/api/mock/stop');
+        });
+
+        document.getElementById('cleanupMockBtn').addEventListener('click', () => {
+            if (confirm('Delete all mock data (isMockData = true) from sensor_data?')) {
+                callMockApi('/api/mock/cleanup');
+            }
+        });
+
+        document.getElementById('closePanelBtn').addEventListener('click', () => {
+            document.getElementById('mockControlPanel').style.display = 'none';
+        });
+
+        // Show initial status
+        async function refreshMockStatus() {
+            try {
+                const res = await fetch('/api/mock/status');
+                const data = await res.json();
+                showStatus(data.running ? 'Mock data is RUNNING' : 'Mock data is STOPPED', !data.running);
+            } catch (err) {
+                showStatus('Unable to read mock status', true);
+            }
+        }
+        refreshMockStatus();
+        setInterval(refreshMockStatus, 5000);
     </script>
 </body>
 </html>

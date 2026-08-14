@@ -5,13 +5,17 @@
   "description": "A prototype for a real-time water monitoring web app.",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "mock:start": "node scripts/addMockData.js",
+    "mock:cleanup": "node scripts/cleanupMockData.js",
+    "mock:cycle": "node scripts/mockDataCycle.js"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
-    "firebase": "^12.6.0"
+    "firebase": "^12.6.0",
+    "firebase-admin": "^12.0.0"
   }
 }

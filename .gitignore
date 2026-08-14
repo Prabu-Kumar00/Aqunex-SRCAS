@@ -113,6 +113,10 @@ dist
 # FuseBox cache
 .fusebox/
 
+node_modules/
+serviceAccountKey.json
+
+
 # DynamoDB Local files
 .dynamodb/
 

@@ -4,814 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>R-TECH - Smart India Hackathon 2025 | Water Monitoring Platform</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-    }
-    
-    /* SIH Header Banner - FIXED WITH LARGER LOGOS */
-    .sih-banner {
-      background: white;
-      padding: 1rem 2rem;
-      display: grid;
-      grid-template-columns: 1fr 2fr 1fr;
-      align-items: center;
-      gap: 1rem;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .logo-section {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-    .logo-section.left {
-      justify-content: flex-start;
-    }
-    .logo-section.right {
-      justify-content: flex-end;
-    }
-    .logo-section img {
-      height: 65px;
-      width: auto;
-      object-fit: contain;
-    }
-    .sih-title-section {
-      text-align: center;
-      justify-self: center;
-    }
-    .sih-title-section h1 {
-      font-size: 1.8rem;
-      color: #0066cc;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-    }
-    .sih-title-section p {
-      font-size: 0.85rem;
-      color: #666;
-      margin-top: 0.2rem;
-    }
-    
-    .navbar { 
-      background: rgba(255, 255, 255, 0.95); 
-      padding: 1rem 2rem; 
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      position: sticky; 
-      top: 0; 
-      z-index: 1000; 
-    }
-    .logo { 
-      font-size: 1.5rem; 
-      font-weight: bold; 
-      color: #667eea; 
-      display: flex; 
-      align-items: center; 
-      gap: 0.5rem; 
-    }
-    .logo img {
-      height: 40px;
-      width: 40px;
-      border-radius: 8px;
-    }
-    .nav-links { 
-      display: flex; 
-      align-items: center; 
-      gap: 1.5rem; 
-    }
-    .nav-links a { 
-      text-decoration: none; 
-      font-weight: 500; 
-      transition: color 0.3s; 
-    }
-    .nav-links a:not(.btn):not(.btn-outline) { color: #333; }
-    .nav-links a:not(.btn):not(.btn-outline):hover { color: #667eea; }
-    .btn { 
-      background: #667eea; 
-      color: white !important; 
-      padding: 0.75rem 1.5rem; 
-      border-radius: 8px; 
-      text-decoration: none; 
-      transition: all 0.3s; 
-      display: inline-block; 
-      border: none; 
-      cursor: pointer; 
-      font-weight: 600; 
-    }
-    .btn:hover { 
-      background: #5568d3 !important; 
-      color: white !important; 
-      transform: translateY(-2px); 
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); 
-    }
-    .btn-outline { 
-      background: transparent !important; 
-      color: #333 !important; 
-      border: 2px solid #667eea !important; 
-      padding: 0.75rem 1.5rem; 
-      border-radius: 8px; 
-      text-decoration: none; 
-      transition: all 0.3s; 
-      display: inline-block; 
-      cursor: pointer; 
-      font-weight: 600; 
-    }
-    .btn-outline:hover { 
-      background: #667eea !important; 
-      color: white !important; 
-      transform: translateY(-2px); 
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); 
-    }
-    
-    .hero { 
-      text-align: center; 
-      padding: 4rem 2rem; 
-      color: white; 
-    }
-    .hero-content { 
-      max-width: 1000px; 
-      margin: 0 auto; 
-    }
-    .sih-badge {
-      display: inline-block;
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      padding: 0.5rem 1.5rem;
-      border-radius: 30px;
-      margin-bottom: 1rem;
-      font-weight: 600;
-      font-size: 1.1rem;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-    }
-    .hero h1 { 
-      font-size: 3.5rem; 
-      margin-bottom: 0.5rem; 
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.2); 
-      line-height: 1.2;
-    }
-    .hero .subtitle {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
-      font-weight: 600;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-    }
-    .hero p { 
-      font-size: 1.2rem; 
-      margin-bottom: 2rem; 
-      opacity: 0.95;
-      line-height: 1.6;
-    }
-    
-    /* SIH Info Section */
-    .sih-info-section {
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-      padding: 3rem 2rem;
-      color: white;
-    }
-    .sih-info-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    .sih-info-container h2 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-    }
-    .sih-info-container .tagline {
-      font-size: 1.3rem;
-      margin-bottom: 2rem;
-      opacity: 0.9;
-    }
-    .sih-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-    .stat-card {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      padding: 1.5rem;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    .stat-card h3 {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-      color: #4fc3f7;
-    }
-    .stat-card p {
-      font-size: 1rem;
-      opacity: 0.9;
-    }
-    
-    /* Project Overview Section */
-    .project-overview {
-      background: white;
-      padding: 4rem 2rem;
-    }
-    .project-container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .project-overview h2 {
-      text-align: center;
-      font-size: 2.5rem;
-      color: #333;
-      margin-bottom: 1rem;
-    }
-    .project-overview .subtitle {
-      text-align: center;
-      font-size: 1.2rem;
-      color: #667eea;
-      margin-bottom: 3rem;
-      font-weight: 600;
-    }
-    .tech-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      margin-top: 3rem;
-      justify-items: center;
-    }
-    .tech-grid > div:last-child:nth-child(4) {
-      grid-column: 1 / -1;
-      max-width: 400px;
-    }
-    .tech-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
-      transition: transform 0.3s;
-    }
-    .tech-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
-    }
-    .tech-card h3 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .tech-card ul {
-      list-style: none;
-      padding-left: 0;
-    }
-    .tech-card li {
-      padding: 0.5rem 0;
-      padding-left: 1.5rem;
-      position: relative;
-    }
-    .tech-card li:before {
-      content: "✓";
-      position: absolute;
-      left: 0;
-      font-weight: bold;
-    }
 
-
-    /* Technical Specifications Section */
-    .specifications-section {
-      background: #f8f9fa;
-      padding: 4rem 2rem;
-    }
-    .specifications-container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .specifications-section h2 {
-      text-align: center;
-      font-size: 2.5rem;
-      color: #333;
-      margin-bottom: 1rem;
-    }
-    .specifications-section .subtitle {
-      text-align: center;
-      font-size: 1.2rem;
-      color: #667eea;
-      margin-bottom: 3rem;
-      font-weight: 600;
-    }
-    .specs-table-wrapper {
-      overflow-x: auto;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      border-radius: 12px;
-    }
-    .specs-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      font-size: 0.95rem;
-    }
-    .specs-table thead {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-    .specs-table th {
-      padding: 1.2rem;
-      text-align: left;
-      font-weight: 600;
-      font-size: 1rem;
-    }
-    .specs-table th:first-child {
-      width: 80px;
-    }
-    .specs-table th:nth-child(2) {
-      width: 220px;
-    }
-    .specs-table td {
-      padding: 1.2rem;
-      border-bottom: 1px solid #e0e0e0;
-      vertical-align: top;
-    }
-    .specs-table tbody tr:hover {
-      background: #f8f9fa;
-      transition: background 0.3s;
-    }
-    .specs-table tbody tr:last-child td {
-      border-bottom: none;
-    }
-    .specs-table td:first-child {
-      font-weight: 600;
-      color: #667eea;
-    }
-    .specs-table td:nth-child(2) {
-      font-weight: 600;
-      color: #333;
-    }
-    .specs-table ol {
-      margin: 0;
-      padding-left: 1.2rem;
-      list-style-position: outside;
-    }
-    .specs-table ol li {
-      margin-bottom: 0.5rem;
-      line-height: 1.6;
-      color: #555;
-    }
-    .specs-table strong {
-      color: #667eea;
-      font-weight: 600;
-    }
-    .nested-row td {
-      background: #fafbfc;
-    }
-
-
-    /* Prototype Design Section */
-    .prototype-section {
-      background: white;
-      padding: 4rem 2rem;
-    }
-    .prototype-container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .prototype-section h2 {
-      text-align: center;
-      font-size: 2.5rem;
-      color: #333;
-      margin-bottom: 1rem;
-    }
-    .prototype-section .subtitle {
-      text-align: center;
-      font-size: 1.2rem;
-      color: #667eea;
-      margin-bottom: 3rem;
-      font-weight: 600;
-    }
-    .prototype-gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-    .prototype-card {
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      transition: transform 0.3s;
-    }
-    .prototype-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-    }
-    .prototype-card img {
-      width: 100%;
-      height: 280px;
-      object-fit: contain;
-      background: #f0f0f0;
-      padding: 1rem;
-    }
-    .prototype-info {
-      padding: 1.5rem;
-    }
-    .prototype-info h3 {
-      color: #667eea;
-      font-size: 1.3rem;
-      margin-bottom: 0.5rem;
-    }
-    .prototype-info p {
-      color: #555;
-      line-height: 1.6;
-      font-size: 0.95rem;
-    }
-
-
-    /* Team Section */
-    .team-section {
-      background: #f8f9fa;
-      padding: 4rem 2rem;
-    }
-    .team-container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .team-section h2 {
-      text-align: center;
-      font-size: 2.5rem;
-      color: #333;
-      margin-bottom: 1rem;
-    }
-    .team-section .subtitle {
-      text-align: center;
-      font-size: 1.2rem;
-      color: #667eea;
-      margin-bottom: 3rem;
-      font-weight: 600;
-    }
-    .team-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-    
-    /* Center last two team members (5 and 6) */
-    @media (min-width: 769px) {
-      .team-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-      
-      .team-grid > div:nth-child(5) {
-        grid-column: 2 / 3;
-      }
-      
-      .team-grid > div:nth-child(6) {
-        grid-column: 3 / 4;
-      }
-    }
-    
-    .team-card {
-      background: white;
-      border-radius: 12px;
-      padding: 2rem;
-      text-align: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      transition: transform 0.3s;
-    }
-    .team-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-    }
-    .team-photo {
-      width: 120px;
-      height: 120px;
-      margin: 0 auto 1rem;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 4px solid #667eea;
-    }
-    .team-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .team-card h3 {
-      color: #333;
-      font-size: 1.3rem;
-      margin-bottom: 0.5rem;
-    }
-    .team-card .role {
-      color: #667eea;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-    .team-card .affiliation {
-      color: #666;
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-    }
-    .linkedin-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: #0077b5;
-      color: white;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.3s;
-      margin-top: 1rem;
-    }
-    .linkedin-btn:hover {
-      background: #005885;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 119, 181, 0.3);
-    }
-    .mentor-card {
-      max-width: 350px;
-    }
-    
-    .problem-section { 
-      background: white; 
-      padding: 4rem 2rem; 
-      margin: 0; 
-    }
-    .problem-container { 
-      max-width: 1200px; 
-      margin: 0 auto; 
-    }
-    .problem-section h2 { 
-      text-align: center; 
-      font-size: 2.5rem; 
-      color: #333; 
-      margin-bottom: 1rem; 
-    }
-    .problem-section .subtitle { 
-      text-align: center; 
-      font-size: 1.2rem; 
-      color: #666; 
-      margin-bottom: 3rem; 
-    }
-    .problem-grid { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); 
-      gap: 3rem; 
-      margin-top: 2rem; 
-    }
-    .problem-card { 
-      background: #f8f9fa; 
-      border-radius: 12px; 
-      overflow: hidden; 
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
-      transition: transform 0.3s; 
-    }
-    .problem-card:hover { 
-      transform: translateY(-5px); 
-      box-shadow: 0 8px 30px rgba(0,0,0,0.15); 
-    }
-    .problem-card img { 
-      width: 100%; 
-      height: 300px; 
-      object-fit: cover; 
-    }
-    .problem-content { 
-      padding: 2rem; 
-    }
-    .problem-content h3 { 
-      color: #d73027; 
-      font-size: 1.5rem; 
-      margin-bottom: 1rem; 
-      display: flex; 
-      align-items: center; 
-      gap: 0.5rem; 
-    }
-    .problem-content p { 
-      color: #555; 
-      line-height: 1.8; 
-      margin-bottom: 1rem; 
-    }
-    .impact-list { 
-      margin-top: 1rem; 
-      padding-left: 1.5rem; 
-    }
-    .impact-list li { 
-      color: #555; 
-      margin-bottom: 0.5rem; 
-      line-height: 1.6; 
-    }
-    .location-badge { 
-      display: inline-block; 
-      background: #667eea; 
-      color: white; 
-      padding: 0.5rem 1rem; 
-      border-radius: 20px; 
-      font-size: 0.9rem; 
-      margin-bottom: 1rem; 
-    }
-    
-    .features { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-      gap: 2rem; 
-      margin-top: 3rem; 
-      padding: 0 2rem; 
-      max-width: 1200px; 
-      margin-left: auto; 
-      margin-right: auto; 
-      padding-bottom: 3rem;
-    }
-    .feature-card { 
-      background: rgba(255, 255, 255, 0.1); 
-      backdrop-filter: blur(10px); 
-      padding: 2rem; 
-      border-radius: 12px; 
-      border: 1px solid rgba(255, 255, 255, 0.2); 
-      text-align: center; 
-      color: white; 
-      transition: transform 0.3s;
-    }
-    .feature-card:hover {
-      transform: translateY(-5px);
-      background: rgba(255, 255, 255, 0.15);
-    }
-    .feature-card h3 { 
-      margin-bottom: 0.5rem; 
-      font-size: 1.2rem; 
-    }
-    .icon { 
-      font-size: 2.5rem; 
-      margin-bottom: 1rem; 
-    }
-    
-    .cta-section { 
-      text-align: center; 
-      padding: 4rem 2rem; 
-      color: white; 
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    
-    /* ============================================ */
-    /* MOBILE RESPONSIVE STYLES - ADDED FOR YOU */
-    /* ============================================ */
-    @media (max-width: 900px) {
-      /* General Mobile Adjustments */
-      body {
-        font-size: 14px;
-      }
-      
-      .sih-title-section h1 {
-        font-size: 1rem !important;
-        white-space: normal !important;
-      }
-
-      /* SIH Banner Mobile */
-      .sih-banner { 
-        padding: 0.75rem 1rem; 
-        grid-template-columns: 1fr !important;
-        gap: 0.75rem;
-      }
-      .logo-section { 
-        justify-content: center !important;
-        gap: 1rem;
-      }
-      .logo-section img { 
-        height: 50px !important;
-      }
-      .sih-title-section h1 { 
-        font-size: 1.2rem !important;
-        white-space: normal;
-        line-height: 1.3;
-      }
-      .sih-title-section p {
-        font-size: 0.75rem;
-      }
-      
-      /* Navbar Mobile */
-      .navbar {
-        flex-direction: column;
-        padding: 1rem;
-        gap: 1rem;
-      }
-      .nav-links {
-        flex-direction: column;
-        width: 100%;
-        gap: 0.75rem;
-      }
-      .nav-links a {
-        width: 100%;
-        text-align: center;
-      }
-      .btn, .btn-outline {
-        width: 100%;
-        padding: 0.75rem 1rem;
-      }
-      
-      /* Hero Section Mobile */
-      .hero {
-        padding: 2rem 1rem;
-      }
-      .hero h1 { 
-        font-size: 2.2rem !important;
-      }
-      .hero .subtitle { 
-        font-size: 1.4rem !important;
-      }
-      .hero p {
-        font-size: 1rem;
-      }
-      .sih-badge {
-        font-size: 0.9rem;
-        padding: 0.4rem 1rem;
-      }
-      
-      /* Section Titles Mobile */
-      h2 {
-        font-size: 1.8rem !important;
-      }
-      .subtitle {
-        font-size: 1rem !important;
-      }
-      
-      /* Tables Mobile */
-      .specs-table {
-        font-size: 0.8rem !important;
-        display: block;
-        overflow-x: auto;
-      }
-      .specs-table th,
-      .specs-table td {
-        padding: 0.75rem !important;
-      }
-      .specs-table th:first-child {
-        width: 40px !important;
-      }
-      .specs-table th:nth-child(2) {
-        width: 120px !important;
-      }
-      
-      /* Grids Mobile */
-      .problem-grid { 
-        grid-template-columns: 1fr !important;
-        gap: 2rem;
-      }
-      .prototype-gallery { 
-        grid-template-columns: 1fr !important;
-      }
-      .tech-grid {
-        grid-template-columns: 1fr !important;
-      }
-      .tech-grid > div:last-child:nth-child(4) {
-        grid-column: auto !important;
-        max-width: 100%;
-      }
-      .features {
-        grid-template-columns: 1fr !important;
-        padding: 0 1rem 2rem 1rem;
-      }
-      
-      /* Team Grid Mobile */
-      .team-grid { 
-        grid-template-columns: 1fr !important;
-      }
-      .team-grid > div:nth-child(5),
-      .team-grid > div:nth-child(6) {
-        grid-column: auto !important;
-      }
-      
-      /* Cards Mobile */
-      .prototype-card img {
-        height: 220px;
-      }
-      .problem-card img {
-        height: 220px;
-      }
-      
-      /* Sections Padding Mobile */
-      .hero,
-      .problem-section,
-      .specifications-section,
-      .prototype-section,
-      .team-section,
-      .cta-section {
-        padding: 2rem 1rem !important;
-      }
-      
-      /* Images Responsive */
-      img {
-        max-width: 100%;
-        height: auto;
-      }
-      
-      /* Button Adjustments */
-      .linkedin-btn {
-        font-size: 0.9rem;
-        padding: 0.5rem 1rem;
-      }
-    }
-  </style>
+  <!-- External CSS -->
+  <link rel="stylesheet" href="/css/home.css">
 </head>
 <body>
   <!-- SIH 2025 Official Header -->
@@ -829,7 +24,6 @@
     </div>
   </div>
 
-
   <nav class="navbar">
     <div class="logo">
       <span>🌊</span>
@@ -841,25 +35,99 @@
     </div>
   </nav>
 
-
-  <div class="hero">
-    <div class="hero-content">
-      <div class="sih-badge">🏆 Smart India Hackathon 2025 - Hardware Edition</div>
-      <h1>R-TECH</h1>
-      <p class="subtitle">Autonomous Water Quality Monitoring Robot</p>
-      <p>Advanced robotic multispectral technology for real-time monitoring of chlorophyll concentrations, plastic pollution, and water quality parameters across rivers, estuaries, and coastal areas. Competing in SIH 2025 to revolutionize environmental conservation through innovation.</p>
-      <a href="/dashboard" class="btn" style="font-size: 1.2rem; padding: 1rem 2rem;">View Live Dashboard</a>
+  <!-- HERO CAROUSEL - REBUILT FROM SCRATCH -->
+  <div class="hero-carousel">
+    <!-- Slide 1: R-TECH Project - VISIBLE BY DEFAULT -->
+    <div class="hero-slide" style="display: block;">
+      <div class="hero-content">
+        <div class="sih-badge">🏆 Smart India Hackathon 2025 - Hardware Edition</div>
+        <h1>R-TECH</h1>
+        <p class="subtitle">Autonomous Water Quality Monitoring Robot</p>
+        <p>Advanced robotic multispectral technology for real-time monitoring of chlorophyll concentrations, plastic pollution, and water quality parameters across rivers, estuaries, and coastal areas. Competing in SIH 2025 to revolutionize environmental conservation through innovation.</p>
+        <a href="/dashboard" class="btn" style="font-size: 1.2rem; padding: 1rem 2rem;">View Live Dashboard</a>
+      </div>
     </div>
+
+    <!-- Slide 2: PM Quote Banner -->
+    <div class="hero-slide" style="display: none;">
+      <div class="hero-content" style="max-width: 100%; padding: 0;">
+        <img src="/images/pm-modi.jpg" alt="PM Modi Quote - Smart India Hackathon 2025" 
+             style="width: 100%; height: auto; display: block;">
+      </div>
+    </div>
+
+    <!-- Navigation dots -->
+    <div class="carousel-dots">
+      <span class="dot active" onclick="currentSlide(1)"></span>
+      <span class="dot" onclick="currentSlide(2)"></span>
+    </div>
+
+    <!-- Navigation arrows -->
+    <a class="carousel-prev" onclick="changeSlide(-1)">❮</a>
+    <a class="carousel-next" onclick="changeSlide(1)">❯</a>
   </div>
 
+  <!-- Project Overview Section -->
+  <section class="project-overview">
+    <div class="project-container">
+      <h2>💡 Project Overview</h2>
+      <p class="subtitle">R-TECH: Robotic Monitoring for Chlorophyll and Plastic Signatures</p>
 
- 
+      <div class="tech-grid">
+        <div class="tech-card">
+          <h3>🤖 Hardware Components</h3>
+          <ul>
+            <li>ESP32 Microcontroller</li>
+            <li>Jetson Orin Nano</li>
+            <li>AS7265x Spectral Sensors</li>
+            <li>pH & Turbidity Sensors</li>
+            <li>GPS + IMU Navigation</li>
+            <li>Camera Module (YOLO)</li>
+          </ul>
+        </div>
+
+        <div class="tech-card">
+          <h3>🛠️ Software Stack</h3>
+          <ul>
+            <li>Python Backend (Flask)</li>
+            <li>React.js Frontend</li>
+            <li>Firebase Realtime DB</li>
+            <li>YOLO v8 ML Model</li>
+            <li>Leaflet.js Maps</li>
+            <li>Spectral Analysis Algorithms</li>
+          </ul>
+        </div>
+
+        <div class="tech-card">
+          <h3>🛰️ Satellite Integration</h3>
+          <ul>
+            <li>OceanSat-3 OCM</li>
+            <li>Sentinel-2 MSI</li>
+            <li>Sentinel-3 OLCI</li>
+            <li>Ground-truth Validation</li>
+          </ul>
+        </div>
+
+        <div class="tech-card">
+          <h3>🎯 Key Features</h3>
+          <ul>
+            <li>Real-time Water Monitoring</li>
+            <li>Chlorophyll-a Detection</li>
+            <li>Plastic Debris Identification</li>
+            <li>Autonomous Navigation</li>
+            <li>Cloud-based Dashboard</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Technical Specifications Section -->
   <section class="specifications-section">
     <div class="specifications-container">
       <h2>📋 Technical Specifications</h2>
       <p class="subtitle">Detailed specifications for R-TECH autonomous water monitoring robot</p>
-      
+
       <div class="specs-table-wrapper">
         <table class="specs-table">
           <thead>
@@ -873,15 +141,15 @@
             <tr>
               <td>1.</td>
               <td>Mission Duration</td>
-              <td>4-5 hours continuous operation per charge cycle</td>
+              <td>3-4 hours continuous operation per charge cycle</td>
             </tr>
-            
+
             <tr>
               <td>2.</td>
               <td>Deployment Area</td>
-              <td>Rivers, estuaries, coastal areas, and inland water bodies across Tamil Nadu and India</td>
+              <td>Rivers, estuaries, coastal areas, and inland water bodies across India</td>
             </tr>
-            
+
             <tr class="nested-row">
               <td>3.</td>
               <td>Sensor Payloads</td>
@@ -890,7 +158,7 @@
                 <ol>
                   <li>pH Sensor (E201-C BNC electrode)</li>
                   <li>Temperature Sensor (DS18B20 - Waterproof)</li>
-                  <li>Turbidity Sensor (Analog)</li>
+                  <li>Turbidity Sensor</li>
                   <li>Spectral Sensors (AS7265x) for chlorophyll-a measurement</li>
                 </ol>
                 <strong>Environmental Monitoring:</strong>
@@ -901,33 +169,33 @@
                 </ol>
               </td>
             </tr>
-            
+
             <tr class="nested-row">
               <td>4.</td>
               <td>Robot Configuration</td>
               <td>
                 <ol>
-                  <li><strong>Catamaran Hull:</strong> Dual/triple pontoon design for stability</li>
+                  <li><strong>Catamaran Hull:</strong> Triple pontoon design for stability</li>
                   <li><strong>Propulsion System:</strong> Dual DC motors (775 motors) with 3D-printed propellers</li>
                   <li><strong>Control Unit:</strong> ESP32 for data processing</li>
                   <li><strong>ML Processing:</strong> Jetson Orin Nano for real-time AI inference</li>
                 </ol>
               </td>
             </tr>
-            
+
             <tr class="nested-row">
               <td>5.</td>
               <td>Data Processing</td>
               <td>
                 <ol>
                   <li><strong>Edge Computing:</strong> Jetson Orin Nano for sensor data aggregation</li>
-                  <li><strong>Machine Learning:</strong> YOLO v8 for plastic detection, Random Forest for water quality prediction</li>
-                  <li><strong>Spectral Analysis:</strong> Python-based algorithms for chlorophyll-a concentration calculation</li>
+                  <li><strong>Machine Learning:</strong> YOLO v8 for plastic detection</li>
+                  <li><strong>Spectral Analysis:</strong> Simple algorithms for chlorophyll-a concentration calculation</li>
                   <li><strong>Real-time Dashboard:</strong> React.js frontend with Leaflet.js for map visualization</li>
                 </ol>
               </td>
             </tr>
-            
+
             <tr class="nested-row">
               <td>6.</td>
               <td>Environmental Ratings</td>
@@ -936,7 +204,7 @@
                   <li><strong>Water Resistance:</strong> IP67 rated electronics enclosure</li>
                   <li><strong>Operating Temperature:</strong> 10°C to 45°C</li>
                   <li><strong>Wave Tolerance:</strong> Up to 0.5m wave height</li>
-                  <li><strong>Wind Speed:</strong> Up to 20 km/h</li>
+                  <li><strong>Wind Speed:</strong> Up to 40 km/h</li>
                 </ol>
               </td>
             </tr>
@@ -945,7 +213,6 @@
       </div>
     </div>
   </section>
-
 
   <!-- Prototype Design Section -->
   <section class="prototype-section">
@@ -956,7 +223,7 @@
         Our team is actively developing the autonomous catamaran robot. These CAD models represent the initial design phase, 
         showcasing the dual-pontoon structure, propulsion system, and sensor mounting platform.
       </p>
-      
+
       <div class="prototype-gallery">
         <div class="prototype-card">
           <img src="/images/cad_1.jpg" alt="R-TECH Catamaran - Final Model">
@@ -965,7 +232,7 @@
             <p>Catamaran structure with solar panel mounting and dual propulsion system for stable navigation</p>
           </div>
         </div>
-        
+
         <div class="prototype-card">
           <img src="/images/cad_2.jpg" alt="R-TECH Catamaran - Earlier CAD Model">
           <div class="prototype-info">
@@ -973,7 +240,7 @@
             <p>Dual motor configuration with propellers for enhanced maneuverability in water bodies</p>
           </div>
         </div>
-        
+
         <div class="prototype-card">
           <img src="/images/cad_3.jpg" alt="R-TECH Catamaran - Earlier CAD Model">
           <div class="prototype-info">
@@ -985,21 +252,19 @@
     </div>
   </section>
 
-
   <!-- Team Section -->
   <section class="team-section">
     <div class="team-container">
       <h2>👥 Our Team</h2>
       <p class="subtitle">Meet the innovators behind R-TECH</p>
-      
-      <!-- Team Members -->
+
       <div class="team-grid">
         <div class="team-card">
           <div class="team-photo">
             <img src="/images/team/chandru.jpeg" alt="Team Member 1">
           </div>
           <h3>Chandru P</h3>
-          <p class="role">Team Leader</p>
+          <p class="role">Team Leader / Embedded Systems and IOT</p>
           <a href="https://www.linkedin.com/in/chandru-p-13bb99333/" target="_blank" class="linkedin-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
               <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
@@ -1008,13 +273,12 @@
           </a>
         </div>
 
-
         <div class="team-card">
           <div class="team-photo">
             <img src="/images/team/sudhar.jpeg" alt="Team Member 2">
           </div>
           <h3>Sudharsan D</h3>
-          <p class="role">Role/Position</p>
+          <p class="role">AI/ML Engineer</p>
           <a href="https://www.linkedin.com/in/sudharsan-d-30bb79364/" target="_blank" class="linkedin-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
               <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
@@ -1023,13 +287,12 @@
           </a>
         </div>
 
-
         <div class="team-card">
           <div class="team-photo">
             <img src="/images/team/prabu.jpeg" alt="Team Member 3">
           </div>
           <h3>Prabu Kumar S P</h3>
-          <p class="role">Web Developer</p>
+          <p class="role">Full-Stack Developer</p>
           <a href="https://www.linkedin.com/in/prabu-kumar-s-p-79998326a" target="_blank" class="linkedin-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
               <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
@@ -1038,13 +301,12 @@
           </a>
         </div>
 
-
         <div class="team-card">
           <div class="team-photo">
             <img src="/images/team/deepiga.jpeg" alt="Team Member 4">
           </div>
           <h3>Deepiga M</h3>
-          <p class="role">Role/Position</p>
+          <p class="role">AI/ML Engineer and Data Analyst</p>
           <a href="https://www.linkedin.com/in/deepiga-m-179986362/" target="_blank" class="linkedin-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
               <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
@@ -1053,13 +315,12 @@
           </a>
         </div>
 
-
         <div class="team-card">
           <div class="team-photo">
             <img src="/images/team/saranya.jpeg" alt="Team Member 5">
           </div>
           <h3>Saranya D</h3>
-          <p class="role">Role/Position</p>
+          <p class="role">Data Analyst and Research Lead</p>
           <a href="https://www.linkedin.com/in/saranya-dhulasiraman-4463a0352/" target="_blank" class="linkedin-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
               <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
@@ -1068,13 +329,12 @@
           </a>
         </div>
 
-
         <div class="team-card">
           <div class="team-photo">
             <img src="/images/team/aakash.jpeg" alt="Team Member 6">
           </div>
           <h3>Aakash R</h3>
-          <p class="role">Role/Position</p>
+          <p class="role">CAD Designer</p>
           <a href="https://www.linkedin.com/in/aakash-r-cs07/" target="_blank" class="linkedin-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
               <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
@@ -1084,8 +344,6 @@
         </div>
       </div>
 
-
-      <!-- Mentor Section -->
       <h3 style="text-align: center; margin-top: 3rem; margin-bottom: 2rem; color: #333; font-size: 2rem;">🎓 Our Mentor</h3>
       <div style="display: flex; justify-content: center;">
         <div class="team-card mentor-card">
@@ -1106,14 +364,12 @@
     </div>
   </section>
 
-
   <!-- Problem Statement Section -->
   <section class="problem-section">
     <div class="problem-container">
       <h2>🚨 The Water Crisis We're Solving</h2>
       <p class="subtitle">Real evidence from Tamil Nadu's water bodies showing urgent environmental threats</p>
       <div class="problem-grid">
-        <!-- Algae/Chlorophyll Problem -->
         <div class="problem-card">
           <img src="/images/algae-pollution.jpg" alt="Algae pollution in Coimbatore water body">
           <div class="problem-content">
@@ -1130,8 +386,7 @@
             </ul>
           </div>
         </div>
-        
-        <!-- Plastic Pollution Problem -->
+
         <div class="problem-card">
           <img src="/images/plastic-pollution.jpg" alt="Plastic debris along riverbank in Coimbatore">
           <div class="problem-content">
@@ -1149,7 +404,7 @@
           </div>
         </div>
       </div>
-      
+
       <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
         <h3 style="margin-bottom: 1rem; font-size: 1.8rem;">🎯 Our SIH 2025 Solution</h3>
         <p style="font-size: 1.1rem; line-height: 1.8; max-width: 900px; margin: 0 auto;">
@@ -1161,7 +416,6 @@
       </div>
     </div>
   </section>
-
 
   <!-- Features Section -->
   <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding-top: 3rem;">
@@ -1190,7 +444,6 @@
     </div>
   </div>
 
-
   <div class="cta-section">
     <h2 style="margin-bottom: 1rem; font-size: 2.5rem;">🌍 Join the Fight for Clean Water</h2>
     <p style="font-size: 1.2rem; margin-bottom: 1rem; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.6;">
@@ -1201,5 +454,9 @@
     </p>
     <a href="/dashboard" class="btn" style="font-size: 1.2rem; padding: 1rem 2.5rem;">View Water Quality Dashboard</a>
   </div>
+
+  <!-- External JavaScript -->
+  <script src="/js/carousel.js"></script>
+
 </body>
 </html>
