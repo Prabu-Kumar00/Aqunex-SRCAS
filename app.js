@@ -124,6 +124,7 @@ app.get('/auth/logout', (req, res) => {
   res.redirect('/');
 });
 
+
 // GET /dashboard — PUBLIC
 app.get('/dashboard', async (req, res) => {
   try {

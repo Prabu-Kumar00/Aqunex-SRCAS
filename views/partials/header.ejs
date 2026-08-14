@@ -36,10 +36,12 @@
 <script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
 <script src="/js/smooth-scroll.js"></script>
 <script src="/js/count-up.js"></script>
+<script src="/js/page-transitions.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
     .main-nav {
+        view-transition-name: main-nav;
         font-family: 'Inter', sans-serif;
         display: flex;
         justify-content: space-between;
@@ -133,4 +135,177 @@
     .auth-btn:active { transform: translateY(0); }
     .login-btn  { background: #00897b; color: #fff; }
     .logout-btn { background: #da3633; color: #fff; }
+
+    /* ── VIEW TRANSITIONS & BUBBLE CURTAIN OVERLAY ── */
+    @view-transition {
+        navigation: auto;
+    }
+
+    /* Keep View Transition extremely subtle to not clash with bubbles */
+    ::view-transition-old(root) {
+        animation: aqunex-fade-out 250ms ease both;
+    }
+
+    ::view-transition-new(root) {
+        animation: aqunex-fade-in 300ms ease both;
+    }
+
+    @keyframes aqunex-fade-out {
+        from { opacity: 1; }
+        to { opacity: 0.9; }
+    }
+
+    @keyframes aqunex-fade-in {
+        from { opacity: 0.9; }
+        to { opacity: 1; }
+    }
+
+    #page-transition {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        overflow: hidden;
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+        background: radial-gradient(
+            ellipse at 50% 110%,
+            rgba(14, 165, 233, 0.22),
+            rgba(6, 13, 26, 0.94) 72%
+        );
+        transition: opacity 180ms ease, visibility 0s linear 180ms;
+    }
+
+    #page-transition.is-leaving {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: all;
+        transition-delay: 0s;
+    }
+
+    .transition-water-glow {
+        position: absolute;
+        left: 50%;
+        bottom: -20%;
+        width: 80vmax;
+        height: 35vmax;
+        border-radius: 50%;
+        transform: translateX(-50%) scale(0.8);
+        opacity: 0;
+        background: radial-gradient(
+            ellipse,
+            rgba(6, 182, 212, 0.24),
+            transparent 68%
+        );
+        pointer-events: none;
+    }
+
+    #page-transition.is-leaving .transition-water-glow {
+        animation: waterGlowRise 850ms ease-out both;
+    }
+
+    @keyframes waterGlowRise {
+        from {
+            transform: translateX(-50%) scale(0.8);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(-50%) scale(1.15);
+            opacity: 1;
+        }
+    }
+
+    .transition-bubbles {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+    }
+
+    .transition-bubble {
+        position: absolute;
+        left: var(--start-x);
+        bottom: -70px;
+        width: var(--size);
+        height: var(--size);
+        border-radius: 50%;
+        opacity: 0;
+        border: 1px solid rgba(186, 230, 253, 0.7);
+        background: radial-gradient(
+            circle at 30% 25%,
+            rgba(255, 255, 255, 0.72) 0 5%,
+            rgba(125, 211, 252, 0.24) 22%,
+            rgba(14, 165, 233, 0.08) 62%,
+            transparent 74%
+        );
+        box-shadow:
+            inset 3px 3px 8px rgba(255, 255, 255, 0.2),
+            0 0 14px rgba(56, 189, 248, 0.2);
+        transform: translate3d(0, 0, 0) scale(0.55) rotate(0deg);
+        will-change: transform, opacity;
+    }
+
+    #page-transition.is-leaving .transition-bubble {
+        animation: bubbleRise var(--duration) cubic-bezier(0.22, 1, 0.36, 1) var(--delay) forwards;
+    }
+
+    @keyframes bubbleRise {
+        0% {
+            opacity: 0;
+            transform: translate3d(0, 0, 0) scale(0.55) rotate(0deg);
+        }
+        12% {
+            opacity: var(--bubble-opacity);
+        }
+        70% {
+            opacity: calc(var(--bubble-opacity) * 0.9);
+        }
+        100% {
+            opacity: 0;
+            transform: translate3d(var(--drift), -115vh, 0) scale(1.05) rotate(var(--rotation));
+        }
+    }
+
+    .transition-brand {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.8rem;
+        font-weight: 800;
+        letter-spacing: 6px;
+        color: #fff;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 100000;
+        text-shadow: 0 0 20px rgba(14, 165, 233, 0.6);
+        transition: opacity 300ms ease-out, transform 300ms ease-out;
+    }
+
+    #page-transition.is-leaving .transition-brand {
+        opacity: 0.85;
+        transform: translate(-50%, -50%) scale(1);
+        transition-delay: 180ms;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        #page-transition,
+        .transition-bubble,
+        .transition-water-glow,
+        .transition-brand {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation-duration: 1ms !important;
+        }
+    }
 </style>
+
+<div id="page-transition" aria-hidden="true">
+    <div class="transition-water-glow"></div>
+    <div class="transition-bubbles" aria-hidden="true"></div>
+    <div class="transition-brand" aria-hidden="true">R-TECH</div>
+</div>
