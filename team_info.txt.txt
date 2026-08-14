@@ -1,0 +1,12 @@
+Team Name: R-TECH
+
+Institute: Rathinam Technical Campus
+
+Team Members:
+
+1. Chandru P - Team Leader / Embedded Systems and IOT
+2. Prabu Kumar S P - Full-Stack Developer
+3. Sudharsan D - AI/ML Engineer
+4. Aakash R - CAD Designer
+5. Saranya D - Data Analyst and Research Lead
+6. Deepiga M - AI/ML Engineer and Data Analyst

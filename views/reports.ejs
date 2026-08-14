@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -176,16 +176,16 @@
 </head>
 <body>
     <div class="header">
-        <div class="logo">📊 R-TECH Reports</div>
+        <div class="logo">ðŸ“Š R-TECH Reports</div>
         <div class="nav-links">
-            <a href="/">🏠 Home</a>
-            <a href="/dashboard">🗺️ Dashboard</a>
+            <a href="/">ðŸ  Home</a>
+            <a href="/dashboard">ðŸ—ºï¸ Dashboard</a>
         </div>
     </div>
 
     <div class="container">
         <div class="card">
-            <h2>📈 Data Summary</h2>
+            <h2>ðŸ“ˆ Data Summary</h2>
             <div class="stats-grid" id="statsGrid">
                 <div class="stat-card">
                     <div class="stat-number" id="totalHotspots">0</div>
@@ -203,30 +203,30 @@
         </div>
 
         <div class="card">
-            <h2>📥 Download Reports</h2>
+            <h2>ðŸ“¥ Download Reports</h2>
             
             <!-- Full Report Button -->
             <div class="download-section">
-                <button class="download-btn" onclick="downloadReport('all', 'all')">📊 Full Report (All Data)</button>
+                <button class="download-btn" onclick="downloadReport('all', 'all')">ðŸ“Š Full Report (All Data)</button>
             </div>
 
             <!-- By State Section -->
             <div class="section-divider"></div>
-            <h3>🗺️ Download by State</h3>
+            <h3>ðŸ—ºï¸ Download by State</h3>
             <div class="download-section" id="stateButtons">
                 <!-- State buttons will be dynamically generated here -->
             </div>
 
             <!-- By District Section -->
             <div class="section-divider"></div>
-            <h3>🏙️ Download by District</h3>
+            <h3>ðŸ™ï¸ Download by District</h3>
             <div class="download-section" id="districtButtons">
                 <!-- District buttons will be dynamically generated here -->
             </div>
         </div>
         
         <div class="card">
-            <h2>🔍 All Sensor Data - Real Time</h2>
+            <h2>ðŸ” All Sensor Data - Real Time</h2>
             <table id="hotspotsTable">
                 <thead>
                     <tr>
@@ -236,10 +236,10 @@
                         <th>Type</th>
                         <th>Severity</th>
                         <th>Status</th>
-                        <th>Chl-a (µg/L)</th>
+                        <th>Chl-a (Âµg/L)</th>
                         <th>Turb (NTU)</th>
                         <th>pH</th>
-                        <th>Temp (°C)</th>
+                        <th>Temp (Â°C)</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -256,14 +256,7 @@
 
     <script>
         // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyARC-G4soX4WRO26ncZE19L9BeUeTyHlw",
-            authDomain: "aquex-871b9.firebaseapp.com",
-            projectId: "aquex-871b9",
-            storageBucket: "aquex-871b9.firebasestorage.app",
-            messagingSenderId: "501715709742",
-            appId: "1:501715709742:web:8204e44f3219e6584954bf"
-        };
+        const firebaseConfig = <%- JSON.stringify(firebaseConfig) %>;
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
@@ -315,7 +308,7 @@
                 const button = document.createElement('button');
                 button.className = 'download-btn state-btn';
                 button.onclick = () => downloadReport('state', state);
-                button.innerHTML = `📥 ${state}`;
+                button.innerHTML = `ðŸ“¥ ${state}`;
                 stateSection.appendChild(button);
             });
 
@@ -324,7 +317,7 @@
                 const button = document.createElement('button');
                 button.className = 'download-btn';
                 button.onclick = () => downloadReport('district', districtInfo);
-                button.innerHTML = `📥 ${districtInfo}`;
+                button.innerHTML = `ðŸ“¥ ${districtInfo}`;
                 districtSection.appendChild(button);
             });
         }
@@ -384,7 +377,7 @@
                     <td>${waterBody.turbidity.toFixed(1)}</td>
                     <td>${waterBody.ph.toFixed(1)}</td>
                     <td>${waterBody.temperature.toFixed(1)}</td>
-                    <td><button class="action-btn" onclick='downloadSingleHotspot(${JSON.stringify(waterBody).replace(/"/g, '&quot;')})'>📥 Report</button></td>
+                    <td><button class="action-btn" onclick='downloadSingleHotspot(${JSON.stringify(waterBody).replace(/"/g, '&quot;')})'>ðŸ“¥ Report</button></td>
                 `;
                 tbody.appendChild(row);
             });
@@ -443,23 +436,23 @@
             const csvData = `R-TECH Water Quality Report - ${waterBody.name}
 Generated: ${new Date().toLocaleString('en-IN')}
 
-📍 LOCATION: ${waterBody.name}
-🏙️  District: ${waterBody.district}
-🗺️  State: ${waterBody.state}
-📌 Coordinates: ${waterBody.lat}°N, ${waterBody.lng}°E
+ðŸ“ LOCATION: ${waterBody.name}
+ðŸ™ï¸  District: ${waterBody.district}
+ðŸ—ºï¸  State: ${waterBody.state}
+ðŸ“Œ Coordinates: ${waterBody.lat}Â°N, ${waterBody.lng}Â°E
 
-📊 WATER QUALITY PARAMETERS:
-• Chlorophyll-a: ${waterBody.chlorophyll} µg/L
-• Turbidity: ${waterBody.turbidity} NTU  
-• pH: ${waterBody.ph}
-• Temperature: ${waterBody.temperature} °C
+ðŸ“Š WATER QUALITY PARAMETERS:
+â€¢ Chlorophyll-a: ${waterBody.chlorophyll} Âµg/L
+â€¢ Turbidity: ${waterBody.turbidity} NTU  
+â€¢ pH: ${waterBody.ph}
+â€¢ Temperature: ${waterBody.temperature} Â°C
 
-⚠️  ASSESSMENT:
-• Pollution Type: ${waterBody.type}
-• Severity: ${waterBody.severity}/10
-• Status: ${waterBody.status.toUpperCase()}
+âš ï¸  ASSESSMENT:
+â€¢ Pollution Type: ${waterBody.type}
+â€¢ Severity: ${waterBody.severity}/10
+â€¢ Status: ${waterBody.status.toUpperCase()}
 
-🔗 Source: R-TECH Real-Time Monitoring System`;
+ðŸ”— Source: R-TECH Real-Time Monitoring System`;
 
             const blob = new Blob([csvData], { type: 'text/plain' });
             const url = window.URL.createObjectURL(blob);

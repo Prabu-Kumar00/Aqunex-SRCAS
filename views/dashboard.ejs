@@ -1,75 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>R-TECH - Dashboard</title>
-    
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; background: #f5f5f5; }
-        .header { position: fixed; top: 0; left: 0; right: 0; background: white; color: #333; padding: 15px 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .header h1 { font-size: 20px; color: #333; }
-        .btn { padding: 8px 16px; background: #5b7dff; color: white; border: none; border-radius: 5px; text-decoration: none; font-size: 14px; margin-left: 10px; cursor: pointer; }
-        .btn:hover { background: #4a6ae8; }
-        #map { position: absolute; top: 60px; bottom: 0; width: 100%; }
-        .custom-marker { width: 32px !important; height: 32px !important; border-radius: 50%; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4); cursor: pointer; }
-        .marker-good { background: #28a745; }
-        .marker-moderate { background: #ffc107; }
-        .marker-alert { background: #dc3545; }
-        
-        /* NEW: ESP32 marker style */
-        .marker-esp32 { background: #17a2b8; border-color: #0056b3 !important; }
-        
-        .leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-        .leaflet-popup-content { margin: 0; min-width: 340px; max-width: 400px; padding: 0; }
-        .popup-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px 10px 0 0; }
-        
-        /* NEW: ESP32 header style */
-        .popup-header.esp32-header { background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); }
-        
-        .popup-title { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
-        .popup-subtitle { font-size: 12px; opacity: 0.9; }
-        .popup-body { padding: 15px; }
-        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; width: 100%; }
-        .data-item { background: #f8f9fa; padding: 10px; border-radius: 6px; border-left: 3px solid #667eea; min-width: 0; }
-        .data-label { font-size: 11px; color: #666; text-transform: uppercase; margin-bottom: 4px; }
-        .data-value { font-size: 16px; font-weight: bold; color: #333; }
-        .meta-info { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; font-size: 12px; color: #666; }
-        .meta-item { display: flex; align-items: center; gap: 4px; }
-        .severity-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
-        .severity-low { background: #d4edda; color: #155724; }
-        .severity-moderate { background: #fff3cd; color: #856404; }
-        .severity-high { background: #f8d7da; color: #721c24; }
-        .status-active { display: inline-block; padding: 4px 12px; background: #28a745; color: white; border-radius: 12px; font-size: 12px; font-weight: bold; }
-        
-        /* NEW: Source badges */
-        .source-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-left: 8px; }
-        .source-firestore { background: #e3f2fd; color: #1976d2; }
-        .source-esp32 { background: #e0f7fa; color: #00838f; }
-        
-        .download-btn { display: block; width: 100%; padding: 12px; background: #5b7dff; color: white; text-align: center; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; margin-top: 15px; }
-        .download-btn:hover { background: #4a6ae8; }
-        .loading { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 9999; background: rgba(255,255,255,0.95); padding: 40px; border-radius: 10px; }
-        
-        /* Custom styling for search bar */
-        .leaflet-control-geocoder { 
-            border: 2px solid #5b7dff !important; 
-            border-radius: 8px !important; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15) !important;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .leaflet-control-geocoder-form input { 
-            font-size: 14px !important; 
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            color: #333;
+            padding: 15px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            color: #333;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: #5b7dff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #4a6ae8;
+        }
+
+        #map {
+            position: absolute;
+            top: 110px;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Custom cluster styling */
+        .marker-cluster-small {
+            background-color: rgba(40, 167, 69, 0.6);
+        }
+
+        .marker-cluster-small div {
+            background-color: rgba(40, 167, 69, 0.8);
+            color: #fff;
+        }
+
+        .marker-cluster-medium {
+            background-color: rgba(255, 193, 7, 0.6);
+        }
+
+        .marker-cluster-medium div {
+            background-color: rgba(255, 193, 7, 0.8);
+            color: #333;
+        }
+
+        .marker-cluster-large {
+            background-color: rgba(220, 53, 69, 0.6);
+        }
+
+        .marker-cluster-large div {
+            background-color: rgba(220, 53, 69, 0.8);
+            color: #fff;
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 32px;
+            padding: 10px 20px;
+            font-size: 13px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .stat-icon {
+            font-size: 16px;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .stat-label {
+            opacity: 0.7;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-divider {
+            width: 1px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-alert {
+            color: #f87171;
+        }
+
+        .stat-good {
+            color: #4ade80;
+        }
+
+        .custom-marker {
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+        }
+
+        .marker-good {
+            background: #28a745;
+        }
+
+        .marker-moderate {
+            background: #ffc107;
+        }
+
+        .marker-alert {
+            background: #dc3545;
+        }
+
+        /* NEW: ESP32 marker style */
+        .marker-esp32 {
+            background: #17a2b8;
+            border-color: #0056b3 !important;
+        }
+
+        .leaflet-popup-content-wrapper {
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .leaflet-popup-content {
+            margin: 0;
+            min-width: 340px;
+            max-width: 400px;
+            padding: 0;
+        }
+
+        .popup-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+        }
+
+        /* NEW: ESP32 header style */
+        .popup-header.esp32-header {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        }
+
+        .popup-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .popup-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .popup-body {
+            padding: 15px;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .data-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            min-width: 0;
+        }
+
+        .data-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .data-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .severity-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .severity-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .severity-moderate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .severity-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-active {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #28a745;
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* NEW: Source badges */
+        .source-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .source-firestore {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .source-esp32 {
+            background: #e0f7fa;
+            color: #00838f;
+        }
+
+        .download-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #5b7dff;
+            color: white;
+            text-align: center;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        .download-btn:hover {
+            background: #4a6ae8;
+        }
+
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 9999;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 10px;
+        }
+
+        /* Custom styling for search bar */
+        .leaflet-control-geocoder {
+            border: 2px solid #5b7dff !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .leaflet-control-geocoder-form input {
+            font-size: 14px !important;
             padding: 8px !important;
         }
 
         /* ============================================ */
         /* MOBILE & TABLET RESPONSIVE STYLES */
         /* ============================================ */
-        
+
         /* Tablet and smaller */
         @media (max-width: 1024px) {
             .header {
@@ -77,73 +380,95 @@
                 padding: 12px 15px;
                 gap: 10px;
             }
+
             .header h1 {
                 font-size: 17px;
                 text-align: center;
             }
-            .header > div {
+
+            .header>div {
                 display: flex;
                 width: 100%;
                 justify-content: center;
                 gap: 8px;
             }
+
             .btn {
                 padding: 8px 14px;
                 font-size: 13px;
                 margin-left: 0;
                 flex: 1;
             }
+
             #map {
-                top: 90px;
+                top: 140px;
             }
-            
+
+            .stats-bar {
+                top: 90px;
+                gap: 16px;
+                flex-wrap: wrap;
+                padding: 8px 15px;
+            }
+
             .leaflet-popup-content {
                 min-width: 300px !important;
                 max-width: 340px !important;
             }
+
             .popup-header {
                 padding: 12px;
             }
+
             .popup-title {
                 font-size: 16px;
             }
+
             .popup-subtitle {
                 font-size: 11px;
             }
+
             .data-grid {
                 gap: 8px;
             }
+
             .data-item {
                 padding: 9px;
             }
+
             .data-label {
                 font-size: 10px;
             }
+
             .data-value {
                 font-size: 15px;
             }
         }
-        
+
         /* Mobile phones */
         @media (max-width: 768px) {
+
             /* Header Mobile */
             .header {
                 flex-direction: column;
                 padding: 10px;
                 gap: 8px;
             }
+
             .header h1 {
                 font-size: 15px;
                 text-align: center;
                 line-height: 1.3;
             }
-            .header > div {
+
+            .header>div {
                 display: flex;
                 width: 100%;
                 justify-content: center;
                 gap: 6px;
                 flex-wrap: wrap;
             }
+
             .btn {
                 padding: 7px 12px;
                 font-size: 12px;
@@ -155,7 +480,26 @@
 
             /* Map adjustments for mobile header height */
             #map {
+                top: 130px;
+            }
+
+            .stats-bar {
                 top: 85px;
+                gap: 10px;
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+
+            .stat-value {
+                font-size: 13px;
+            }
+
+            .stat-label {
+                font-size: 9px;
+            }
+
+            .stat-divider {
+                display: none;
             }
 
             /* Popup adjustments for mobile */
@@ -163,15 +507,19 @@
                 min-width: 280px !important;
                 max-width: 320px !important;
             }
+
             .popup-title {
                 font-size: 15px;
             }
+
             .popup-subtitle {
                 font-size: 10px;
             }
+
             .popup-header {
                 padding: 10px;
             }
+
             .popup-body {
                 padding: 10px;
             }
@@ -181,12 +529,15 @@
                 grid-template-columns: 1fr;
                 gap: 8px;
             }
+
             .data-item {
                 padding: 8px;
             }
+
             .data-label {
                 font-size: 9px;
             }
+
             .data-value {
                 font-size: 14px;
             }
@@ -198,10 +549,12 @@
                 gap: 6px;
                 font-size: 10px;
             }
+
             .severity-badge {
                 font-size: 11px;
                 padding: 4px 10px;
             }
+
             .status-active {
                 font-size: 10px;
                 padding: 3px 10px;
@@ -219,7 +572,8 @@
                 width: 28px !important;
                 height: 28px !important;
             }
-            .custom-marker > div {
+
+            .custom-marker>div {
                 line-height: 22px !important;
                 font-size: 16px !important;
             }
@@ -229,6 +583,7 @@
                 width: calc(100vw - 20px) !important;
                 max-width: 350px !important;
             }
+
             .leaflet-control-geocoder-form input {
                 font-size: 12px !important;
                 padding: 6px !important;
@@ -240,9 +595,11 @@
                 width: 90%;
                 max-width: 300px;
             }
+
             .loading h2 {
                 font-size: 17px;
             }
+
             .loading p {
                 font-size: 13px;
             }
@@ -259,23 +616,33 @@
             .header h1 {
                 font-size: 13px;
             }
+
             .btn {
                 font-size: 11px;
                 padding: 6px 10px;
             }
+
             #map {
+                top: 120px;
+            }
+
+            .stats-bar {
                 top: 80px;
             }
+
             .leaflet-popup-content {
                 min-width: 260px !important;
                 max-width: 280px !important;
             }
+
             .popup-title {
                 font-size: 14px;
             }
+
             .data-value {
                 font-size: 13px;
             }
+
             .download-btn {
                 font-size: 12px;
                 padding: 9px;
@@ -283,6 +650,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="loading" id="loadingScreen">
         <h2>🌊 Loading Dashboard...</h2>
@@ -297,26 +665,62 @@
             <a href="/reports" class="btn">📄 Reports</a>
         </div>
     </div>
-    
+
+    <!-- Stats Bar -->
+    <div class="stats-bar" id="statsBar">
+        <div class="stat-item">
+            <span class="stat-icon">📡</span>
+            <div>
+                <div class="stat-value" id="statSensors">—</div>
+                <div class="stat-label">Active Sensors</div>
+            </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <span class="stat-icon">⚠️</span>
+            <div>
+                <div class="stat-value stat-alert" id="statAlerts">—</div>
+                <div class="stat-label">Alerts</div>
+            </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <span class="stat-icon">🗺️</span>
+            <div>
+                <div class="stat-value" id="statStates">—</div>
+                <div class="stat-label">States Covered</div>
+            </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <span class="stat-icon">📍</span>
+            <div>
+                <div class="stat-value" id="statLocations">—</div>
+                <div class="stat-label">Locations Monitored</div>
+            </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <span class="stat-icon">🕐</span>
+            <div>
+                <div class="stat-value stat-good" id="statLastUpdate">—</div>
+                <div class="stat-label">Last Updated</div>
+            </div>
+        </div>
+    </div>
+
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <!-- NEW: Realtime Database library -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    
+
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyARC-G4soX4WRO26ncZE19l9BeFUsTyHlw",
-            authDomain: "aquex-871b9.firebaseapp.com",
-            databaseURL: "https://aquex-871b9-default-rtdb.asia-southeast1.firebasedatabase.app", // NEW
-            projectId: "aquex-871b9",
-            storageBucket: "aquex-871b9.firebasestorage.app",
-            messagingSenderId: "501715709742",
-            appId: "1:501715709742:web:8204e44f3219e6584954bf"
-        };
+        const firebaseConfig = <% - JSON.stringify(firebaseConfig) %>;
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
@@ -332,9 +736,19 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
+        // Create a MarkerClusterGroup for data markers
+        const markerClusterGroup = L.markerClusterGroup({
+            maxClusterRadius: 45,
+            spiderfyOnMaxZoom: true,
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: true,
+            disableClusteringAtZoom: 10
+        });
+        map.addLayer(markerClusterGroup);
+
         // Add Google Maps-style search bar
         var searchMarker = null; // To store temporary search marker
-        
+
         L.Control.geocoder({
             defaultMarkGeocode: false,
             placeholder: 'Search any location (city, river, lake)...',
@@ -343,31 +757,31 @@
             suggestTimeout: 250,
             queryMinLength: 1
         })
-        .on('markgeocode', function(e) {
-            var latlng = e.geocode.center;
-            var locationName = e.geocode.name;
-            
-            // Remove previous search marker if exists
-            if (searchMarker) {
-                map.removeLayer(searchMarker);
-            }
-            
-            // Move map to searched location with smooth animation
-            map.setView(latlng, 12);
-            
-            // Add temporary marker at searched location
-            searchMarker = L.marker(latlng, {
-                icon: L.divIcon({
-                    className: 'custom-marker',
-                    html: '<div style="background: #5b7dff; width: 32px; height: 32px; border-radius: 50%; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4); text-align:center; line-height:26px; color:white; font-size:18px;">📍</div>',
-                    iconSize: [32, 32]
+            .on('markgeocode', function (e) {
+                var latlng = e.geocode.center;
+                var locationName = e.geocode.name;
+
+                // Remove previous search marker if exists
+                if (searchMarker) {
+                    map.removeLayer(searchMarker);
+                }
+
+                // Move map to searched location with smooth animation
+                map.setView(latlng, 12);
+
+                // Add temporary marker at searched location
+                searchMarker = L.marker(latlng, {
+                    icon: L.divIcon({
+                        className: 'custom-marker',
+                        html: '<div style="background: #5b7dff; width: 32px; height: 32px; border-radius: 50%; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.4); text-align:center; line-height:26px; color:white; font-size:18px;">📍</div>',
+                        iconSize: [32, 32]
+                    })
                 })
+                    .addTo(map)
+                    .bindPopup(`<div style="padding: 10px;"><strong>📍 ${locationName}</strong><br><small>Searched location</small></div>`)
+                    .openPopup();
             })
-            .addTo(map)
-            .bindPopup(`<div style="padding: 10px;"><strong>📍 ${locationName}</strong><br><small>Searched location</small></div>`)
-            .openPopup();
-        })
-        .addTo(map);
+            .addTo(map);
 
         // Helper functions
         function getSeverity(chlorophyll) {
@@ -376,13 +790,13 @@
             if (severity <= 7) return { rating: severity, class: 'severity-moderate', markerClass: 'marker-moderate' };
             return { rating: severity, class: 'severity-high', markerClass: 'marker-alert' };
         }
-        
+
         function getPollutionType(chlorophyll) {
             return chlorophyll > 15 ? 'Algae Bloom' : 'Organic Matter';
         }
-        
+
         function createDownloadFunction(location, chlorophyll, turbidity, ph, temperature) {
-            return function() {
+            return function () {
                 const csv = `Water Quality Report - ${location}
 Date: ${new Date().toLocaleDateString()}
 
@@ -479,22 +893,70 @@ Temperature,${temperature},°C`;
                     </button>
                 </div>
             `;
-            
-            L.marker([lat, lng], { icon: icon })
-                .bindPopup(popupContent, { maxWidth: 380, minWidth: 340 })
-                .addTo(map);
+
+            const marker = L.marker([lat, lng], { icon: icon })
+                .bindPopup(popupContent, { maxWidth: 380, minWidth: 340 });
+            markerClusterGroup.addLayer(marker);
         }
 
         // Track all active markers
         let allMarkers = {};
 
         function clearDataMarkers() {
-            map.eachLayer(function (layer) {
-                if (layer instanceof L.Marker && layer !== searchMarker) {
-                    map.removeLayer(layer);
-                }
-            });
+            markerClusterGroup.clearLayers();
             allMarkers = {};
+        }
+
+        // ==========================================
+        // STATS BAR — update from snapshot data
+        // ==========================================
+        function updateStatsBar(docs) {
+            if (!docs || docs.length === 0) {
+                document.getElementById('statSensors').textContent = '0';
+                document.getElementById('statAlerts').textContent = '0';
+                document.getElementById('statStates').textContent = '0';
+                document.getElementById('statLocations').textContent = '0';
+                document.getElementById('statLastUpdate').textContent = '—';
+                return;
+            }
+
+            const states = new Set();
+            const locations = new Set();
+            let lastTimestamp = 0;
+            let alerts = 0;
+
+            docs.forEach(d => {
+                if (d.state) states.add(d.state);
+                if (d.location) locations.add(d.location);
+
+                // Handle various timestamp formats (Firestore Timestamp, Date object, string)
+                let ts = 0;
+                if (d.timestamp && typeof d.timestamp.toDate === 'function') {
+                    ts = d.timestamp.toDate().getTime();
+                } else if (d.timestamp) {
+                    ts = new Date(d.timestamp).getTime();
+                }
+                if (ts > lastTimestamp) lastTimestamp = ts;
+
+                const sev = Math.min(Math.floor((d.chlorophyll || 0) / 3), 10);
+                if (sev >= 8) alerts++;
+            });
+
+            const n = docs.length;
+            document.getElementById('statSensors').textContent = n;
+            document.getElementById('statAlerts').textContent = alerts;
+            document.getElementById('statAlerts').className = alerts > 0 ? 'stat-value stat-alert' : 'stat-value stat-good';
+
+            document.getElementById('statStates').textContent = states.size;
+            document.getElementById('statLocations').textContent = locations.size;
+
+            if (lastTimestamp > 0) {
+                const date = new Date(lastTimestamp);
+                // format: 10:30 AM
+                document.getElementById('statLastUpdate').textContent = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else {
+                document.getElementById('statLastUpdate').textContent = '—';
+            }
         }
 
         // Load Firestore data (original functionality)
@@ -502,15 +964,20 @@ Temperature,${temperature},°C`;
             // Only clear and redraw all markers on firestore update
             clearDataMarkers();
 
+            const allDocs = [];
             snapshot.forEach((doc) => {
                 const data = doc.data();
+                allDocs.push(data);
                 const markerId = `firestore_${doc.id}`;
                 allMarkers[markerId] = true;
                 createMarker(data, 'firestore', doc.id);
             });
 
+            // Update stats bar with latest data
+            updateStatsBar(allDocs);
+
             console.log(`Loaded ${Object.keys(allMarkers).filter(k => k.startsWith('firestore')).length} markers from Firestore`);
-            
+
             // Re-load realtime data to show both
             loadRealtimeData();
         });
@@ -540,7 +1007,7 @@ Temperature,${temperature},°C`;
             const key = snapshot.key;
             const data = snapshot.val();
             const markerId = `realtime_${key}`;
-            
+
             if (!allMarkers[markerId]) {
                 allMarkers[markerId] = true;
                 createMarker(data, 'esp32', key);
@@ -566,20 +1033,25 @@ Temperature,${temperature},°C`;
     </script>
 
     <!-- Hidden Mock Data Control Panel (Ctrl+M to toggle) -->
-    <div id="mockControlPanel" style="display:none; position:fixed; bottom:20px; right:20px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,0.3); z-index:10000; min-width:260px;">
+    <div id="mockControlPanel"
+        style="display:none; position:fixed; bottom:20px; right:20px; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 20px rgba(0,0,0,0.3); z-index:10000; min-width:260px;">
         <h3 style="margin:0 0 12px 0; font-size:16px;">🧪 Mock Data Control</h3>
         <div style="display:flex; flex-direction:column; gap:8px;">
             <button id="startMockBtn" class="btn" style="margin:0; width:100%;">▶️ Start Mock Data</button>
-            <button id="stopMockBtn" class="btn" style="margin:0; width:100%; background:#dc3545;">⏹️ Stop Mock Data</button>
-            <button id="cleanupMockBtn" class="btn" style="margin:0; width:100%; background:#ffc107; color:#333;">🧹 Cleanup Mock Data</button>
-            <button id="closePanelBtn" class="btn" style="margin:0; width:100%; background:#6c757d;">❌ Close Panel</button>
+            <button id="stopMockBtn" class="btn" style="margin:0; width:100%; background:#dc3545;">⏹️ Stop Mock
+                Data</button>
+            <button id="cleanupMockBtn" class="btn" style="margin:0; width:100%; background:#ffc107; color:#333;">🧹
+                Cleanup Mock Data</button>
+            <button id="closePanelBtn" class="btn" style="margin:0; width:100%; background:#6c757d;">❌ Close
+                Panel</button>
         </div>
-        <div id="mockStatus" style="margin-top:10px; padding:8px; background:#f8f9fa; border-radius:5px; font-size:12px;"></div>
+        <div id="mockStatus"
+            style="margin-top:10px; padding:8px; background:#f8f9fa; border-radius:5px; font-size:12px;"></div>
     </div>
 
     <script>
         // Toggle panel with Ctrl+M
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.ctrlKey && e.key === 'm') {
                 const panel = document.getElementById('mockControlPanel');
                 panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
@@ -634,4 +1106,5 @@ Temperature,${temperature},°C`;
         setInterval(refreshMockStatus, 5000);
     </script>
 </body>
+
 </html>

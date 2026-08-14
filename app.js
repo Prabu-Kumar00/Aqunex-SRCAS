@@ -1,19 +1,61 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const admin = require('firebase-admin');
+const { getRandomLocation, addGPSVariation, getRandomValue } = require('./scripts/locations');
+
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 // Initialize Firebase Admin (only once)
-const serviceAccount = require('./serviceAccountKey.json');
+let serviceAccount;
+const fs = require('fs');
+const serviceAccountPath = path.join(__dirname, 'serviceAccountKey.json');
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
+if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+  try {
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    console.log('✅ Firebase Admin initialized via environment variable');
+  } catch (e) {
+    console.error('❌ Error parsing FIREBASE_SERVICE_ACCOUNT environment variable:', e.message);
+  }
 }
 
-const db = admin.firestore();
+if (!serviceAccount && fs.existsSync(serviceAccountPath)) {
+  serviceAccount = require(serviceAccountPath);
+  console.log('✅ Firebase Admin initialized via local JSON file');
+}
+
+if (!serviceAccount) {
+  console.error('❌ CRITICAL ERROR: No Firebase credentials found!');
+  console.error('Please set FIREBASE_SERVICE_ACCOUNT environment variable or provide serviceAccountKey.json');
+  // In production (Render), we want to avoid crashing the whole process immediately if possible, 
+  // but Firebase Admin requires it. We'll proceed but db calls will fail.
+} else {
+  if (!admin.apps.length) {
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+  }
+}
+
+// Global Firebase Web Config to pass to views
+const firebaseConfig = {
+  apiKey: process.env.FIREBASE_API_KEY || "AIzaSyARC-G4soX4WRO26ncZE19l9BeFUsTyHlw",
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN || "aquex-871b9.firebaseapp.com",
+  databaseURL: process.env.FIREBASE_DATABASE_URL || "https://aquex-871b9-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: process.env.FIREBASE_PROJECT_ID || "aquex-871b9",
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "aquex-871b9.firebasestorage.app",
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || "501715709742",
+  appId: process.env.FIREBASE_APP_ID || "1:501715709742:web:8204e44f3219e6584954bf"
+};
+
+let db;
+try {
+  db = admin.firestore();
+} catch (e) {
+  console.error('⚠️ Could not initialize Firestore database:', e.message);
+}
 
 // Middleware
 app.set('view engine', 'ejs');
@@ -23,28 +65,28 @@ app.use(express.json());
 
 // ✅ CORRECT FLOW: Home → Dashboard → Reports
 app.get('/', (req, res) => {
-    res.render('home');  // ✅ Home page first
+  res.render('home', { firebaseConfig });  // ✅ Home page first
 });
 
 app.get('/dashboard', (req, res) => {
-    res.render('dashboard');
+  res.render('dashboard', { firebaseConfig });
 });
 
 app.get('/reports', (req, res) => {
-    res.render('reports');
+  res.render('reports', { firebaseConfig });
 });
 
 // ✅ Home page links to dashboard
 app.get('/map', (req, res) => {
-    res.redirect('/dashboard');
+  res.redirect('/dashboard');
 });
 
 // API endpoint
 app.get('/api/data', async (req, res) => {
-    res.json({
-        message: "Real-time data available in dashboard/reports",
-        endpoints: ["/dashboard", "/reports"]
-    });
+  res.json({
+    message: "Real-time data available in dashboard/reports",
+    endpoints: ["/dashboard", "/reports"]
+  });
 });
 
 // ==========================================
@@ -54,36 +96,17 @@ app.get('/api/data', async (req, res) => {
 let mockInterval = null;
 let isMockRunning = false;
 
-// Helper functions for mock data generation
-function getRandomValue(min, max, decimals = 1) {
-  return parseFloat((Math.random() * (max - min) + min).toFixed(decimals));
-}
-
-function jitter(value, maxOffset) {
-  return value + (Math.random() * 2 - 1) * maxOffset;
-}
-
-function getRandomLocation() {
-  const locations = [
-    { name: "Sabarmati River", district: "Ahmedabad", state: "Gujarat", lat: 23.020925865026157, lng: 72.5751981354866 },
-    { name: "Kankaria Lake", district: "Ahmedabad", state: "Gujarat", lat: 22.9988, lng: 72.6047 },
-    { name: "Chandola Lake", district: "Ahmedabad", state: "Gujarat", lat: 23.0089, lng: 72.6047 },
-    { name: "Vastrapur Lake", district: "Ahmedabad", state: "Gujarat", lat: 23.0355, lng: 72.5246 },
-    { name: "Narmada River", district: "Bharuch", state: "Gujarat", lat: 21.7051, lng: 72.9959 },
-    { name: "Thol Lake", district: "Mehsana", state: "Gujarat", lat: 23.5832, lng: 72.4153 }
-  ];
-  return locations[Math.floor(Math.random() * locations.length)];
-}
 
 async function addMockDataEntry() {
   try {
     const loc = getRandomLocation();
+    const variedGPS = addGPSVariation(loc.lat, loc.lng, 3);
     await db.collection('sensor_data').add({
       chlorophyll: getRandomValue(5, 150, 1),
       district: loc.district,
-      gps: { 
-        lat: jitter(loc.lat, 0.01), 
-        lng: jitter(loc.lng, 0.01) 
+      gps: {
+        lat: variedGPS.lat,
+        lng: variedGPS.lng
       },
       location: loc.name,
       ph: getRandomValue(6.5, 8.5, 1),
@@ -108,11 +131,11 @@ app.post('/api/mock/start', async (req, res) => {
   try {
     // Add first entry immediately
     await addMockDataEntry();
-    
+
     // Then continue every 10 seconds
     mockInterval = setInterval(addMockDataEntry, 10000);
     isMockRunning = true;
-    
+
     console.log('🚀 Mock data generation started from dashboard');
     res.json({ success: true, message: 'Mock data started - adding every 10 seconds' });
   } catch (error) {
@@ -125,11 +148,11 @@ app.post('/api/mock/stop', (req, res) => {
   if (!isMockRunning) {
     return res.json({ success: false, message: 'Mock data not running' });
   }
-  
+
   clearInterval(mockInterval);
   mockInterval = null;
   isMockRunning = false;
-  
+
   console.log('🛑 Mock data generation stopped from dashboard');
   res.json({ success: true, message: 'Mock data stopped' });
 });
@@ -167,14 +190,13 @@ app.get('/api/mock/status', (req, res) => {
 
 // 404 handler
 app.use((req, res) => {
-    res.redirect('/');
+  res.redirect('/');
 });
 
-// Start server
 app.listen(port, () => {
-    console.log(`🚤 Aqunex Server running at http://localhost:${port}`);
-    console.log(`🏠 Home:      http://localhost:${port}/`);
-    console.log(`📊 Dashboard: http://localhost:${port}/dashboard`);
-    console.log(`📈 Reports:   http://localhost:${port}/reports`);
-    console.log(`🧪 Mock API:  Press Ctrl+M on dashboard to control mock data`);
+  console.log(`🚤 Aqunex Server running at http://localhost:${port}`);
+  console.log(`🏠 Home:      http://localhost:${port}/`);
+  console.log(`📊 Dashboard: http://localhost:${port}/dashboard`);
+  console.log(`📈 Reports:   http://localhost:${port}/reports`);
+  console.log(`🧪 Mock API:  Press Ctrl+M on dashboard to control mock data`);
 });

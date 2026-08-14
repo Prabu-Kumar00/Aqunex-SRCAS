@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+const { getRandomLocation, addGPSVariation, getRandomValue } = require('./locations');
 
 const serviceAccount = require('../serviceAccountKey.json');
 
@@ -14,30 +15,15 @@ const COLLECTION_NAME = 'sensor_data';   // must match dashboard
 const MAX_MOCK_DOCS = 10;
 const ADD_INTERVAL = 10000;             // 10 seconds
 
-function getRandomValue(min, max, decimals = 1) {
-  return parseFloat((Math.random() * (max - min) + min).toFixed(decimals));
-}
-
-function getRandomLocation() {
-  const locations = [
-    { name: 'Sabarmati River', district: 'Ahmedabad', state: 'Gujarat', lat: 23.020925865026157, lng: 72.5751981354866 },
-    { name: 'Kankaria Lake', district: 'Ahmedabad', state: 'Gujarat', lat: 22.9988, lng: 72.6047 },
-    { name: 'Chandola Lake', district: 'Ahmedabad', state: 'Gujarat', lat: 23.0089, lng: 72.6047 },
-    { name: 'Vastrapur Lake', district: 'Ahmedabad', state: 'Gujarat', lat: 23.0355, lng: 72.5246 },
-    { name: 'Narmada River', district: 'Bharuch', state: 'Gujarat', lat: 21.7051, lng: 72.9959 },
-    { name: 'Thol Lake', district: 'Mehsana', state: 'Gujarat', lat: 23.5832, lng: 72.4153 }
-  ];
-  return locations[Math.floor(Math.random() * locations.length)];
-}
-
 function generateMockData() {
   const loc = getRandomLocation();
+  const variedGPS = addGPSVariation(loc.lat, loc.lng, 3);
   return {
     chlorophyll: getRandomValue(5, 150, 1),
     district: loc.district,
     gps: {
-      lat: loc.lat,
-      lng: loc.lng
+      lat: variedGPS.lat,
+      lng: variedGPS.lng
     },
     location: loc.name,
     ph: getRandomValue(6.5, 8.5, 1),
@@ -62,7 +48,7 @@ async function trimMockDocsIfNeeded() {
 
   const extra = docs.length - MAX_MOCK_DOCS;
   const batch = db.batch();
-  
+
   // Delete first N docs (no ordering needed)
   for (let i = 0; i < extra; i++) {
     batch.delete(docs[i].ref);

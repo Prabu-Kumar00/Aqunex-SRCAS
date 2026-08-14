@@ -1,6 +1,5 @@
 /* =============================================
-   R-TECH Homepage Styles - FIXED VERSION
-   Smart India Hackathon 2025
+   R-TECH Homepage Styles
    ============================================= */
 
 /* Global Styles */
@@ -12,57 +11,6 @@ body {
   min-height: 100vh;
 }
 
-/* =============================================
-   SIH Header Banner
-   ============================================= */
-.sih-banner {
-  background: white;
-  padding: 1rem 2rem;
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
-  align-items: center;
-  gap: 1rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.logo-section {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.logo-section.left {
-  justify-content: flex-start;
-}
-
-.logo-section.right {
-  justify-content: flex-end;
-}
-
-.logo-section img {
-  height: 65px;
-  width: auto;
-  object-fit: contain;
-}
-
-.sih-title-section {
-  text-align: center;
-  justify-self: center;
-}
-
-.sih-title-section h1 {
-  font-size: 1.8rem;
-  color: #0066cc;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-.sih-title-section p {
-  font-size: 0.85rem;
-  color: #666;
-  margin-top: 0.2rem;
-}
 
 /* =============================================
    Navigation Bar
@@ -204,18 +152,6 @@ body {
   padding: 0 1rem;
 }
 
-.sih-badge {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  padding: 0.6rem 1.8rem;
-  border-radius: 30px;
-  margin-bottom: 1.5rem;
-  font-weight: 600;
-  font-size: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
 
 .hero-slide h1 { 
   font-size: 4rem; 

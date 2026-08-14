@@ -113,15 +113,22 @@ dist
 # FuseBox cache
 .fusebox/
 
+# Firebase and Google Cloud Credentials - CRITICAL SECURITY
 node_modules/
 serviceAccountKey.json
-
+firebase-adminsdk-*.json
+*-firebase-adminsdk-*.json
+google-credentials.json
+gcp-key.json
 
 # DynamoDB Local files
 .dynamodb/
 
 # Firebase cache directory
 .firebase/
+firebase-debug.log
+firestore-debug.log
+.firebaserc
 
 # TernJS port file
 .tern-port
@@ -141,3 +148,24 @@ serviceAccountKey.json
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build output
+build/
+dist/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
