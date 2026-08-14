@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/live-detection.css">
+</head>
+<body class="live-root">
+    <div class="bg-gradient"></div>
+    <%- include('partials/header', { page: page, admin: admin }) %>
+
+    <main class="live-main live-container">
+        <header class="live-header">
+            <h1 style="display:flex;align-items:center;gap:15px;font-size:2.6rem;font-weight:700;margin-bottom:0.4rem;background:linear-gradient(135deg,#fff 0%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+                Live Detection
+                <span class="live-status-container">
+                    <span id="live-status-dot" class="status-dot status-dot--connected"></span>
+                    <span id="live-status-text" class="status-text">Live</span>
+                </span>
+            </h1>
+            <p style="color:var(--text-muted);font-size:1rem;">
+                Real-time waste detection from Edge AI sensor nodes
+            </p>
+        </header>
+
+        <% 
+            function parseDate(ts) {
+                if (!ts) return "N/A";
+                try {
+                    if (typeof ts.toDate === 'function') return ts.toDate().toLocaleString();
+                    if (ts._seconds) return new Date(ts._seconds * 1000).toLocaleString();
+                    const d = new Date(ts);
+                    return isNaN(d.getTime()) ? "N/A" : d.toLocaleString();
+                } catch(e) { return "N/A"; }
+            }
+            function parseTime(ts) {
+                if (!ts) return "N/A";
+                try {
+                    if (typeof ts.toDate === 'function') return ts.toDate().toLocaleTimeString();
+                    if (ts._seconds) return new Date(ts._seconds * 1000).toLocaleTimeString();
+                    const d = new Date(ts);
+                    return isNaN(d.getTime()) ? "N/A" : d.toLocaleTimeString();
+                } catch(e) { return "N/A"; }
+            }
+        %>
+
+        <% if (!detections || detections.length === 0) { %>
+            <div id="live-main-placeholder" class="empty-state">
+                <div class="pulse state-icon">📡</div>
+                <p>No detections yet. Waiting for incoming data...</p>
+            </div>
+            <!-- Hidden containers for when data arrives -->
+            <div id="live-content-wrapper" style="display: none;" class="live-content-grid">
+                <section class="live-main-frame card-panel">
+                    <div class="main-image-container">
+                        <img id="live-main-image" src="" alt="Latest Detection" />
+                    </div>
+                    <div class="metadata-panel">
+                        <div class="meta-item">
+                            <span class="meta-label">Classes</span>
+                            <span id="meta-classes" class="meta-value severity-badge sev-medium"></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Confidence</span>
+                            <span id="meta-confidence" class="meta-value"></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Device ID</span>
+                            <span id="meta-device" class="meta-value"></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Timestamp</span>
+                            <span id="meta-timestamp" class="meta-value"></span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="live-gallery card-panel">
+                    <h3>Recent Frames (<span id="gallery-count">0</span>)</h3>
+                    <div id="live-gallery-grid" class="gallery-grid">
+                        <!-- Thumbs will be added via JS -->
+                    </div>
+                </section>
+            </div>
+        <% } else { %>
+            <div id="live-main-placeholder" class="empty-state" style="display: none;">
+                <div class="pulse state-icon">📡</div>
+                <p>No detections yet. Waiting for incoming data...</p>
+            </div>
+            <div id="live-content-wrapper" class="live-content-grid">
+                <section class="live-main-frame card-panel">
+                    <div class="main-image-container">
+                        <img id="live-main-image" src="data:image/jpeg;base64,<%= detections[0].image_base64 %>" alt="Latest Detection" />
+                    </div>
+                    <div class="metadata-panel">
+                        <div class="meta-item">
+                            <span class="meta-label">Classes</span>
+                            <span id="meta-classes" class="meta-value severity-badge sev-medium"><%= (detections[0].classes || []).join(', ') %></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Confidence</span>
+                            <span id="meta-confidence" class="meta-value">
+                                <%= detections[0].confidences && detections[0].confidences.length ? Math.max(...detections[0].confidences).toFixed(2) : 'N/A' %>
+                            </span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Device ID</span>
+                            <span id="meta-device" class="meta-value" style="font-family:monospace;"><%= detections[0].device_id || 'Unknown' %></span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Timestamp</span>
+                            <span id="meta-timestamp" class="meta-value" style="font-family:monospace; color:var(--text-muted);">
+                                <%= parseDate(detections[0].timestamp) %>
+                            </span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="live-gallery card-panel">
+                    <h3>Recent Frames (<span id="gallery-count"><%= detections.length %></span>)</h3>
+                    <div id="live-gallery-grid" class="gallery-grid">
+                        <% detections.forEach(function(det) { 
+                            let maxConf = det.confidences && det.confidences.length ? Math.max(...det.confidences).toFixed(2) : 'N/A';
+                            let clsStr = (det.classes || []).join(', ');
+                            let dtStr = parseDate(det.timestamp);
+                            let timeStr = parseTime(det.timestamp);
+                        %>
+                            <div class="gallery-item" 
+                                 data-id="<%= det.id %>"
+                                 data-img="<%= det.image_base64 %>"
+                                 data-classes="<%= clsStr %>"
+                                 data-conf="<%= maxConf %>"
+                                 data-device="<%= det.device_id || 'Unknown' %>"
+                                 data-time="<%= dtStr %>">
+                                <img src="data:image/jpeg;base64,<%= det.image_base64 %>" alt="Thumbnail" />
+                                <div class="gallery-overlay">
+                                    <div class="gallery-overlay-text">
+                                        <span class="g-cls"><%= clsStr %></span>
+                                        <span class="g-time"><%= timeStr %></span>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </section>
+            </div>
+        <% } %>
+    </main>
+
+    <script>
+        window.INITIAL_DETECTION_ID = "<%= (detections && detections.length > 0) ? detections[0].id : '' %>";
+    </script>
+    <script src="/js/live-detection.js"></script>
+</body>
+</html>

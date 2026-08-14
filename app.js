@@ -98,10 +98,7 @@ app.use(session({
 }));
 
 // ── Auth Middleware ──
-function requireAuth(req, res, next) {
-  if (req.session && req.session.admin) return next();
-  res.redirect('/login');
-}
+const requireAuth = require('./middleware/auth');
 
 // ── Helper ──
 function calcRiskLevel(chlorophyll) {
@@ -207,6 +204,9 @@ app.get('/reports', async (req, res) => {
     res.status(500).send('Error loading reports: ' + err.message);
   }
 });
+
+const liveDetectionRoutes = require('./routes/liveDetection');
+app.use(liveDetectionRoutes);
 
 // ══════════════════════════════════════════════
 // PROTECTED ROUTES
