@@ -312,6 +312,96 @@ app.get('/api/mock/status', (req, res) => {
   res.json({ running: isMockRunning });
 });
 
+let rtdbMockInterval = null;
+let isRtdbMockRunning = false;
+
+async function addRtdbMockDataEntry() {
+  try {
+    const tempBase = 24.12;
+    const temp = parseFloat((tempBase + (Math.random() * 2 - 1)).toFixed(2));
+    
+    const now = new Date();
+    const pad = (n) => n.toString().padStart(2, '0');
+    const timestamp = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    
+    const mockData = {
+      chlorophyll: "Absent",
+      district: "Coimbatore",
+      gps: "11.021970,77.034560",
+      location: "Sri Ramakrishna College of Arts And Science",
+      ph: 10,
+      state: "Tamil Nadu",
+      temperature: temp,
+      timestamp: timestamp,
+      turbidity: "CLEAN",
+      isMockData: true
+    };
+    
+    const rtdb = admin.database();
+    const newRef = rtdb.ref().push();
+    await newRef.set(mockData);
+    console.log(`✓ RTDB Mock data added: ${mockData.location} | Temp: ${mockData.temperature}`);
+  } catch (error) {
+    console.error('❌ Error adding RTDB mock data:', error.message);
+  }
+}
+
+app.post('/api/mock/rtdb/start', async (req, res) => {
+  if (isRtdbMockRunning) {
+    return res.json({ success: false, message: 'RTDB Mock data already running' });
+  }
+  try {
+    await addRtdbMockDataEntry();
+    rtdbMockInterval = setInterval(addRtdbMockDataEntry, 7000);
+    isRtdbMockRunning = true;
+    console.log('🚀 RTDB Mock data generation started');
+    res.json({ success: true, message: 'RTDB Mock started' });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+});
+
+app.post('/api/mock/rtdb/stop', (req, res) => {
+  if (!isRtdbMockRunning) {
+    return res.json({ success: false, message: 'RTDB Mock data not running' });
+  }
+  clearInterval(rtdbMockInterval);
+  rtdbMockInterval = null;
+  isRtdbMockRunning = false;
+  console.log('🛑 RTDB Mock data generation stopped');
+  res.json({ success: true, message: 'RTDB Mock stopped' });
+});
+
+app.post('/api/mock/rtdb/cleanup', async (req, res) => {
+  try {
+    const rtdb = admin.database();
+    const snap = await rtdb.ref().once('value');
+    const data = snap.val();
+    
+    if (!data) {
+      return res.json({ success: true, message: 'No RTDB mock data to clean', count: 0 });
+    }
+    
+    let deletedCount = 0;
+    const updates = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (value.isMockData === true && value.location === "Sri Ramakrishna College of Arts And Science") {
+        updates[key] = null;
+        deletedCount++;
+      }
+    }
+    await rtdb.ref().update(updates);
+    console.log(`🧹 Cleaned up ${deletedCount} RTDB mock entries`);
+    res.json({ success: true, message: `Deleted ${deletedCount} RTDB mock entries`, count: deletedCount });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+});
+
+app.get('/api/mock/rtdb/status', (req, res) => {
+  res.json({ running: isRtdbMockRunning });
+});
+
 // ── 404 handler ──
 app.use((req, res) => {
   res.redirect('/');

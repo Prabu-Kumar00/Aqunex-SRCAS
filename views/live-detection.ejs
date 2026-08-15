@@ -44,6 +44,13 @@
                     return isNaN(d.getTime()) ? "N/A" : d.toLocaleTimeString();
                 } catch(e) { return "N/A"; }
             }
+            function getDetectionTimestamp(det) {
+                return det.timestamp_utc ||
+                       det.server_timestamp ||
+                       det.timestamp ||
+                       det.timestamp_local ||
+                       null;
+            }
         %>
 
         <% if (!detections || detections.length === 0) { %>
@@ -112,7 +119,7 @@
                         <div class="meta-item">
                             <span class="meta-label">Timestamp</span>
                             <span id="meta-timestamp" class="meta-value" style="font-family:monospace; color:var(--text-muted);">
-                                <%= parseDate(detections[0].timestamp) %>
+                                <%= parseDate(getDetectionTimestamp(detections[0])) %>
                             </span>
                         </div>
                     </div>
@@ -124,8 +131,9 @@
                         <% detections.forEach(function(det) { 
                             let maxConf = det.confidences && det.confidences.length ? Math.max(...det.confidences).toFixed(2) : 'N/A';
                             let clsStr = (det.classes || []).join(', ');
-                            let dtStr = parseDate(det.timestamp);
-                            let timeStr = parseTime(det.timestamp);
+                            let ts = getDetectionTimestamp(det);
+                            let dtStr = parseDate(ts);
+                            let timeStr = parseTime(ts);
                         %>
                             <div class="gallery-item" 
                                  data-id="<%= det.id %>"
